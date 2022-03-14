@@ -3,11 +3,11 @@
   <title>Hexo</title>
   
   
-  <link href="http://unknown404.github.io/atom.xml" rel="self"/>
+  <link href="http://unknown_404.gitee.io/atom.xml" rel="self"/>
   
-  <link href="http://unknown404.github.io/"/>
+  <link href="http://unknown_404.gitee.io/"/>
   <updated>2022-03-13T10:56:13.744Z</updated>
-  <id>http://unknown404.github.io/</id>
+  <id>http://unknown_404.gitee.io/</id>
   
   <author>
     <name>Nobody</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>markdown笔记</title>
-    <link href="http://unknown404.github.io/2022/03/13/markdown%E7%AC%94%E8%AE%B0/"/>
-    <id>http://unknown404.github.io/2022/03/13/markdown%E7%AC%94%E8%AE%B0/</id>
+    <link href="http://unknown_404.gitee.io/2022/03/13/markdown%E7%AC%94%E8%AE%B0/"/>
+    <id>http://unknown_404.gitee.io/2022/03/13/markdown%E7%AC%94%E8%AE%B0/</id>
     <published>2022-03-13T08:28:58.000Z</published>
     <updated>2022-03-13T10:56:13.744Z</updated>
     
@@ -30,10 +30,10 @@
     
     
     
-    <category term="技术学习" scheme="http://unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/"/>
+    <category term="技术学习" scheme="http://unknown_404.gitee.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/"/>
     
     
-    <category term="Markdown" scheme="http://unknown404.github.io/tags/Markdown/"/>
+    <category term="Markdown" scheme="http://unknown_404.gitee.io/tags/Markdown/"/>
     
   </entry>
   
