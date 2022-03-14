@@ -6,7 +6,7 @@
   <link href="http://unknown_404.gitee.io/atom.xml" rel="self"/>
   
   <link href="http://unknown_404.gitee.io/"/>
-  <updated>2022-03-13T10:56:13.744Z</updated>
+  <updated>2022-03-14T07:33:47.478Z</updated>
   <id>http://unknown_404.gitee.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>hexo搭建博客</title>
+    <link href="http://unknown_404.gitee.io/2022/03/14/hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/"/>
+    <id>http://unknown_404.gitee.io/2022/03/14/hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</id>
+    <published>2022-03-14T06:05:43.000Z</published>
+    <updated>2022-03-14T07:33:47.478Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="准备工具"><a href="#准备工具" class="headerlink" title="准备工具"></a>准备工具</h2><p>1）<a href="https://nodejs.org/zh-cn/">node.js</a><br>2) <a href="https://git-scm.com/">git</a>  </p><h2 id="创建空白仓库"><a href="#创建空白仓库" class="headerlink" title="创建空白仓库"></a>创建空白仓库</h2><p>1）在<a href="https://gitee.com/">Gitee</a>注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名设置为自己的用户名。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;记录自己使用hexo搭建个人博客并部署到gitee的流程。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="技术学习" scheme="http://unknown_404.gitee.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+    <category term="Hexo" scheme="http://unknown_404.gitee.io/tags/Hexo/"/>
+    
+  </entry>
   
   <entry>
     <title>markdown笔记</title>
