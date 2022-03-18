@@ -5,9 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="Hexo">
-    <title>hexo搭建博客 - Hexo</title>
-    <meta name="author" content="Nobody">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>hexo搭建博客 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
     
     
     
@@ -15,17 +15,17 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Nobody","sameAs":["https://github.com/","http://stackoverflow.com/users"],"image":"cover.jpg"},"articleBody":"\n\n准备工具1）node.js2) git  \n创建空白仓库1）在Gitee注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名设置为自己的用户名。\n","dateCreated":"2022-03-14T14:05:43+08:00","dateModified":"2022-03-14T17:15:26+08:00","datePublished":"2022-03-14T14:05:43+08:00","description":"记录自己使用hexo搭建个人博客并部署到gitee的流程。","headline":"hexo搭建博客","image":["cover.jpg"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"},"publisher":{"@type":"Organization","name":"Nobody","sameAs":["https://github.com/","http://stackoverflow.com/users"],"image":"cover.jpg","logo":{"@type":"ImageObject","url":"cover.jpg"}},"url":"http://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/","keywords":"Hexo","thumbnailUrl":"cover.jpg"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":["https://github.com/","http://stackoverflow.com/users"],"image":"cover.jpg"},"articleBody":"\n\n准备工具1）node.js2) git  \n本地建站流程1.在Gitee注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名可随意设置。但注意初始化时不要加文件。\n根据网上大多数博客的说法仓库名应该设置为用户名，否则hexo打包的css路径会找不到。但是实际操作中并没有遇到这样的问题推测有两个可能性。1）这个问题只出现在GitHub Page开设的流程。2）配置更新了，现在新版hexo的打包确保了相对路径的可查找性。\n\n2.将空仓库拉到本地，安装hexo，安装指令如下：\n12npm install hexo-cli -g\n3.使用指令hexo init初始化hexo，注意如果仓库的文件夹不为空的话，初始化就会失败，可以考虑新建一个文件夹，在新文件夹的位置启动初始化指令。（推荐将初始化生成的文件夹都放在仓库的另一个分支，master分支保留给hexo打包博客文件）初始化后当前文件夹内部结构如下：\n12345678.├── _config.yml //网站的配置文件，可配置大部分参数├── package.json├── scaffolds  //模版文件夹├── source  //资源文件夹，用户添加资源的位置|   ├── _drafts  //草稿|   └── _posts   //博文└── themes  //主题文件夹。Hexo 会根据主题来生成静态页面。\n4.初始化完成以后package.json新增了几个指令，包括\n123456&quot;scripts&quot;: &#123;    &quot;build&quot;: &quot;hexo generate&quot;,    &quot;clean&quot;: &quot;hexo clean&quot;,    &quot;deploy&quot;: &quot;hexo deploy&quot;,    &quot;server&quot;: &quot;hexo server&quot;  &#125;,\n新增的hexo指令的意义是：\n\nhexo clean —— 清空已有hexo网站文件hexo generate(or g) —— 依据网页文本与新的CSS样式生成新网站文件hexo server(or s) —— 启动本地服务器，可以在localhost:4000查看网站修改效果按上述顺序执行就可以在localhost:4000看到默认版式下的页面了。一般默认的是一个landscape主题。\n\n到此为止一个简单的博客就在本地建好了。我们可以通过调整themes文件夹的主题、修改_config.yml文件来使自己的博客更加个性化。\n更换主题hexo有自己的主题网站，可以选择自己感兴趣的主题点击进入其github主页进行下载，解压后添加到themes文件夹下。\n虽然hexo的主题丰富，很容易找到合意的个性主题。但是第一次使用时最好找一个比较常用的模版，这样说明文档比较丰富、遇到问题网上搜索时也很容易找到答案😭\n个人比较推荐并以后打算尝试的模版包括Next\n","dateCreated":"2022-03-14T14:05:43+08:00","dateModified":"2022-03-18T18:45:49+08:00","datePublished":"2022-03-14T14:05:43+08:00","description":"记录自己使用hexo搭建个人博客并部署到gitee的流程。","headline":"hexo搭建博客","image":["cover.jpg"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":["https://github.com/","http://stackoverflow.com/users"],"image":"cover.jpg","logo":{"@type":"ImageObject","url":"cover.jpg"}},"url":"http://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/","keywords":"Hexo","thumbnailUrl":"cover.jpg"}</script>
     <meta name="description" content="记录自己使用hexo搭建个人博客并部署到gitee的流程。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="hexo搭建博客">
 <meta property="og:url" content="http://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="记录自己使用hexo搭建个人博客并部署到gitee的流程。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-03-14T06:05:43.000Z">
-<meta property="article:modified_time" content="2022-03-14T09:15:26.083Z">
-<meta property="article:author" content="Nobody">
+<meta property="article:modified_time" content="2022-03-18T10:45:49.165Z">
+<meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="Hexo">
 <meta name="twitter:card" content="summary">
     
@@ -74,7 +74,7 @@
             href="/unknown_404/"
             aria-label=""
         >
-            Hexo
+            小白的文件整理箱
         </a>
     </div>
     
@@ -109,9 +109,9 @@
                 >
                     <img class="sidebar-profile-picture" src="/unknown_404/assets/images/cover.jpg" alt="作者的图片"/>
                 </a>
-                <h4 class="sidebar-profile-name">Nobody</h4>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>test</p>
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
 </h5>
                 
             </div>
@@ -281,10 +281,26 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7"><span class="toc-text">准备工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%A9%BA%E7%99%BD%E4%BB%93%E5%BA%93"><span class="toc-text">创建空白仓库</span></a></li></ol>
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7"><span class="toc-text">准备工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%BB%BA%E7%AB%99%E6%B5%81%E7%A8%8B"><span class="toc-text">本地建站流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%8D%A2%E4%B8%BB%E9%A2%98"><span class="toc-text">更换主题</span></a></li></ol>
 
 <h2 id="准备工具"><a href="#准备工具" class="headerlink" title="准备工具"></a>准备工具</h2><p>1）<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">node.js</a><br>2) <a target="_blank" rel="noopener" href="https://git-scm.com/">git</a>  </p>
-<h2 id="创建空白仓库"><a href="#创建空白仓库" class="headerlink" title="创建空白仓库"></a>创建空白仓库</h2><p>1）在<a target="_blank" rel="noopener" href="https://gitee.com/">Gitee</a>注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名设置为自己的用户名。</p>
+<h2 id="本地建站流程"><a href="#本地建站流程" class="headerlink" title="本地建站流程"></a>本地建站流程</h2><p>1.在<a target="_blank" rel="noopener" href="https://gitee.com/">Gitee</a>注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名可随意设置。但注意初始化时不要加文件。</p>
+<div class="alert info"><p>根据网上大多数博客的说法仓库名应该设置为用户名，否则hexo打包的css路径会找不到。但是实际操作中并没有遇到这样的问题推测有两个可能性。<br>1）这个问题只出现在GitHub Page开设的流程。<br>2）配置更新了，现在新版hexo的打包确保了相对路径的可查找性。</p>
+</div>
+<p>2.将空仓库拉到本地，安装hexo，安装指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>3.使用指令<code>hexo init</code>初始化hexo，注意如果仓库的文件夹不为空的话，初始化就会失败，可以考虑新建一个文件夹，在新文件夹的位置启动初始化指令。<br><em>（推荐将初始化生成的文件夹都放在仓库的另一个分支，master分支保留给hexo打包博客文件）</em><br>初始化后当前文件夹内部结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml //网站的配置文件，可配置大部分参数</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds  //模版文件夹</span><br><span class="line">├── source  //资源文件夹，用户添加资源的位置</span><br><span class="line">|   ├── _drafts  //草稿</span><br><span class="line">|   └── _posts   //博文</span><br><span class="line">└── themes  //主题文件夹。Hexo 会根据主题来生成静态页面。</span><br></pre></td></tr></table></figure>
+<p>4.初始化完成以后package.json新增了几个指令，包括</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;build&quot;: &quot;hexo generate&quot;,</span><br><span class="line">    &quot;clean&quot;: &quot;hexo clean&quot;,</span><br><span class="line">    &quot;deploy&quot;: &quot;hexo deploy&quot;,</span><br><span class="line">    &quot;server&quot;: &quot;hexo server&quot;</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+<p>新增的hexo指令的意义是：</p>
+<blockquote>
+<p>hexo clean —— 清空已有hexo网站文件<br>hexo generate(or g) —— 依据网页文本与新的CSS样式生成新网站文件<br>hexo server(or s) —— 启动本地服务器，可以在localhost:4000查看网站修改效果<br>按上述顺序执行就可以在localhost:4000看到默认版式下的页面了。一般默认的是一个landscape主题。</p>
+</blockquote>
+<p>到此为止一个简单的博客就在本地建好了。我们可以通过调整themes文件夹的主题、修改_config.yml文件来使自己的博客更加个性化。</p>
+<h2 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h2><p>hexo有自己的<a target="_blank" rel="noopener" href="https://hexo.io/themes/">主题网站</a>，可以选择自己感兴趣的主题点击进入其github主页进行下载，解压后添加到themes文件夹下。</p>
+<p>虽然hexo的主题丰富，很容易找到合意的个性主题。但是第一次使用时最好找一个比较常用的模版，这样说明文档比较丰富、遇到问题网上搜索时也很容易找到答案😭</p>
+<p>个人比较推荐并以后打算尝试的模版包括<a href="">Next</a></p>
 
             
 
@@ -409,7 +425,7 @@
 
                 <footer id="footer" class="main-content-wrap">
     <span class="copyrights">
-        Copyrights &copy; 2022 Nobody. All Rights Reserved.
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
     </span>
 </footer>
 
@@ -579,16 +595,16 @@
         
             <img id="about-card-picture" src="/unknown_404/assets/images/cover.jpg" alt="作者的图片"/>
         
-            <h4 id="about-card-name">Nobody</h4>
+            <h4 id="about-card-name">小白的文件整理箱</h4>
         
-            <div id="about-card-bio"><p>test</p>
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
 </div>
         
         
             <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>test</p>
+                <p>菜鸟级摸鱼工程师</p>
 
             </div>
         
@@ -596,7 +612,7 @@
             <div id="about-card-location">
                 <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                Shanghai, China
+                Shadow Border
             </div>
         
     </div>
