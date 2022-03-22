@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: 小白的文件整理箱
 subtitle: ''
-description: 'I am testing description'
+description: 'gitee静态页面练手'
 keywords:
-author: Nobody
+author: 小白的文件整理箱
 language: zh-cn
 timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://unknown_404.gitee.io
+url: https://unknown-four-hundred-and-four.gitee.io/unknown_404
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:

@@ -10,7 +10,6 @@ tags:
 > Markdown 是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档。
 > Markdown 编写的文档可以导出 HTML 、Word、图像、PDF、Epub 等多种格式的文档。
 > Markdown 编写的文档后缀为 .md, .markdown。
-
 ## 常用语法
 
 ### 1.标题
@@ -159,6 +158,10 @@ ___粗斜体文本___
 | :-----| ----: | :----: |
 | 单元格 | 单元格 | 单元格 |
 | 单元格 | 单元格 | 单元格 |
+
+## Markdown效果预览
+
+VsCode：快捷键command+shift+v
 
 ## 参考文档：  
 1. [菜鸟教程](https://www.runoob.com/markdown/md-table.html)  
