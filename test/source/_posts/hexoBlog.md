@@ -144,7 +144,7 @@ date:
 tags:
 ---
 ```
-如果是草稿则没有自动生成的date变量，执行publish语句、移动到source/_posts 文件夹时应该会出现。
+如果是草稿则没有自动生成的date变量，执行语句`hexo publish draft  <title>`、移动到source/_posts 文件夹时应该会出现。
 根据自己的需要，可以在文件头部增加内容。以tranquilpeak为例，该样式支持categories、thumbnailImage、excerpt等配置。配置categories可以在分类页面看到自己这篇文章的归类情况；配置thumbnailImage时会在文章列表增加缩略图，但本地是看不到效果的，只有打包上传到gitee后才可以；配置excerpt时首页文章列表不会展示全文而只会展示摘要。
 tranquilpeak模版还支持两个标签语法：`<!-- more -->`和`<!-- toc -->`。前者是将标志之前的内容将会自动生成首页的概览，后者则是自动生成文章目录。
 具体的内容书写可以参考markdown语法。
