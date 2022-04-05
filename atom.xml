@@ -6,7 +6,7 @@
   <link href="https://unknown-four-hundred-and-four.gitee.io/unknown_404/atom.xml" rel="self"/>
   
   <link href="https://unknown-four-hundred-and-four.gitee.io/unknown_404/"/>
-  <updated>2022-03-29T13:08:20.395Z</updated>
+  <updated>2022-04-05T04:07:19.589Z</updated>
   <id>https://unknown-four-hundred-and-four.gitee.io/unknown_404/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>关于登录拦截和history.back()的二三事</title>
+    <link href="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/31/login/"/>
+    <id>https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/31/login/</id>
+    <published>2022-03-31T02:13:02.000Z</published>
+    <updated>2022-04-05T04:07:19.589Z</updated>
+    
+    <content type="html"><![CDATA[<p>记录一个维护老项目时发现的古早bug。</p><span id="more"></span> <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>WAP项目首页通常有一个用户中心的图标供用户进入自己个人页面。当点击这个用户中心图标时后端会根据请求是否包含登录态来绝对是否重定向请求。例如说目标连接是user.domain.com，在这个域名下的代码由于没有拿到用户个人信息进行了302重定向，重定向后的连接为login.domain.com?to&#x3D;user.domain.com。但如果user.domain.com的代码找到了用户数据就会渲染前端页面。</p><div class="figure center" style="width:;"><img class="fig-img" src="login.png" alt="登录逻辑"><span class="caption">登录逻辑</span></div><div style="clear:both;"></div><p>目前为止看起来是不是毫无问题？</p><p>但如果重定向页面login.domain.com?to&#x3D;user.domain.com有回退按钮呢？前端回退通常使用的方法是history.back()，可以返回上一级页面，此时回退的话就会就会退回user.domain.com，该域名下的代码会再次执行判断登录态的逻辑，发现没有登录态依然会继续重定向，因此实际的页面效果看起来就像登录页面刷新，无法回退到首页。而到了Safari浏览器，由于该移动端浏览器不会重新执行返回的页面的代码，所以浏览器的url停留在user.domain.com，且没有渲染页面，看起来就像白屏故障一样。</p><div class="figure center" style="width:;"><img class="fig-img" src="login-problem.png" alt="登录页回退逻辑"><span class="caption">登录页回退逻辑</span></div><div style="clear:both;"></div><h2 id="解决方式？"><a href="#解决方式？" class="headerlink" title="解决方式？"></a>解决方式？</h2><p>（1）后端的登录跳转逻辑调整（<del>具体怎么改是后端的事跟我有什么关系呢</del> ）</p><p>（2）前端用户中心跳转的链接随获取用户登录态接口的数据而调整</p><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="http://t.zoukankan.com/yanggb-p-11675315.html">javascript解决在safari浏览器中使用history.back()返回上一页后页面不会刷新的问题</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;记录一个维护老项目时发现的古早bug。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="踩坑经历" scheme="https://unknown-four-hundred-and-four.gitee.io/unknown_404/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
+    
+    
+    <category term="浏览器" scheme="https://unknown-four-hundred-and-four.gitee.io/unknown_404/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+    <category term="WEB API" scheme="https://unknown-four-hundred-and-four.gitee.io/unknown_404/tags/WEB-API/"/>
+    
+  </entry>
   
   <entry>
     <title>小程序海报绘制</title>
