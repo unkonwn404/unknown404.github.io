@@ -46,6 +46,7 @@ sidebar:
             title: global.archives
             url: /all-archives
             icon: fa fa-archive
+    next_bar:
         search:
             title: global.search
             url: "#search"
@@ -56,16 +57,16 @@ sidebar:
             title: global.about
             url: "#about"
             icon: fa fa-question
-    author_links:
-        github:
-            title: global.github
-            url: https://github.com/
-            icon: fab fa-github
+    # author_links:
+    #     github:
+    #         title: global.github
+    #         url: https://github.com/
+    #         icon: fab fa-github
         
-        stack_overflow:
-            title: global.stack_overflow
-            url: http://stackoverflow.com/users
-            icon: fab fa-stack-overflow
+    #     stack_overflow:
+    #         title: global.stack_overflow
+    #         url: http://stackoverflow.com/users
+    #         icon: fab fa-stack-overflow
     
 
 
@@ -94,13 +95,13 @@ header:
 
 # Your biography and your job is editable in each languages files in `languages` folder
 author:
-    email: danhuipeng@sohu-inc.com
+    email: dhpeng_hust@126.com
     location: Shadow Border
     # Your profile picture located in folder `source/_images/` (development)
     # or in `source/assets/images/` (production)
     # or you can use an external url
     # Overwritten by your gravatar image if `gravatar_email` is filled
-    picture: cover.jpg
+    picture: icon.png
     # Your Twitter username without the @. E.g : `tranquilpeak`
     twitter:
     # Your personal google plus profile id, not your blog or business page id.

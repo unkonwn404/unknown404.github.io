@@ -25,7 +25,8 @@ thumbnailImage: cover.jpg
 根据网上大多数博客的说法仓库名应该设置为用户名，否则 hexo 打包的 css 路径会找不到。但是实际操作中并没有遇到这样的问题推测有两个可能性。
 1）这个问题只出现在 GitHub Page 开设的流程。
 2）配置更新了，现在新版 hexo 的打包确保了相对路径的可查找性。
-{% endalert %} 2.将空仓库拉到本地，安装 hexo，安装指令如下：
+{% endalert %} 
+2.将空仓库拉到本地，安装 hexo，安装指令如下：
 
 ```
 npm install hexo-cli -g
@@ -73,7 +74,7 @@ hexo 有自己的[主题网站](https://hexo.io/themes/)，可以选择自己感
 
 虽然 hexo 的主题丰富，很容易找到合意的个性主题。但是第一次使用时最好找一个比较常用的模版，这样说明文档比较丰富、遇到问题网上搜索时也很容易找到答案 😭
 
-个人比较推荐并以后打算尝试的模版包括[Next](https://github.com/theme-next/hexo-theme-next)*(大家都喜欢应该是有理由的吧)*、[Fluid](https://github.com/fluid-dev/hexo-theme-fluid)*(文档看着真齐全)*。
+个人比较推荐并以后打算尝试的模版包括[Next](https://github.com/theme-next/hexo-theme-next) (大家都喜欢应该是有理由的吧)、[Fluid](https://github.com/fluid-dev/hexo-theme-fluid) (文档看着真齐全)。
 
 当前使用的主题是[tranquilpeak](https://github.com/LouisBarranqueiro/hexo-theme-tranquilpeak)，看着比较美观。后续以该主题为例讲解配置修改。
 
