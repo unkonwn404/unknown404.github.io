@@ -15,7 +15,7 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":["https://github.com/","http://stackoverflow.com/users"],"image":"cover.jpg"},"articleBody":"\n\n背景知识类型系统按照「是否允许隐式类型转换」来分类，可以分为强类型和弱类型。JavaScript就属于弱类型语言，灵活性强，但不利的一点是没有编译过程，语言的类型错误只有运行时才会发现（JavaScript因此被称为动态语言）。而TypeScript可以弥补这一点：TypeScript 在运行前需要先编译为 JavaScript，而在编译阶段就会进行类型检查并报错（TypeScript对应称为静态语言）。同时TypeScript 增强了编辑器（IDE）的功能，包括代码补全、接口提示、跳转到定义、代码重构等，这在很大程度上提高了开发效率。\n本文主要记录一些常用的typescript语法及一些需要辨析的注意点。\nanyScript使用方法用于代码标红但确实不知道如何声明的场景\n123// @ts-nocheck 禁用整个文件的ts校验，置于文件头顶// @ts-ignore 禁用单行ts校验，放在报错行的上方使用any和unknown\n在遇到确实难以定义类型的场景下可以使用以上方法逃课，以后再思考可能的改进方式。\n基础类型在TypeScript 3.1的文档里，基础类型包括：boolean,string,number,Array&lt;&gt;,Tuple,any,void,undefined,null,never简单记录下使用偏少的类型它的特点。\n辨析点：\n1）unknown vs anyunknown与any一样，所有类型都可以分配给unknown，unknown 类型的值只能赋给 unknown 本身和 any 类型。但unknown仍然有静态检测能力，个人理解是unknown没有放弃类型的推断，并不是所有类型的内部方法unknown类型数据都可以随便调用\n2）void，null和undefined相同点是这3个本身在声明变量的过程中用处不大。\n123let unusable: void = undefined;let u: undefined = undefined;let n: null = null;\n默认情况下null和undefined是所有类型的子类型。undefined 也是 void 的一个子集。当你对函数返回值并不在意（number、boolean、undefined都可以是返回值）时，使用 void 而不是 undefined。\n接口与类型别名接口可用于对象类型命名和定义类型参数。基本语法：interface SquareConfig &#123;&#125;接口名开头需大写，因为定义的是一种类型。\n可选属性使用写法：\n1234interface SquareConfig &#123;  color?: string;  width?: number;&#125;\n根据使用经验，在调用该类型SquareConfig的变量其属性时编译等效于：\n1234interface SquareConfig &#123;  color: string｜undefined;  width: number｜undefined;&#125;\n所以假如使用变量的color属性调用string的默认方法或者赋值给一个string变量时就会报错\n只读属性一些对象属性只能在对象刚刚创建的时候修改其值。可以在属性名前用 readonly来指定只读属性：\n1234interface Point &#123;    readonly x: number;    readonly y: number;&#125;\n辨析点：const vs readonly：const可以防止变量的值被修改，readonly可以防止变量的属性被修改。\n索引签名描述了对象索引的类型，还有相应的索引返回值类型。索引签名只支持以下两种：\n\n字符串索引签名\n数字索引签名一个接口中最多只能定义一个字符串索引签名，该签名会约束对象类型的所有属性类型。12345interface NumberDictionary &#123;  [index: string]: number;  length: number;    // 可以，length是number类型  name: string       // 错误，`name`的类型与索引类型返回值的类型不匹配&#125;\n类型别名类型别名声明可以为TypeScript中任意类型命名基本语法：type AliasType=string｜boolean｜numberinterface与type区别\n\n\ntype可以用于非对象类型，而接口只能用于对象类型\n接口可以继承其他对象类型，type不支持继承只能用交叉类型实现继承效果。123456&lt;!-- type类型扩展方式 --&gt;type Name = &#123; name: string &#125;;type Person = Name &amp; &#123; age: number &#125;;&lt;!-- interface类型扩展方式 --&gt;interface IName &#123; name: string &#125;;interface IPerson extends IName &#123; age: number &#125;;\n接口具有声明合并的行为，type没有\n\n运算符使用非空断言运算符 !置于变量名后，用于强调元素不是null或undefined。\n123const test=(func:()=&gt;void)=&gt;&#123;    func!()&#125;\n可选链运算符 ?.ES11(ES2020)新增的特性。?.用来判断左侧的变量是否存在，不存在不会继续表达式运算。例如书写a?.b时实际上等效于\n1a === null || a === void 0 ? void 0 : a.b;\n空值合并运算符 ??ES11(ES2020)新增的特性。当左侧的操作数为 null 或者 undefined 时，返回其右侧操作数，否则返回左侧操作数。let b &#x3D; a ?? 10等效于\n1let b = a !== null &amp;&amp; a !== void 0 ? a : 10;\n数字分割符_可以用于长数字分隔，方便阅读，不会编译进JavaScript。个人理解类似计算器的数字每隔3位加一个逗号方便阅读的作用。\n1let num:number = 12_345.678_9\n内置工具类型Partial作用是将泛型T所有属性变为可选属性。\n123type Partial&lt;T&gt; = &#123;\t[P in keyof T]?: T[P]&#125;\nRequired1234作用是将泛型T所有属性变为必选属性。type Required&lt;T&gt; = &#123;  [P in keyof T]-?: T[P]&#125;\n\nRecord&lt;K, T&gt;作用是将 K 中所有属性值转化为 T 类型。K提供对象属性名的联合类型，T提供对象属性类型。因为K是用作对象属性名设置，所以参数K必须能够赋值给string｜number｜symbol类型。\n123type Record&lt;K extends keyof any,T&gt; = &#123;  [key in K]: T&#125;\n示例：\n123type K=&#x27;x&#x27;|&#x27;y&#x27;type R=Record&lt;K,number&gt;const a:R=&#123;x:0,y:0&#125;\nPick&lt;T, K&gt;作用是将 T 类型中的 K 键列表提取，K必须为对象类型T存在的属性。\n123type Pick&lt;T, K extends keyof T&gt; = &#123;  [P in K]: T[P]&#125;\n示例：\n12interface Point=&#123;x:number,y:number&#125;type T=Pick&lt;Point,&#x27;x&#x27;|&#x27;y&#x27;&gt;//&#123;x:number,y:number&#125;\nOmit&lt;T, K&gt;与Pick&lt;T, K&gt;互补。用于去除类型 T 中包含 K 的键值对。如果K为T不存在的属性则新类型等同于T。\nExclude&lt;T, U&gt;在 T 类型中，去除 T 类型和 U 类型的交集。\nExtract&lt;T, U&gt;与Exclude&lt;T, U&gt;互补。获取T类型中所有能赋值给U的类型，没有返回never。\nReturnType获取 T 类型(函数)对应的返回值类型。\n12function foo(x: string | number): string | number &#123; /*..*/ &#125;type FooType = ReturnType&lt;foo&gt;;  // string | number\n参考资料（1）TypeScript 高级用法（2）一篇够用的TypeScript总结（3）TypeScript文档\n","dateCreated":"2022-03-27T19:05:48+08:00","dateModified":"2022-03-27T19:05:49+08:00","datePublished":"2022-03-27T19:05:48+08:00","description":"TypeScript一些特性记录和辨析，方便自己记忆，为日后使用准备。","headline":"TypeScript","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":["https://github.com/","http://stackoverflow.com/users"],"image":"cover.jpg","logo":{"@type":"ImageObject","url":"cover.jpg"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/","keywords":"TypeScript"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"\n\n背景知识类型系统按照「是否允许隐式类型转换」来分类，可以分为强类型和弱类型。JavaScript就属于弱类型语言，灵活性强，但不利的一点是没有编译过程，语言的类型错误只有运行时才会发现（JavaScript因此被称为动态语言）。而TypeScript可以弥补这一点：TypeScript 在运行前需要先编译为 JavaScript，而在编译阶段就会进行类型检查并报错（TypeScript对应称为静态语言）。同时TypeScript 增强了编辑器（IDE）的功能，包括代码补全、接口提示、跳转到定义、代码重构等，这在很大程度上提高了开发效率。\n本文主要记录一些常用的typescript语法及一些需要辨析的注意点。\nanyScript使用方法用于代码标红但确实不知道如何声明的场景\n123// @ts-nocheck 禁用整个文件的ts校验，置于文件头顶// @ts-ignore 禁用单行ts校验，放在报错行的上方使用any和unknown\n在遇到确实难以定义类型的场景下可以使用以上方法逃课，以后再思考可能的改进方式。\n基础类型在TypeScript 3.1的文档里，基础类型包括：boolean,string,number,Array&lt;&gt;,Tuple,any,void,undefined,null,never简单记录下使用偏少的类型它的特点。\n辨析点：\n1）unknown vs anyunknown与any一样，所有类型都可以分配给unknown，unknown 类型的值只能赋给 unknown 本身和 any 类型。但unknown仍然有静态检测能力，个人理解是unknown没有放弃类型的推断，并不是所有类型的内部方法unknown类型数据都可以随便调用\n2）void，null和undefined相同点是这3个本身在声明变量的过程中用处不大。\n123let unusable: void = undefined;let u: undefined = undefined;let n: null = null;\n默认情况下null和undefined是所有类型的子类型。undefined 也是 void 的一个子集。当你对函数返回值并不在意（number、boolean、undefined都可以是返回值）时，使用 void 而不是 undefined。\n接口与类型别名接口可用于对象类型命名和定义类型参数。基本语法：interface SquareConfig &#123;&#125;接口名开头需大写，因为定义的是一种类型。\n可选属性使用写法：\n1234interface SquareConfig &#123;  color?: string;  width?: number;&#125;\n根据使用经验，在调用该类型SquareConfig的变量其属性时编译等效于：\n1234interface SquareConfig &#123;  color: string｜undefined;  width: number｜undefined;&#125;\n所以假如使用变量的color属性调用string的默认方法或者赋值给一个string变量时就会报错\n只读属性一些对象属性只能在对象刚刚创建的时候修改其值。可以在属性名前用 readonly来指定只读属性：\n1234interface Point &#123;    readonly x: number;    readonly y: number;&#125;\n辨析点：const vs readonly：const可以防止变量的值被修改，readonly可以防止变量的属性被修改。\n索引签名描述了对象索引的类型，还有相应的索引返回值类型。索引签名只支持以下两种：\n\n字符串索引签名\n数字索引签名一个接口中最多只能定义一个字符串索引签名，该签名会约束对象类型的所有属性类型。12345interface NumberDictionary &#123;  [index: string]: number;  length: number;    // 可以，length是number类型  name: string       // 错误，`name`的类型与索引类型返回值的类型不匹配&#125;\n类型别名类型别名声明可以为TypeScript中任意类型命名基本语法：type AliasType=string｜boolean｜numberinterface与type区别\n\n\ntype可以用于非对象类型，而接口只能用于对象类型\n接口可以继承其他对象类型，type不支持继承只能用交叉类型实现继承效果。123456&lt;!-- type类型扩展方式 --&gt;type Name = &#123; name: string &#125;;type Person = Name &amp; &#123; age: number &#125;;&lt;!-- interface类型扩展方式 --&gt;interface IName &#123; name: string &#125;;interface IPerson extends IName &#123; age: number &#125;;\n接口具有声明合并的行为，type没有\n\n运算符使用非空断言运算符 !置于变量名后，用于强调元素不是null或undefined。\n123const test=(func:()=&gt;void)=&gt;&#123;    func!()&#125;\n可选链运算符 ?.ES11(ES2020)新增的特性。?.用来判断左侧的变量是否存在，不存在不会继续表达式运算。例如书写a?.b时实际上等效于\n1a === null || a === void 0 ? void 0 : a.b;\n空值合并运算符 ??ES11(ES2020)新增的特性。当左侧的操作数为 null 或者 undefined 时，返回其右侧操作数，否则返回左侧操作数。let b &#x3D; a ?? 10等效于\n1let b = a !== null &amp;&amp; a !== void 0 ? a : 10;\n数字分割符_可以用于长数字分隔，方便阅读，不会编译进JavaScript。个人理解类似计算器的数字每隔3位加一个逗号方便阅读的作用。\n1let num:number = 12_345.678_9\n内置工具类型Partial作用是将泛型T所有属性变为可选属性。\n123type Partial&lt;T&gt; = &#123;\t[P in keyof T]?: T[P]&#125;\nRequired1234作用是将泛型T所有属性变为必选属性。type Required&lt;T&gt; = &#123;  [P in keyof T]-?: T[P]&#125;\n\nRecord&lt;K, T&gt;作用是将 K 中所有属性值转化为 T 类型。K提供对象属性名的联合类型，T提供对象属性类型。因为K是用作对象属性名设置，所以参数K必须能够赋值给string｜number｜symbol类型。\n123type Record&lt;K extends keyof any,T&gt; = &#123;  [key in K]: T&#125;\n示例：\n123type K=&#x27;x&#x27;|&#x27;y&#x27;type R=Record&lt;K,number&gt;const a:R=&#123;x:0,y:0&#125;\nPick&lt;T, K&gt;作用是将 T 类型中的 K 键列表提取，K必须为对象类型T存在的属性。\n123type Pick&lt;T, K extends keyof T&gt; = &#123;  [P in K]: T[P]&#125;\n示例：\n12interface Point=&#123;x:number,y:number&#125;type T=Pick&lt;Point,&#x27;x&#x27;|&#x27;y&#x27;&gt;//&#123;x:number,y:number&#125;\nOmit&lt;T, K&gt;与Pick&lt;T, K&gt;互补。用于去除类型 T 中包含 K 的键值对。如果K为T不存在的属性则新类型等同于T。\nExclude&lt;T, U&gt;在 T 类型中，去除 T 类型和 U 类型的交集。\nExtract&lt;T, U&gt;与Exclude&lt;T, U&gt;互补。获取T类型中所有能赋值给U的类型，没有返回never。\nReturnType获取 T 类型(函数)对应的返回值类型。\n12function foo(x: string | number): string | number &#123; /*..*/ &#125;type FooType = ReturnType&lt;foo&gt;;  // string | number\n参考资料（1）TypeScript 高级用法（2）一篇够用的TypeScript总结（3）TypeScript文档\n","dateCreated":"2022-03-27T19:05:48+08:00","dateModified":"2022-03-27T19:05:49+08:00","datePublished":"2022-03-27T19:05:48+08:00","description":"TypeScript一些特性记录和辨析，方便自己记忆，为日后使用准备。","headline":"TypeScript","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/","keywords":"TypeScript"}</script>
     <meta name="description" content="TypeScript一些特性记录和辨析，方便自己记忆，为日后使用准备。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="TypeScript">
@@ -33,7 +33,7 @@
         
     
     
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/cover.jpg"/>
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
     
     
     
@@ -83,7 +83,7 @@
             >
         
         
-            <img class="header-picture" src="/unknown_404/assets/images/cover.jpg" alt="作者的图片"/>
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
         
         </a>
     
@@ -104,7 +104,7 @@
                     href="/unknown_404/#about"
                     aria-label="阅读有关作者的更多信息"
                 >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/cover.jpg" alt="作者的图片"/>
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
                 </a>
                 <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
                 
@@ -172,6 +172,10 @@
                     </a>
             </li>
             
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
                 <li class="sidebar-button">
                     
                         <a
@@ -197,42 +201,6 @@
                         >
                         <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
                         <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="https://github.com/"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="GitHub"
-                        >
-                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">GitHub</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="http://stackoverflow.com/users"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="Stack Overflow"
-                        >
-                        <i class="sidebar-button-icon fab fa-stack-overflow" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Stack Overflow</span>
                     </a>
             </li>
             
@@ -629,7 +597,7 @@
             <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/unknown_404/assets/images/cover.jpg" alt="作者的图片"/>
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
         
             <h4 id="about-card-name">小白的文件整理箱</h4>
         
