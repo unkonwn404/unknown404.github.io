@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>React Hooks学习笔记 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"记录常用的React钩子的使用方法。\n \n\nReact Hook规则（1）只在最顶层使用 Hook：不要在循环，条件或嵌套函数中调用 Hook（2）只在 React 函数中调用 Hook：可以在React组件或自定义钩子中调用\nuseState使用示例：\n1[selfState,setSelfState]=useState(initialState)\n输入参数：初始状态initialState。如果initialState需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。返回参数：当前状态名selfState和更新状态函数名setSelfStatesetSelfState可以传入新值来变更状态setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数setSelfState(prevState &#x3D;&gt; newState)注意点：（1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。（2）initialState可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。（3）过时状态问题：class和hooks的写法里，异步操作的过程中如何改变 state 的值，最后打印的时候都是最初的值或者说异步操作开始定义的时候的 state 的值。如下面的函数组件中setTimeout 取到的都是旧值，是因为 react 中一直遵循一个原则，即 state 指向的内容是不可变的，所以每一次 state 的更新都是指向变了。因为闭包的原因，setTimeout中依然指向的原来的对象，所以旧的state没有释放，所以会取到旧值。\n12345678910111213141516function DelayedCount() &#123;  const [count, setCount] = useState(0);  const handleClickAsync = () =&gt; &#123;    setTimeout(function delay() &#123;      setCount(count + 1);    &#125;, 3000);  &#125;  return (    &lt;div&gt;      &#123;count&#125;      &lt;button onClick=&#123;handleClickAsync&#125;&gt;Increase async&lt;/button&gt;    &lt;/div&gt;  );&#125;\n以上代码点击多次时不能正确记录点击次数。解决方法是使用setCount(count &#x3D;&gt; count + 1)，这样不依赖外部变量、确保将最新状态值作为参数提供给更新状态函数，过时闭包的问题解决了。\nuseEffect使用示例：\n1234useEffect(()=&gt;&#123;    ...    return ()=&gt;&#123;&#125;&#125;,[variable])\n第一参数的回调函数函数可以没有返回值，第二参数的书写不是必要的，如果设置了变量variable，当且仅当variable改变时才会触发第一参数回调\nuseEffect与生命周期关系useEffect实现componentDidMountuseEffect的第二个参数设置为一个空数组时，初始化调用一次之后不再执行回调，相当于周期componentDidMount\n123useEffect(() =&gt; &#123;    console.log(&#x27;hello world&#x27;)&#125;, [])\nuseEffect实现componentDidMount和componentDidUpdate当useEffect没有第二个参数时,组件的初始化和更新都会执行。当useEffect有第二个参数时,组件的更新仅当variable改变时会执行。\nuseEffect实现componentDidMount和componentWillMountuseEffect设置返回一个函数，这个函数在组件卸载时会执行。\n12345678910useEffect(() =&gt; &#123;    function handleStatusChange(status) &#123;      setIsOnline(status.isOnline);    &#125;    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);    // Specify how to clean up after this effect:    return function cleanup() &#123;      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);    &#125;;&#125;,[]);\nuseEffect无限循环陷阱1234567891011121314151617181920212223242526import React, &#123; useState, useEffect &#125; from &#x27;react&#x27;;import axios from &#x27;axios&#x27;; function App() &#123;  const [data, setData] = useState(&#123; hits: [] &#125;);   useEffect(async () =&gt; &#123;    const result = await axios(      &#x27;http://localhost/api/v1/search?query=redux&#x27;,    );     setData(result.data);  &#125;);   return (    &lt;ul&gt;      &#123;data.hits.map(item =&gt; (        &lt;li key=&#123;item.objectID&#125;&gt;          &lt;a href=&#123;item.url&#125;&gt;&#123;item.title&#125;&lt;/a&gt;        &lt;/li&gt;      ))&#125;    &lt;/ul&gt;  );&#125; export default App;\n以该组件为例，初次渲染执行useEffect内部请求、返回数据后，由于使用了setData组件state改变，引起重新渲染，同时由于useEffect没有依赖项，再次渲染时仍然会触发内部的回调，因此出现了无限循环的问题。\n解决方式：如果只希望在组件mount时执行请求，可以传递一个空数组作为useEffect的第二个参数\nuseEffect与async同时使用时的报错async函数会返回promise，但useEffect只允许返回一个清除函数，所以在控制台可以看到警告提醒\nWarning: useEffect function must return a cleanup function or nothing. Promises and useEffect(async () &#x3D;&gt; …) are not supported, but you can call an async function inside an effect\n \n解决方式：async函数的定义分离出useEffect回调函数，回调函数内部执行async函数。\nuseEffect vs useLayoutEffect执行时期：useEffect 在全部渲染完毕后才会执行，useLayoutEffect 会在浏览器布局之后，绘制之前执行执行方式：useEffect异步，useLayoutEffect同步\nuseMemo使用示例：\n1234const memo=useMemo(()=&gt;&#123;    ...    return compute(props.v)&#125;,[variable])\n传入 useMemo 的函数会在渲染期间执行。如果没有设置第二参数依赖变量，则每次渲染都会执行第一参数的函数来计算。类比生命周期就是shouldComponentUpdate适用场景：（1）父组件将某个值传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，子组件同样也会重新渲染。因此可以使用useMemo、将依赖设置为父组件传递的值，只有当其发生变化时子组件才更新。（2）组件内部计算成本比较高的逻辑。需要通过控制依赖来减少不必要的计算。注意点：（1）useMemo内部不要使用setState相关操作，会导致无限循环（2）包括后面的useCallback，如果是用在父子组件传值的场景，子组件通常用高阶函数React.memo包裹\nuseCallback使用示例：\n1234const fn=useCallback(()=&gt;&#123;    ...    doSomething(variable)&#125;,[variable])\nuseCallback(fn, deps) 相当于 useMemo(() &#x3D;&gt; fn, deps)。类似生命周期shouldComponentUpdate适用场景：（1）父组件将某个函数传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，由于函数重新创建等原因子组件同样也会重新渲染。\nuseRef使用示例：\n1const refContainer = useRef(initialValue);\n输入参数initialValue将赋给ref的current属性。ref作用于HTML元素时 ref 接收底层 DOM 元素作为其 current 属性；作用于组件时，ref 对象接收组件的挂载实例作为其 current 属性。useRef() 和自建一个 {current: …} 对象的唯一区别是，useRef 会在每次渲染时返回同一个 ref 对象。适用场景：（1）引用如input等有参数频繁变动更新的 dom 元素。\n参考文献（1）useEffect你真的会用吗？（2）React Hooks 及其性能优化之React.memo,useCallBack,useMemo\n","dateCreated":"2022-04-08T14:47:53+08:00","dateModified":"2022-05-10T11:06:05+08:00","datePublished":"2022-04-08T14:47:53+08:00","description":"记录常用的React钩子的使用方法。","headline":"React Hooks学习笔记","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/","keywords":"React"}</script>
+    <meta name="description" content="记录常用的React钩子的使用方法。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="React Hooks学习笔记">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="记录常用的React钩子的使用方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-08T06:47:53.000Z">
+<meta property="article:modified_time" content="2022-05-10T03:06:05.056Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            React Hooks学习笔记
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-04-08T14:47:53+08:00">
+	
+		    4月 08, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a>, <a class="category-link" href="/unknown_404/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/">前端基础</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>记录常用的React钩子的使用方法。</p>
+<span id="more"></span> 
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hook%E8%A7%84%E5%88%99"><span class="toc-text">React Hook规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useState"><span class="toc-text">useState</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useEffect"><span class="toc-text">useEffect</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect%E4%B8%8E%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%85%B3%E7%B3%BB"><span class="toc-text">useEffect与生命周期关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#useEffect%E5%AE%9E%E7%8E%B0componentDidMount"><span class="toc-text">useEffect实现componentDidMount</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#useEffect%E5%AE%9E%E7%8E%B0componentDidMount%E5%92%8CcomponentDidUpdate"><span class="toc-text">useEffect实现componentDidMount和componentDidUpdate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#useEffect%E5%AE%9E%E7%8E%B0componentDidMount%E5%92%8CcomponentWillMount"><span class="toc-text">useEffect实现componentDidMount和componentWillMount</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E9%99%B7%E9%98%B1"><span class="toc-text">useEffect无限循环陷阱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect%E4%B8%8Easync%E5%90%8C%E6%97%B6%E4%BD%BF%E7%94%A8%E6%97%B6%E7%9A%84%E6%8A%A5%E9%94%99"><span class="toc-text">useEffect与async同时使用时的报错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect-vs-useLayoutEffect"><span class="toc-text">useEffect vs useLayoutEffect</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useMemo"><span class="toc-text">useMemo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useCallback"><span class="toc-text">useCallback</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useRef"><span class="toc-text">useRef</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+<h2 id="React-Hook规则"><a href="#React-Hook规则" class="headerlink" title="React Hook规则"></a>React Hook规则</h2><p>（1）只在最顶层使用 Hook：不要在循环，条件或嵌套函数中调用 Hook<br>（2）只在 React 函数中调用 Hook：可以在React组件或自定义钩子中调用</p>
+<h2 id="useState"><a href="#useState" class="headerlink" title="useState"></a>useState</h2><p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[selfState,setSelfState]=useState(initialState)</span><br></pre></td></tr></table></figure>
+<p>输入参数：初始状态initialState。如果initialState需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。<br>返回参数：当前状态名selfState和更新状态函数名setSelfState<br>setSelfState可以传入新值来变更状态setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数setSelfState(prevState &#x3D;&gt; newState)<br>注意点：<br>（1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。<br>（2）initialState可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。<br>（3）过时状态问题：class和hooks的写法里，异步操作的过程中如何改变 state 的值，最后打印的时候都是最初的值或者说异步操作开始定义的时候的 state 的值。如下面的函数组件中setTimeout 取到的都是旧值，是因为 react 中一直遵循一个原则，即 state 指向的内容是不可变的，所以每一次 state 的更新都是指向变了。因为闭包的原因，setTimeout中依然指向的原来的对象，所以旧的state没有释放，所以会取到旧值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function DelayedCount() &#123;</span><br><span class="line">  const [count, setCount] = useState(0);</span><br><span class="line"></span><br><span class="line">  const handleClickAsync = () =&gt; &#123;</span><br><span class="line">    setTimeout(function delay() &#123;</span><br><span class="line">      setCount(count + 1);</span><br><span class="line">    &#125;, 3000);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &#123;count&#125;</span><br><span class="line">      &lt;button onClick=&#123;handleClickAsync&#125;&gt;Increase async&lt;/button&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码点击多次时不能正确记录点击次数。解决方法是使用setCount(count &#x3D;&gt; count + 1)，这样不依赖外部变量、确保将最新状态值作为参数提供给更新状态函数，过时闭包的问题解决了。</p>
+<h2 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h2><p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">useEffect(()=&gt;&#123;</span><br><span class="line">    ...</span><br><span class="line">    return ()=&gt;&#123;&#125;</span><br><span class="line">&#125;,[variable])</span><br></pre></td></tr></table></figure>
+<p>第一参数的回调函数函数可以没有返回值，第二参数的书写不是必要的，如果设置了变量variable，当且仅当variable改变时才会触发第一参数回调</p>
+<h3 id="useEffect与生命周期关系"><a href="#useEffect与生命周期关系" class="headerlink" title="useEffect与生命周期关系"></a>useEffect与生命周期关系</h3><h4 id="useEffect实现componentDidMount"><a href="#useEffect实现componentDidMount" class="headerlink" title="useEffect实现componentDidMount"></a>useEffect实现componentDidMount</h4><p>useEffect的第二个参数设置为一个空数组时，初始化调用一次之后不再执行回调，相当于周期componentDidMount</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">    console.log(&#x27;hello world&#x27;)</span><br><span class="line">&#125;, [])</span><br></pre></td></tr></table></figure>
+<h4 id="useEffect实现componentDidMount和componentDidUpdate"><a href="#useEffect实现componentDidMount和componentDidUpdate" class="headerlink" title="useEffect实现componentDidMount和componentDidUpdate"></a>useEffect实现componentDidMount和componentDidUpdate</h4><p>当useEffect没有第二个参数时,组件的初始化和更新都会执行。<br>当useEffect有第二个参数时,组件的更新仅当variable改变时会执行。</p>
+<h4 id="useEffect实现componentDidMount和componentWillMount"><a href="#useEffect实现componentDidMount和componentWillMount" class="headerlink" title="useEffect实现componentDidMount和componentWillMount"></a>useEffect实现componentDidMount和componentWillMount</h4><p>useEffect设置返回一个函数，这个函数在组件卸载时会执行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">    function handleStatusChange(status) &#123;</span><br><span class="line">      setIsOnline(status.isOnline);</span><br><span class="line">    &#125;</span><br><span class="line">    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    // Specify how to clean up after this effect:</span><br><span class="line">    return function cleanup() &#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;,[]);</span><br></pre></td></tr></table></figure>
+<h3 id="useEffect无限循环陷阱"><a href="#useEffect无限循环陷阱" class="headerlink" title="useEffect无限循环陷阱"></a>useEffect无限循环陷阱</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">import React, &#123; useState, useEffect &#125; from &#x27;react&#x27;;</span><br><span class="line">import axios from &#x27;axios&#x27;;</span><br><span class="line"> </span><br><span class="line">function App() &#123;</span><br><span class="line">  const [data, setData] = useState(&#123; hits: [] &#125;);</span><br><span class="line"> </span><br><span class="line">  useEffect(async () =&gt; &#123;</span><br><span class="line">    const result = await axios(</span><br><span class="line">      &#x27;http://localhost/api/v1/search?query=redux&#x27;,</span><br><span class="line">    );</span><br><span class="line"> </span><br><span class="line">    setData(result.data);</span><br><span class="line">  &#125;);</span><br><span class="line"> </span><br><span class="line">  return (</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">      &#123;data.hits.map(item =&gt; (</span><br><span class="line">        &lt;li key=&#123;item.objectID&#125;&gt;</span><br><span class="line">          &lt;a href=&#123;item.url&#125;&gt;&#123;item.title&#125;&lt;/a&gt;</span><br><span class="line">        &lt;/li&gt;</span><br><span class="line">      ))&#125;</span><br><span class="line">    &lt;/ul&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">export default App;</span><br></pre></td></tr></table></figure>
+<p>以该组件为例，初次渲染执行useEffect内部请求、返回数据后，由于使用了setData组件state改变，引起重新渲染，同时由于useEffect没有依赖项，再次渲染时仍然会触发内部的回调，因此出现了无限循环的问题。</p>
+<p>解决方式：如果只希望在组件mount时执行请求，可以传递一个空数组作为useEffect的第二个参数</p>
+<h3 id="useEffect与async同时使用时的报错"><a href="#useEffect与async同时使用时的报错" class="headerlink" title="useEffect与async同时使用时的报错"></a>useEffect与async同时使用时的报错</h3><p>async函数会返回promise，但useEffect只允许返回一个清除函数，所以在控制台可以看到警告提醒</p>
+<div class="alert info"><p>Warning: useEffect function must return a cleanup function or nothing. Promises and useEffect(async () &#x3D;&gt; …) are not supported, but you can call an async function inside an effect</p>
+</div> 
+<p>解决方式：async函数的定义分离出useEffect回调函数，回调函数内部执行async函数。</p>
+<h3 id="useEffect-vs-useLayoutEffect"><a href="#useEffect-vs-useLayoutEffect" class="headerlink" title="useEffect vs useLayoutEffect"></a>useEffect vs useLayoutEffect</h3><p>执行时期：useEffect 在全部渲染完毕后才会执行，useLayoutEffect 会在浏览器布局之后，绘制之前执行<br>执行方式：useEffect异步，useLayoutEffect同步</p>
+<h2 id="useMemo"><a href="#useMemo" class="headerlink" title="useMemo"></a>useMemo</h2><p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const memo=useMemo(()=&gt;&#123;</span><br><span class="line">    ...</span><br><span class="line">    return compute(props.v)</span><br><span class="line">&#125;,[variable])</span><br></pre></td></tr></table></figure>
+<p>传入 useMemo 的函数会在渲染期间执行。如果没有设置第二参数依赖变量，则每次渲染都会执行第一参数的函数来计算。类比生命周期就是shouldComponentUpdate<br>适用场景：<br>（1）父组件将某个值传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，子组件同样也会重新渲染。因此可以使用useMemo、将依赖设置为父组件传递的值，只有当其发生变化时子组件才更新。<br>（2）组件内部计算成本比较高的逻辑。需要通过控制依赖来减少不必要的计算。<br>注意点：<br>（1）useMemo内部不要使用setState相关操作，会导致无限循环<br>（2）包括后面的useCallback，如果是用在父子组件传值的场景，子组件通常用高阶函数React.memo包裹</p>
+<h2 id="useCallback"><a href="#useCallback" class="headerlink" title="useCallback"></a>useCallback</h2><p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const fn=useCallback(()=&gt;&#123;</span><br><span class="line">    ...</span><br><span class="line">    doSomething(variable)</span><br><span class="line">&#125;,[variable])</span><br></pre></td></tr></table></figure>
+<p>useCallback(fn, deps) 相当于 useMemo(() &#x3D;&gt; fn, deps)。类似生命周期shouldComponentUpdate<br>适用场景：<br>（1）父组件将某个函数传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，由于函数重新创建等原因子组件同样也会重新渲染。</p>
+<h2 id="useRef"><a href="#useRef" class="headerlink" title="useRef"></a>useRef</h2><p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const refContainer = useRef(initialValue);</span><br></pre></td></tr></table></figure>
+<p>输入参数initialValue将赋给ref的current属性。ref作用于HTML元素时 ref 接收底层 DOM 元素作为其 current 属性；作用于组件时，ref 对象接收组件的挂载实例作为其 current 属性。<br>useRef() 和自建一个 {current: …} 对象的唯一区别是，useRef 会在每次渲染时返回同一个 ref 对象。<br>适用场景：<br>（1）引用如input等有参数频繁变动更新的 dom 元素。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6952509261519781918#heading-0">useEffect你真的会用吗？</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7053695602370019335">React Hooks 及其性能优化之React.memo,useCallBack,useMemo</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/React/" rel="tag">React</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/04/27/gitCommand/"
+                    data-tooltip="git指令回顾"
+                    aria-label="上一篇: git指令回顾"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/04/05/regexp/"
+                    data-tooltip="正则表达式"
+                    aria-label="下一篇: 正则表达式"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/04/27/gitCommand/"
+                    data-tooltip="git指令回顾"
+                    aria-label="上一篇: git指令回顾"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/04/05/regexp/"
+                    data-tooltip="正则表达式"
+                    aria-label="下一篇: 正则表达式"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

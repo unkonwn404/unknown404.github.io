@@ -1,0 +1,681 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>git指令回顾 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"最近VsCode图形化界面操作太过于习惯，一些git指令操作感觉有点生疏，所以回顾一下。\n \n进入正题前可配合以下VsCode操作文章一起阅读，体会也许更深：1）VS Code使用Git可视化管理源代码详细教程2）Version Controlling with Git in Visual Studio Code and Azure DevOps虽说界面化是挺好的，但万一哪天需要书写或修改部署文件时会比较头疼，所以还是要记录一点\n\n背景git是一个分布式版本控制软件。其工作流程如下图所示：\n\n\n涉及的基本工作区概念有：Workspace：工作区，平时开发时改动的地方Index：暂存区，执行git add指令后工作区的文件修改内容就会被推到暂存区Repository：本地仓库，位于自己的本地电脑，执行git commit指令后暂存区的文件修改内容就会被推到本地仓库Remote：远程仓库，用来托管代码的服务器，比较常见的包括GitHub、Gitee、GitLab，可以被多个处于协作的本地仓库修改，执行git push指令后本地仓库的文件修改内容就会被推到远程仓库\n一般来说git的开发流程主要包括以下步骤：\n\n使用git clone将远程仓库代码拉到本地\n按照业务从master分支拉取新分支、使用git branch &lt;branch-name&gt; 、git checkout &lt;branch-name&gt; 在新分支上进行开发\n本地开发完成使用git add .添加所有修改到暂存区\n使用git commit -m &lt;message&gt;将修改提交到本地仓库\n使用git push将修改推送到远程仓库\n\ngit常用配置全局配置用户名、用户邮箱12git config --global user.name &quot;xxx&quot;git config --global user.email &quot;xxx@xx.com&quot;\n\n配置SSH KeySSH Key允许本地电脑和远程仓库间建立一个安全链接。和 https 拉取远程代码的不同点是，https 方式需要手动输入用户名和密码，ssh 的方式配置完毕后 Git 都会使用你本地的私钥和远程仓库的公钥进行验证是否是一对秘钥，从而简化了操作流程。\n查看SSH KeyWindows终端可输入如下指令：\n1type %userprofile%\\.ssh\\id_rsa.pub\n\nGNU&#x2F;Linux&#x2F;Mac&#x2F;PowerShell则可以使用该指令：\n1cat ~/.ssh/id_rsa.pub\n如果返回开头为ssh-rsa一长串字符，可以跳过生成SSH Key过程\n生成SSH Key使用指令：\n1ssh-keygen -t rsa -C &quot;xxx@xxx.com&quot;\n后续关于文件名、passphrase的设置最好直接回车采用默认值，以免影响自动调用SSH Key的流程。如果之后需要修改key值，可以使用如下语句：\n1ssh-keygen -p &lt;keyname&gt;\n完成后再使用如下指令查看SSH Key：Windows：\n1type %userprofile%\\.ssh\\id_rsa.pub\n\nGNU&#x2F;Linux&#x2F;Mac&#x2F;PowerShell：\n1cat ~/.ssh/id_rsa.pub\n复制SSH KeyWindows 命令:\n1type %userprofile%\\.ssh\\id_rsa.pub | clip\n\nWindows PowerShell:\n1cat ~/.ssh/id_rsa.pub | clip\n\nMac:\n1pbcopy &lt; ~/.ssh/id_rsa.pub\n\nGNU&#x2F;Linux (需要 xclip):\n1xclip -sel clip &lt; ~/.ssh/id_rsa.pub\n添加SSH Key打开gitlab，在左侧栏找到profile setting，点击SSH Keys，将复制的SSH Key内容粘贴在keys一栏，点击add key完成。\n查看git配置使用指令git config --list可以查看当前配置所有项\n工作区常用git指令新建本地仓库本地项目git管理使用指令git init使项目git化\n远程仓库项目本地操作使用指令git clone &lt;url&gt;，例如 git clone git@gitee.com:unknown-four-hundred-and-four/unknown_404.git。这里的url最好用SSH而非HTTPS，避免手动输入用户名和密码的麻烦。在克隆完每个远程仓库后，远程仓库默认为origin。如果想用其他的主机名，需要用git clone命令的-o选项指定。\n1git clone -o jQuery https://github.com/jquery/jquery.git\n\n开发新业务查看当前仓库分支情况12git branch 查看本地仓库分支情况，*表示当前位于的分支git branch -a 查看本地和远程所有分支情况\n创建业务分支开发使用指令git checkout -b &lt;branchname&gt;使工作区切到新建的分支上。该指令是git branch &lt;branchname&gt;和git checkout &lt;branchname&gt;合在一起的结果。\n代码提交1）使用指令git add将代码提交到暂存区。\n1234// 添加某个文件到暂存区，后面可以跟多个文件，以空格区分git add xxx// 添加当前更改的所有文件到暂存区。git add .\n\n2）使用指令git commit将代码提交到本地仓库。\n12345678// 提交暂存的更改，会新开编辑器进行编辑git commit // 提交暂存的更改，并记录下备注git commit -m &quot;you message&quot;// 等同于 git add . &amp;&amp; git commit -mgit commit -am// 对最近一次的提交的信息进行修改,此操作会修改commit的hash值git commit --amend\n提交规范补充commit的内容规范不应该被轻视，一个调理清晰的commit记录有助于后面的人做维护工作。实际工作中可能常会遇到之前项目下掉的某功能需要重新恢复，如果能有清晰的commit说明维护人员就能很快定位功能代码位置做出调整；而如果提交记录只有类似fix 、bugfix的说明则会给维护工作造成麻烦。\n目前广泛接受的commit格式规范是angular团队规范，它的message格式如下：\n12345&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;// header部分&lt;BLANK LINE&gt;// 空行&lt;body&gt;// body部分&lt;BLANK LINE&gt;// 空行&lt;footer&gt;// 注释footer部分\n主要分为三个部分：\nheader部分必填内容, 描述主要修改类型和内容。规范将 header 分为 type、scope、subject 三部分。type：提交的代码修改所属类型，必填项。应在以下几种中选择一种：\n\nfeat: 一项新功能\nfix: 一个错误修复\ndocs: 仅文档更改\nstyle: 不影响代码含义的更改（空白，格式，缺少分号等）\nrefactor: 既不修正错误也不增加功能的代码更改（重构）\nperf: 改进性能的代码更改\ntest: 添加缺失或更正现有测试\nbuild: 影响构建系统或外部依赖项的更改（gulp，npm等）\nci: 对CI配置文件和脚本的更改\nchore: 更改构建过程或辅助工具和库，例如文档生成\n\nscope：本次提交的影响范围，描述提交更改的位置如模块名或文件名。可选项subject：指本次提交的简要描述。\nbody部分选填部分。\nfooter部分主要备注以下内容：\n\nBREAKING CHANGE：当前修改是否发生了版本升级、接口参数减少、接口删除、迁移等破坏性调整。\n关闭Issue：填写格式Closes #ISSUE_ID, #ISSUE_ID\n\n当前使用比较广泛的规范化工具是commitizen。\n3）使用指令git push将代码提交到远程仓库。\n1git push &lt;远程主机名&gt; &lt;本地分支名&gt;:&lt;远程分支名&gt;\n如果省略远程分支名，则会将本地分支推送到对应名称的远程分支（两者有追踪关系），如果该远程分支不存在，则会被新建。如果省略本地分支名，则是将空分支推到远程分支，等同于删除指定的远程分支。如果省略本地分支和远程分支、且当前分支与远程分支之间存在追踪关系时，将当前分支推送到origin主机的对应分支；如果追踪关系只有一个可以直接git push。\n文件暂存有的时候我们的功能开发了一半，因为某些原因我们需要 checkout 到其他的分支上查看代码或者是执行某个工作。这个时候由于功能并没有开发完成，所以并不希望提交代码，此时可以用git stash指令来将本地还没有提交的改动全部存储起来。\n1234567891011// 保存改动并注释本次改动git stash [save] &lt;message&gt;// 将新创建并且还没有被 git 管理的文件也一并储藏起来git stash  [--include-untracked/-u]// 查看全部存储记录git stash list// 恢复，num是可选项，通过git stash list可查看具体值。只能恢复一次git stash pop stash@&#123;num&#125;//恢复，num是可选项，通过git stash list可查看具体值。能恢复多次git stash apply stash@&#123;num&#125;\ngit stash在没有add之前才能执行。\n业务协作当同事开发的内容和自己在同一分支且对方已经提交代码的情况下，可以使用指令git pull，git pull 等同于 git fetch &amp;&amp; git merge\n123456// 拉取远程分支代码的更新,对当前工作区的代码没有影响git fetch &lt;远程主机名(eg. origin)&gt; &lt;分支名&gt;// 将当前分支与指定分支进行合并git merge &lt;分支名&gt;// 从远程仓库拉取代码并合并到本地git pull &lt;远程主机名&gt; &lt;远程分支名&gt;:&lt;本地分支名&gt;\n辨析：git merge和git rebase的区别相同点：两个指令都可以用于分支合并。不同点：1）提交记录里，merge在非快速模式下会多一条Merge branch ‘xxx’ into ‘xxx’的提交信息，而rebase不会2）合并冲突时，merge只需要处理一次冲突，rebase需要解决一次又一次冲突3）rebase的交互模式可以将多次提交压缩成一次，具体步骤是：\n\na）执行指令git rebase -i &lt;base-commit&gt;，参数base-commit就是指明操作的基点提交对象，基于这个基点进行 rebase 的操作\nb）指令结束后会进入一个 vim 的交互式页面，将基点以后的节点都设置为了pick，且后面会有指令提示，常用的指令包括12pick：使用该次提交squash：将该commit和前一个commit合并\n通常将第一个提交的后面的pick改成squash即可。\nc）保存，退出编辑页面（点击Esc键后输入:wq），进入commit message页面。之后同样是输入i进入编辑界面，修改自己的commit message\nd）保存，退出。至此，git rebase一个流程走完。\n特别注意，只能在自己使用的 feature 分支上进行 rebase 操作，不允许在集成分支上进行 rebase，因为这种操作会修改集成分支的历史记录。\n\n参考资料（1）commit规范+commitlint+CHANGELOG自动生成一条龙服务（2）git rebase -i 合并多次提交（3）多年 Git 使用心得 &amp; 常见问题整理（4）我在工作中是如何使用 git 的\n\n\n","dateCreated":"2022-04-27T17:55:23+08:00","dateModified":"2022-05-10T11:07:27+08:00","datePublished":"2022-04-27T17:55:23+08:00","description":"最近VsCode图形化界面操作太过于习惯，一些git指令操作感觉有点生疏，所以回顾一下。","headline":"git指令回顾","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/","keywords":"git"}</script>
+    <meta name="description" content="最近VsCode图形化界面操作太过于习惯，一些git指令操作感觉有点生疏，所以回顾一下。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="git指令回顾">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="最近VsCode图形化界面操作太过于习惯，一些git指令操作感觉有点生疏，所以回顾一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/git.png">
+<meta property="article:published_time" content="2022-04-27T09:55:23.000Z">
+<meta property="article:modified_time" content="2022-05-10T03:07:27.809Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/git.png">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            git指令回顾
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-04-27T17:55:23+08:00">
+	
+		    4月 27, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>最近VsCode图形化界面操作太过于习惯，一些git指令操作感觉有点生疏，所以回顾一下。</p>
+<span id="more"></span> 
+<p>进入正题前可配合以下VsCode操作文章一起阅读，体会也许更深：<br>1）<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1793472">VS Code使用Git可视化管理源代码详细教程</a><br>2）<a target="_blank" rel="noopener" href="https://almvm.devopshub.cn/labs/azuredevops/git/">Version Controlling with Git in Visual Studio Code and Azure DevOps</a><br>虽说界面化是挺好的，但万一哪天需要书写或修改部署文件时会比较头疼，所以还是要记录一点</p>
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="toc-text">git常用配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E9%85%8D%E7%BD%AE%E7%94%A8%E6%88%B7%E5%90%8D%E3%80%81%E7%94%A8%E6%88%B7%E9%82%AE%E7%AE%B1"><span class="toc-text">全局配置用户名、用户邮箱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AESSH-Key"><span class="toc-text">配置SSH Key</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8BSSH-Key"><span class="toc-text">查看SSH Key</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E6%88%90SSH-Key"><span class="toc-text">生成SSH Key</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6SSH-Key"><span class="toc-text">复制SSH Key</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0SSH-Key"><span class="toc-text">添加SSH Key</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8Bgit%E9%85%8D%E7%BD%AE"><span class="toc-text">查看git配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%B8%B8%E7%94%A8git%E6%8C%87%E4%BB%A4"><span class="toc-text">工作区常用git指令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93"><span class="toc-text">新建本地仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E9%A1%B9%E7%9B%AEgit%E7%AE%A1%E7%90%86"><span class="toc-text">本地项目git管理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E9%A1%B9%E7%9B%AE%E6%9C%AC%E5%9C%B0%E6%93%8D%E4%BD%9C"><span class="toc-text">远程仓库项目本地操作</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E6%96%B0%E4%B8%9A%E5%8A%A1"><span class="toc-text">开发新业务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E4%BB%93%E5%BA%93%E5%88%86%E6%94%AF%E6%83%85%E5%86%B5"><span class="toc-text">查看当前仓库分支情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%9A%E5%8A%A1%E5%88%86%E6%94%AF%E5%BC%80%E5%8F%91"><span class="toc-text">创建业务分支开发</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4"><span class="toc-text">代码提交</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%A1%A5%E5%85%85"><span class="toc-text">提交规范补充</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#header%E9%83%A8%E5%88%86"><span class="toc-text">header部分</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#body%E9%83%A8%E5%88%86"><span class="toc-text">body部分</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#footer%E9%83%A8%E5%88%86"><span class="toc-text">footer部分</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E6%9A%82%E5%AD%98"><span class="toc-text">文件暂存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E5%8D%8F%E4%BD%9C"><span class="toc-text">业务协作</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BE%A8%E6%9E%90%EF%BC%9Agit-merge%E5%92%8Cgit-rebase%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">辨析：git merge和git rebase的区别</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>git是一个分布式版本控制软件。其工作流程如下图所示：</p>
+<div class="figure center" style="width:;"><img class="fig-img" src="git.png" alt=""></div><div style="clear:both;"></div>
+
+<p>涉及的基本工作区概念有：<br><strong>Workspace</strong>：工作区，平时开发时改动的地方<br><strong>Index</strong>：暂存区，执行<code>git add</code>指令后工作区的文件修改内容就会被推到暂存区<br><strong>Repository</strong>：本地仓库，位于自己的本地电脑，执行<code>git commit</code>指令后暂存区的文件修改内容就会被推到本地仓库<br><strong>Remote</strong>：远程仓库，用来托管代码的服务器，比较常见的包括GitHub、Gitee、GitLab，可以被多个处于协作的本地仓库修改，执行<code>git push</code>指令后本地仓库的文件修改内容就会被推到远程仓库</p>
+<p>一般来说git的开发流程主要包括以下步骤：</p>
+<ol>
+<li>使用<code>git clone</code>将远程仓库代码拉到本地</li>
+<li>按照业务从master分支拉取新分支、使用<code>git branch &lt;branch-name&gt; </code>、<code>git checkout &lt;branch-name&gt; </code>在新分支上进行开发</li>
+<li>本地开发完成使用<code>git add .</code>添加所有修改到暂存区</li>
+<li>使用<code>git commit -m &lt;message&gt;</code>将修改提交到本地仓库</li>
+<li>使用<code>git push</code>将修改推送到远程仓库</li>
+</ol>
+<h2 id="git常用配置"><a href="#git常用配置" class="headerlink" title="git常用配置"></a>git常用配置</h2><h3 id="全局配置用户名、用户邮箱"><a href="#全局配置用户名、用户邮箱" class="headerlink" title="全局配置用户名、用户邮箱"></a>全局配置用户名、用户邮箱</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line">git config --global user.email &quot;xxx@xx.com&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置SSH-Key"><a href="#配置SSH-Key" class="headerlink" title="配置SSH Key"></a>配置SSH Key</h3><p>SSH Key允许本地电脑和远程仓库间建立一个安全链接。和 https 拉取远程代码的不同点是，https 方式需要手动输入用户名和密码，ssh 的方式配置完毕后 Git 都会使用你本地的私钥和远程仓库的公钥进行验证是否是一对秘钥，从而简化了操作流程。</p>
+<h4 id="查看SSH-Key"><a href="#查看SSH-Key" class="headerlink" title="查看SSH Key"></a>查看SSH Key</h4><p>Windows终端可输入如下指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type %userprofile%\.ssh\id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p>GNU&#x2F;Linux&#x2F;Mac&#x2F;PowerShell则可以使用该指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+<p>如果返回开头为<code>ssh-rsa</code>一长串字符，可以跳过生成SSH Key过程</p>
+<h4 id="生成SSH-Key"><a href="#生成SSH-Key" class="headerlink" title="生成SSH Key"></a>生成SSH Key</h4><p>使用指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;xxx@xxx.com&quot;</span><br></pre></td></tr></table></figure>
+<p>后续关于文件名、passphrase的设置最好直接回车采用默认值，以免影响自动调用SSH Key的流程。<br>如果之后需要修改key值，可以使用如下语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -p &lt;keyname&gt;</span><br></pre></td></tr></table></figure>
+<p>完成后再使用如下指令查看SSH Key：<br>Windows：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type %userprofile%\.ssh\id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p>GNU&#x2F;Linux&#x2F;Mac&#x2F;PowerShell：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+<h4 id="复制SSH-Key"><a href="#复制SSH-Key" class="headerlink" title="复制SSH Key"></a>复制SSH Key</h4><p>Windows 命令:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type %userprofile%\.ssh\id_rsa.pub | clip</span><br></pre></td></tr></table></figure>
+
+<p>Windows PowerShell:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa.pub | clip</span><br></pre></td></tr></table></figure>
+
+<p>Mac:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pbcopy &lt; ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p>GNU&#x2F;Linux (需要 xclip):</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xclip -sel clip &lt; ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+<h4 id="添加SSH-Key"><a href="#添加SSH-Key" class="headerlink" title="添加SSH Key"></a>添加SSH Key</h4><p>打开gitlab，在左侧栏找到profile setting，点击SSH Keys，将复制的SSH Key内容粘贴在keys一栏，点击<code>add key</code>完成。</p>
+<h3 id="查看git配置"><a href="#查看git配置" class="headerlink" title="查看git配置"></a>查看git配置</h3><p>使用指令<code>git config --list</code>可以查看当前配置所有项</p>
+<h2 id="工作区常用git指令"><a href="#工作区常用git指令" class="headerlink" title="工作区常用git指令"></a>工作区常用git指令</h2><h3 id="新建本地仓库"><a href="#新建本地仓库" class="headerlink" title="新建本地仓库"></a>新建本地仓库</h3><h4 id="本地项目git管理"><a href="#本地项目git管理" class="headerlink" title="本地项目git管理"></a>本地项目git管理</h4><p>使用指令<code>git init</code>使项目git化</p>
+<h4 id="远程仓库项目本地操作"><a href="#远程仓库项目本地操作" class="headerlink" title="远程仓库项目本地操作"></a>远程仓库项目本地操作</h4><p>使用指令<code>git clone &lt;url&gt;</code>，例如 <code>git clone git@gitee.com:unknown-four-hundred-and-four/unknown_404.git</code>。这里的url最好用SSH而非HTTPS，避免手动输入用户名和密码的麻烦。<br>在克隆完每个远程仓库后，远程仓库默认为origin。如果想用其他的主机名，需要用git clone命令的-o选项指定。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone -o jQuery https://github.com/jquery/jquery.git</span><br></pre></td></tr></table></figure>
+
+<h3 id="开发新业务"><a href="#开发新业务" class="headerlink" title="开发新业务"></a>开发新业务</h3><h4 id="查看当前仓库分支情况"><a href="#查看当前仓库分支情况" class="headerlink" title="查看当前仓库分支情况"></a>查看当前仓库分支情况</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git branch 查看本地仓库分支情况，*表示当前位于的分支</span><br><span class="line">git branch -a 查看本地和远程所有分支情况</span><br></pre></td></tr></table></figure>
+<h4 id="创建业务分支开发"><a href="#创建业务分支开发" class="headerlink" title="创建业务分支开发"></a>创建业务分支开发</h4><p>使用指令<code>git checkout -b &lt;branchname&gt;</code>使工作区切到新建的分支上。该指令是<code>git branch &lt;branchname&gt;</code>和<code>git checkout &lt;branchname&gt;</code>合在一起的结果。</p>
+<h4 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a>代码提交</h4><p>1）使用指令<code>git add</code>将代码提交到暂存区。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 添加某个文件到暂存区，后面可以跟多个文件，以空格区分</span><br><span class="line">git add xxx</span><br><span class="line">// 添加当前更改的所有文件到暂存区。</span><br><span class="line">git add .</span><br></pre></td></tr></table></figure>
+
+<p>2）使用指令<code>git commit</code>将代码提交到本地仓库。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 提交暂存的更改，会新开编辑器进行编辑</span><br><span class="line">git commit </span><br><span class="line">// 提交暂存的更改，并记录下备注</span><br><span class="line">git commit -m &quot;you message&quot;</span><br><span class="line">// 等同于 git add . &amp;&amp; git commit -m</span><br><span class="line">git commit -am</span><br><span class="line">// 对最近一次的提交的信息进行修改,此操作会修改commit的hash值</span><br><span class="line">git commit --amend</span><br></pre></td></tr></table></figure>
+<h4 id="提交规范补充"><a href="#提交规范补充" class="headerlink" title="提交规范补充"></a>提交规范补充</h4><p>commit的内容规范不应该被轻视，一个调理清晰的commit记录有助于后面的人做维护工作。实际工作中可能常会遇到之前项目下掉的某功能需要重新恢复，如果能有清晰的commit说明维护人员就能很快定位功能代码位置做出调整；而如果提交记录只有类似fix 、bugfix的说明则会给维护工作造成麻烦。</p>
+<p>目前广泛接受的commit格式规范是angular团队规范，它的message格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;// header部分</span><br><span class="line">&lt;BLANK LINE&gt;// 空行</span><br><span class="line">&lt;body&gt;// body部分</span><br><span class="line">&lt;BLANK LINE&gt;// 空行</span><br><span class="line">&lt;footer&gt;// 注释footer部分</span><br></pre></td></tr></table></figure>
+<p>主要分为三个部分：</p>
+<h5 id="header部分"><a href="#header部分" class="headerlink" title="header部分"></a>header部分</h5><p>必填内容, 描述主要修改类型和内容。规范将 header 分为 type、scope、subject 三部分。<br><strong>type</strong>：提交的代码修改所属类型，必填项。应在以下几种中选择一种：</p>
+<ul>
+<li>feat: 一项新功能</li>
+<li>fix: 一个错误修复</li>
+<li>docs: 仅文档更改</li>
+<li>style: 不影响代码含义的更改（空白，格式，缺少分号等）</li>
+<li>refactor: 既不修正错误也不增加功能的代码更改（重构）</li>
+<li>perf: 改进性能的代码更改</li>
+<li>test: 添加缺失或更正现有测试</li>
+<li>build: 影响构建系统或外部依赖项的更改（gulp，npm等）</li>
+<li>ci: 对CI配置文件和脚本的更改</li>
+<li>chore: 更改构建过程或辅助工具和库，例如文档生成</li>
+</ul>
+<p><strong>scope</strong>：本次提交的影响范围，描述提交更改的位置如模块名或文件名。可选项<br><strong>subject</strong>：指本次提交的简要描述。</p>
+<h5 id="body部分"><a href="#body部分" class="headerlink" title="body部分"></a>body部分</h5><p>选填部分。</p>
+<h5 id="footer部分"><a href="#footer部分" class="headerlink" title="footer部分"></a>footer部分</h5><p>主要备注以下内容：</p>
+<ul>
+<li><strong>BREAKING CHANGE</strong>：当前修改是否发生了版本升级、接口参数减少、接口删除、迁移等破坏性调整。</li>
+<li><strong>关闭Issue</strong>：填写格式<code>Closes #ISSUE_ID, #ISSUE_ID</code></li>
+</ul>
+<p>当前使用比较广泛的规范化工具是<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/cz-conventional-changelog">commitizen</a>。</p>
+<p>3）使用指令<code>git push</code>将代码提交到远程仓库。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push &lt;远程主机名&gt; &lt;本地分支名&gt;:&lt;远程分支名&gt;</span><br></pre></td></tr></table></figure>
+<p>如果省略远程分支名，则会将本地分支推送到对应名称的远程分支（两者有追踪关系），如果该远程分支不存在，则会被新建。<br>如果省略本地分支名，则是将空分支推到远程分支，等同于删除指定的远程分支。<br>如果省略本地分支和远程分支、且当前分支与远程分支之间存在追踪关系时，将当前分支推送到origin主机的对应分支；如果追踪关系只有一个可以直接<code>git push</code>。</p>
+<h4 id="文件暂存"><a href="#文件暂存" class="headerlink" title="文件暂存"></a>文件暂存</h4><p>有的时候我们的功能开发了一半，因为某些原因我们需要 checkout 到其他的分支上查看代码或者是执行某个工作。这个时候由于功能并没有开发完成，所以并不希望提交代码，此时可以用<code>git stash</code>指令来将本地还没有提交的改动全部存储起来。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 保存改动并注释本次改动</span><br><span class="line">git stash [save] &lt;message&gt;</span><br><span class="line">// 将新创建并且还没有被 git 管理的文件也一并储藏起来</span><br><span class="line">git stash  [--include-untracked/-u]</span><br><span class="line">// 查看全部存储记录</span><br><span class="line">git stash list</span><br><span class="line">// 恢复，num是可选项，通过git stash list可查看具体值。只能恢复一次</span><br><span class="line">git stash pop stash@&#123;num&#125;</span><br><span class="line">//恢复，num是可选项，通过git stash list可查看具体值。能恢复多次</span><br><span class="line">git stash apply stash@&#123;num&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>git stash在没有add之前才能执行。</p>
+<h4 id="业务协作"><a href="#业务协作" class="headerlink" title="业务协作"></a>业务协作</h4><p>当同事开发的内容和自己在同一分支且对方已经提交代码的情况下，可以使用指令git pull，git pull 等同于 git fetch &amp;&amp; git merge</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 拉取远程分支代码的更新,对当前工作区的代码没有影响</span><br><span class="line">git fetch &lt;远程主机名(eg. origin)&gt; &lt;分支名&gt;</span><br><span class="line">// 将当前分支与指定分支进行合并</span><br><span class="line">git merge &lt;分支名&gt;</span><br><span class="line">// 从远程仓库拉取代码并合并到本地</span><br><span class="line">git pull &lt;远程主机名&gt; &lt;远程分支名&gt;:&lt;本地分支名&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="辨析：git-merge和git-rebase的区别"><a href="#辨析：git-merge和git-rebase的区别" class="headerlink" title="辨析：git merge和git rebase的区别"></a>辨析：git merge和git rebase的区别</h5><p>相同点：两个指令都可以用于分支合并。<br>不同点：<br>1）提交记录里，merge在非快速模式下会多一条Merge branch ‘xxx’ into ‘xxx’的提交信息，而rebase不会<br>2）合并冲突时，merge只需要处理一次冲突，rebase需要解决一次又一次冲突<br>3）rebase的交互模式可以将多次提交压缩成一次，具体步骤是：</p>
+<ul>
+<li>a）执行指令<code>git rebase -i &lt;base-commit&gt;</code>，参数base-commit就是指明操作的基点提交对象，基于这个基点进行 rebase 的操作</li>
+<li>b）指令结束后会进入一个 vim 的交互式页面，将基点以后的节点都设置为了pick，且后面会有指令提示，常用的指令包括<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pick：使用该次提交</span><br><span class="line">squash：将该commit和前一个commit合并</span><br></pre></td></tr></table></figure>
+通常将第一个提交的后面的pick改成squash即可。</li>
+<li>c）保存，退出编辑页面（点击Esc键后输入:wq），进入commit message页面。之后同样是输入i进入编辑界面，修改自己的commit message</li>
+<li>d）保存，退出。至此，git rebase一个流程走完。<blockquote>
+<p>特别注意，只能在自己使用的 feature 分支上进行 rebase 操作，不允许在集成分支上进行 rebase，因为这种操作会修改集成分支的历史记录。</p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6934292467160514567#heading-0">commit规范+commitlint+CHANGELOG自动生成一条龙服务</a><br>（2）<a target="_blank" rel="noopener" href="https://blog.csdn.net/M__L__/article/details/104573220">git rebase -i 合并多次提交</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904191203213326">多年 Git 使用心得 &amp; 常见问题整理</a><br>（4）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6974184935804534815">我在工作中是如何使用 git 的</a></p>
+</li>
+</ul>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/git/" rel="tag">git</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/04/08/reactHooks/"
+                    data-tooltip="React Hooks学习笔记"
+                    aria-label="下一篇: React Hooks学习笔记"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/04/08/reactHooks/"
+                    data-tooltip="React Hooks学习笔记"
+                    aria-label="下一篇: React Hooks学习笔记"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/27/gitCommand/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
