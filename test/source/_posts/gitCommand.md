@@ -15,7 +15,7 @@ tags:
 <!-- toc -->
 ## 背景
 git是一个分布式版本控制软件。其工作流程如下图所示：
-{% image center clear git.png  %}
+{% image center clear git.jpeg  %}
 
 涉及的基本工作区概念有：
 **Workspace**：工作区，平时开发时改动的地方
@@ -222,8 +222,30 @@ squash：将该commit和前一个commit合并
 - c）保存，退出编辑页面（点击Esc键后输入:wq），进入commit message页面。之后同样是输入i进入编辑界面，修改自己的commit message
 - d）保存，退出。至此，git rebase一个流程走完。
 > 特别注意，只能在自己使用的 feature 分支上进行 rebase 操作，不允许在集成分支上进行 rebase，因为这种操作会修改集成分支的历史记录。
+#### 部分需求交付
+在开发新功能时因各种客观原因赶不上交付期限的時候，可能需要交付部分需求。针对这一情境，有两种指令可以解决具体的问题。
+- 1）git cherry-pick
+使用格式：
+```
+git cherry-pick <commit-id>
+```
+commit-id为某次提交的hash值。该指令可以理解为”挑拣”提交，和 merge 合并一个分支的所有提交不同的是，它会获取某一个分支的单次提交，并作为一个新的提交引入到你当前分支上。
+
+当新需求分支里的bug修复代码要提前于需求上线时，可以使用git cherry-pick将feature分支上bug修复那次提交生成的hash码提取出来作为一个新的提交加在master分支上。过程中，如果出现冲突，需要解决冲突、之后进行 git add ，接着执行 git cherry-pick --continue。
+
+如果存在多个提交需要同步到目标分支，可以简写为 `git cherry-pick <first-commit-id>...<last-commit-id>`，这是一个左开右闭的区间，也就时说 first-commit-id 提交带来的代码的改动不会被合并过去，如果需要合并过去，可以使用` git cherry-pick <first-commit-id>^...<last-commit-id>`。
+
+- 2）git revert
+使用格式：
+```
+git revert <commit-id>
+```
+commit-id为某次提交的hash值。该指令会创建一个新的提交来去除指定的某次commit的内容。
+
+当新需求中某一项功能因为种种原因不能上线时可以使用该指令。这样既可以留下记录又不会导致其他人分支不同步。
 ## 参考资料
 （1）[commit规范+commitlint+CHANGELOG自动生成一条龙服务](https://juejin.cn/post/6934292467160514567#heading-0)
 （2）[git rebase -i 合并多次提交](https://blog.csdn.net/M__L__/article/details/104573220)
 （3）[多年 Git 使用心得 & 常见问题整理](https://juejin.cn/post/6844904191203213326)
 （4）[我在工作中是如何使用 git 的](https://juejin.cn/post/6974184935804534815)
+（5）[DAY11-git cherry-pick和revert](https://ithelp.ithome.com.tw/articles/10244481)
