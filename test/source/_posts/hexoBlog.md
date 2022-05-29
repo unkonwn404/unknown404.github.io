@@ -181,6 +181,9 @@ deploy选项里repository对应博客仓库的git地址，branch可根据需要�
 3）进入到Gitee Pages 服务页面，选择部署分支，注意和工程文件夹下的\_config.yml的deploy配置一致，如果选择了强制使用https，则工程文件夹下\_config.yml的url配置也必须是https。
 {% image center clear gitee-start.png  %}
 
+## 其他客户端拉取代码的注意事项
+本博客使用的主题tranquilpeak其资源assets是被列入忽略文件夹的内容，因此拉下来的代码不会包括这部分资源，如果直接启动无法正常看到页面样式。需要使用者在拉取代码以后进入主题的文件夹下按要求操作`npm install && npm run prod`才可在本地看到正常的样式。
+
 ## 参考资料
 （1）[基于Gitee+Hexo搭建个人博客](https://cungudafa.blog.csdn.net/article/details/104260494?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ELandingCtr%7ERate-1.queryctrv4&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ELandingCtr%7ERate-1.queryctrv4&utm_relevant_index=1)
 （2）[Hexo中文文档](https://hexo.io/zh-cn/docs/writing)
