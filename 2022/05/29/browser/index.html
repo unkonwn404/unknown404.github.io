@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>浏览器 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"浏览器相关知识点。\n \n\n浏览器存储\n\n\n\ncookie\nlocalStorage\nsessionStorage\nindexDB\n\n\n\n生命周期\n服务器生成，可没过期时间\n一直存在\n会话结束后清理\n一直存在\n\n\n存储大小\n4KB\n5MB\n5MB\n无限\n\n\n服务端通信\n携带于header中\n不参与\n不参与\n不参与\n\n\ncookie属性value：保存用户登录态httpOnly：js不可访问secure：只能https携带same-site：不允许跨域domain：哪个域的cookie是有效的\ncookie vs session\n存储位置：cookie在浏览器，session在服务器\n存储容量：cookie 4KB，session无理论上限\n存储内容：cookie只保存ascii字符串，session接受任何字符类型\n隐私策略：cookie只能在浏览器查看\n有效期：cookie受expires、max-age限制，session受sessionId\n\n浏览器垃圾回收机制1）标记清除：进入环境的变量都标记为进入环境，变量所占内存不得释放；离开环境时标记离开环境2）引用计数：变量引用时计数+1，取别的值-1，计数为0时释放内存（存在问题：循环引用）\n浏览器缓存位置\nservice worker：浏览器的独立线程，必须https实现缓存的方式：1）注册service worker2）监听install事件，回调中缓存所需文件3）拦截所有请求事件，查询是否有缓存\nmemory cache：会随进程释放而释放\ndisk cache\npush cache：上述3种缓存都未命中时使用，只存在于会话中\n\n缓存策略强缓存\nexpires：http1.0产物，格林威治时间\ncache-control：http1.1产物，max-age单位s协商缓存\nLast-Modified&#x2F;If-Modified-Since\nETag&#x2F;If-None-Matched：适用文件周期查看、内容没变的情况\n\n浏览器渲染回流 vs 重绘回流：布局或集合地点属性改变重绘：节点更改外观、不影响布局\n重绘不会引起回流，回流一定会导致重绘\n减少回流的方法：1）transform代替top2）visibility：hidden代替display：none3）不用table布局4）避免css表达式5）动画选择requestAnimationFrame\n浏览器从输入URL到返回页面的过程1）DNS解析网址2）tcp3次握手建立连接，发送http请求3）解析html文件转换为dom树4）解析css生成css dom树5）dom树和css dom树结合生成render树（过滤掉display：none、head、script等结构）6）根据render树布局，gpu绘制、合成图层，显示在屏幕\n浏览器同源策略协议、域名、端口号一致\n跨域方法1）jsonp：script（img、link、iframe可跨域）设置script的src为要访问的网址并设置回调函数接收数据。特点：简单、兼容性好、但只能处理get请求2）CORS：跨域资源共享。服务端设置Access-Control-Allow-Origin简单请求：\n\n使用get、post、head请求\ncontent-type仅限于text&#x2F;plain,multipart&#x2F;form-data,application&#x2F;x-www-form-urlencoded\nxmlHttpRequestUpload没注册任何事件监听且可使用xmlHttpRequest.upload访问复杂请求：会使用option发预检请求、Access-Control—Request-Method告知服务器实际使用的方法，Access-Control-Request-Header告知服务器实际请求所携带自定义首部字段；预检请求完成后发送实际请求3）document.domain：只适用于二级域名相同的情况4）location.hash：通过中间页，不同域之间iframe用location.hash传值，相同域通过js访问5）window.name：跨域数据由iframe的window.name从外域传到本地域，利用window.name在不同页面加载后仍然存在6）postMessage：一个页面发信息，另一个页面监听该事件接收消息7）nginx反向代理：服务器代理目标服务器（eg.百度）将请求传给内部服务器\n\n事件处理事件的三个阶段\n事件捕获\n处于目标阶段\n事件冒泡事件委托利用事件冒泡原理将监听注册在父元素上优点：1）减少事件注册、减少内存消耗 2）新增对象时不需要加监听事件常见事件event.preventDefault()：阻止默认事件event.stopPropagation()：阻止冒泡event.stopImmediatePropagation()：阻止该节点其他注册事件及冒泡\n\n","dateCreated":"2022-05-29T21:04:09+08:00","dateModified":"2022-05-30T21:30:11+08:00","datePublished":"2022-05-29T21:04:09+08:00","description":"浏览器相关知识点。","headline":"浏览器","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/","keywords":"浏览器"}</script>
+    <meta name="description" content="浏览器相关知识点。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="浏览器">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="浏览器相关知识点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-29T13:04:09.000Z">
+<meta property="article:modified_time" content="2022-05-30T13:30:11.798Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="浏览器">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            浏览器
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-05-29T21:04:09+08:00">
+	
+		    5月 29, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/">前端基础</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>浏览器相关知识点。</p>
+<span id="more"></span> 
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AD%98%E5%82%A8"><span class="toc-text">浏览器存储</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#cookie%E5%B1%9E%E6%80%A7"><span class="toc-text">cookie属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cookie-vs-session"><span class="toc-text">cookie vs session</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">浏览器垃圾回收机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E4%BD%8D%E7%BD%AE"><span class="toc-text">浏览器缓存位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5"><span class="toc-text">缓存策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%BA%E7%BC%93%E5%AD%98"><span class="toc-text">强缓存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%8F%E5%95%86%E7%BC%93%E5%AD%98"><span class="toc-text">协商缓存</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93"><span class="toc-text">浏览器渲染</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9E%E6%B5%81-vs-%E9%87%8D%E7%BB%98"><span class="toc-text">回流 vs 重绘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BB%8E%E8%BE%93%E5%85%A5URL%E5%88%B0%E8%BF%94%E5%9B%9E%E9%A1%B5%E9%9D%A2%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="toc-text">浏览器从输入URL到返回页面的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5"><span class="toc-text">浏览器同源策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%A8%E5%9F%9F%E6%96%B9%E6%B3%95"><span class="toc-text">跨域方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86"><span class="toc-text">事件处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%B8%89%E4%B8%AA%E9%98%B6%E6%AE%B5"><span class="toc-text">事件的三个阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%A7%94%E6%89%98"><span class="toc-text">事件委托</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">常见事件</span></a></li></ol></li></ol>
+<h2 id="浏览器存储"><a href="#浏览器存储" class="headerlink" title="浏览器存储"></a>浏览器存储</h2><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">cookie</th>
+<th align="center">localStorage</th>
+<th align="center">sessionStorage</th>
+<th align="center">indexDB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">生命周期</td>
+<td align="center">服务器生成，可没过期时间</td>
+<td align="center">一直存在</td>
+<td align="center">会话结束后清理</td>
+<td align="center">一直存在</td>
+</tr>
+<tr>
+<td align="center">存储大小</td>
+<td align="center">4KB</td>
+<td align="center">5MB</td>
+<td align="center">5MB</td>
+<td align="center">无限</td>
+</tr>
+<tr>
+<td align="center">服务端通信</td>
+<td align="center">携带于header中</td>
+<td align="center">不参与</td>
+<td align="center">不参与</td>
+<td align="center">不参与</td>
+</tr>
+</tbody></table>
+<h3 id="cookie属性"><a href="#cookie属性" class="headerlink" title="cookie属性"></a>cookie属性</h3><p><strong>value</strong>：保存用户登录态<br><strong>httpOnly</strong>：js不可访问<br><strong>secure</strong>：只能https携带<br><strong>same-site</strong>：不允许跨域<br><strong>domain</strong>：哪个域的cookie是有效的</p>
+<h3 id="cookie-vs-session"><a href="#cookie-vs-session" class="headerlink" title="cookie vs session"></a>cookie vs session</h3><ol>
+<li>存储位置：cookie在浏览器，session在服务器</li>
+<li>存储容量：cookie 4KB，session无理论上限</li>
+<li>存储内容：cookie只保存ascii字符串，session接受任何字符类型</li>
+<li>隐私策略：cookie只能在浏览器查看</li>
+<li>有效期：cookie受expires、max-age限制，session受sessionId</li>
+</ol>
+<h3 id="浏览器垃圾回收机制"><a href="#浏览器垃圾回收机制" class="headerlink" title="浏览器垃圾回收机制"></a>浏览器垃圾回收机制</h3><p>1）标记清除：进入环境的变量都标记为进入环境，变量所占内存不得释放；离开环境时标记离开环境<br>2）引用计数：变量引用时计数+1，取别的值-1，计数为0时释放内存（存在问题：循环引用）</p>
+<h3 id="浏览器缓存位置"><a href="#浏览器缓存位置" class="headerlink" title="浏览器缓存位置"></a>浏览器缓存位置</h3><ol>
+<li><strong>service worker</strong>：浏览器的独立线程，必须https<br>实现缓存的方式：<br>1）注册service worker<br>2）监听install事件，回调中缓存所需文件<br>3）拦截所有请求事件，查询是否有缓存</li>
+<li><strong>memory cache</strong>：会随进程释放而释放</li>
+<li><strong>disk cache</strong></li>
+<li><strong>push cache</strong>：上述3种缓存都未命中时使用，只存在于会话中</li>
+</ol>
+<h3 id="缓存策略"><a href="#缓存策略" class="headerlink" title="缓存策略"></a>缓存策略</h3><h4 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h4><ol>
+<li>expires：http1.0产物，格林威治时间</li>
+<li>cache-control：http1.1产物，max-age单位s<h4 id="协商缓存"><a href="#协商缓存" class="headerlink" title="协商缓存"></a>协商缓存</h4></li>
+<li>Last-Modified&#x2F;If-Modified-Since</li>
+<li>ETag&#x2F;If-None-Matched：适用文件周期查看、内容没变的情况</li>
+</ol>
+<h2 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h2><h3 id="回流-vs-重绘"><a href="#回流-vs-重绘" class="headerlink" title="回流 vs 重绘"></a>回流 vs 重绘</h3><p>回流：布局或集合地点属性改变<br>重绘：节点更改外观、不影响布局</p>
+<p>重绘不会引起回流，回流一定会导致重绘</p>
+<p>减少回流的方法：<br>1）transform代替top<br>2）visibility：hidden代替display：none<br>3）不用table布局<br>4）避免css表达式<br>5）动画选择requestAnimationFrame</p>
+<h3 id="浏览器从输入URL到返回页面的过程"><a href="#浏览器从输入URL到返回页面的过程" class="headerlink" title="浏览器从输入URL到返回页面的过程"></a>浏览器从输入URL到返回页面的过程</h3><p>1）DNS解析网址<br>2）tcp3次握手建立连接，发送http请求<br>3）解析html文件转换为dom树<br>4）解析css生成css dom树<br>5）dom树和css dom树结合生成render树（过滤掉display：none、head、script等结构）<br>6）根据render树布局，gpu绘制、合成图层，显示在屏幕</p>
+<h3 id="浏览器同源策略"><a href="#浏览器同源策略" class="headerlink" title="浏览器同源策略"></a>浏览器同源策略</h3><p>协议、域名、端口号一致</p>
+<h3 id="跨域方法"><a href="#跨域方法" class="headerlink" title="跨域方法"></a>跨域方法</h3><p>1）<strong>jsonp</strong>：script（img、link、iframe可跨域）设置script的src为要访问的网址并设置回调函数接收数据。<br>特点：简单、兼容性好、但只能处理get请求<br>2）<strong>CORS</strong>：跨域资源共享。服务端设置Access-Control-Allow-Origin<br>简单请求：</p>
+<ol>
+<li>使用get、post、head请求</li>
+<li>content-type仅限于text&#x2F;plain,multipart&#x2F;form-data,application&#x2F;x-www-form-urlencoded</li>
+<li>xmlHttpRequestUpload没注册任何事件监听且可使用xmlHttpRequest.upload访问<br>复杂请求：<br>会使用option发预检请求、Access-Control—Request-Method告知服务器实际使用的方法，Access-Control-Request-Header告知服务器实际请求所携带自定义首部字段；预检请求完成后发送实际请求<br>3）<strong>document.domain</strong>：只适用于二级域名相同的情况<br>4）<strong>location.hash</strong>：通过中间页，不同域之间iframe用location.hash传值，相同域通过js访问<br>5）<strong>window.name</strong>：跨域数据由iframe的window.name从外域传到本地域，利用window.name在不同页面加载后仍然存在<br>6）<strong>postMessage</strong>：一个页面发信息，另一个页面监听该事件接收消息<br>7）<strong>nginx反向代理</strong>：服务器代理目标服务器（eg.百度）将请求传给内部服务器</li>
+</ol>
+<h2 id="事件处理"><a href="#事件处理" class="headerlink" title="事件处理"></a>事件处理</h2><h3 id="事件的三个阶段"><a href="#事件的三个阶段" class="headerlink" title="事件的三个阶段"></a>事件的三个阶段</h3><ul>
+<li>事件捕获</li>
+<li>处于目标阶段</li>
+<li>事件冒泡<h3 id="事件委托"><a href="#事件委托" class="headerlink" title="事件委托"></a>事件委托</h3>利用事件冒泡原理将监听注册在父元素上<br>优点：1）减少事件注册、减少内存消耗 2）新增对象时不需要加监听事件<h3 id="常见事件"><a href="#常见事件" class="headerlink" title="常见事件"></a>常见事件</h3>event.preventDefault()：阻止默认事件<br>event.stopPropagation()：阻止冒泡<br>event.stopImmediatePropagation()：阻止该节点其他注册事件及冒泡</li>
+</ul>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/05/30/networkBasic/"
+                    data-tooltip="计算机网络"
+                    aria-label="上一篇: 计算机网络"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/05/29/JapaneseNotes/"
+                    data-tooltip="红蓝宝书1000题个人知识点笔记"
+                    aria-label="下一篇: 红蓝宝书1000题个人知识点笔记"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/05/30/networkBasic/"
+                    data-tooltip="计算机网络"
+                    aria-label="上一篇: 计算机网络"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/05/29/JapaneseNotes/"
+                    data-tooltip="红蓝宝书1000题个人知识点笔记"
+                    aria-label="下一篇: 红蓝宝书1000题个人知识点笔记"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/05/29/browser/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
