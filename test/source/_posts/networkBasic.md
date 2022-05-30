@@ -1,14 +1,17 @@
 ---
 title: 计算机网络
+tags:
+  - 计算机网络
 excerpt: <p>前端面试常考内容之计算机网络基础。</p>
 categories:
   - 前端基础
-tags:
-  - 计算机网络
+date: 2022-05-30 21:47:52
 ---
+<!-- toc -->
+
 ## 网络模型
 ### 网络模型一览
-<table>
+<table style="text-align:center;">
     <tr> 
     	<th>OSI模型</th>
       <th>五层模型</th>
