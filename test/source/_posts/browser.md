@@ -50,6 +50,10 @@ tags:
 #### 协商缓存
 1. Last-Modified/If-Modified-Since
 2. ETag/If-None-Matched：适用文件周期查看、内容没变的情况
+#### 刷新操作对缓存内容影响
+正常操作（地址栏输入 url，跳转链接，前进后退等）：强制缓存有效，协商缓存有效。
+手动刷新（f5，点击刷新按钮，右键菜单刷新）：强制缓存失效，协商缓存有效。
+强制刷新（ctrl + f5，shift+command+r）：强制缓存失效，协商缓存失效。
 
 ## 浏览器渲染
 ### 回流 vs 重绘
@@ -77,6 +81,18 @@ tags:
 ### 跨域方法
 1）**jsonp**：script（img、link、iframe可跨域）设置script的src为要访问的网址并设置回调函数接收数据。
 特点：简单、兼容性好、但只能处理get请求
+```
+function jsonp(url,callback,success){
+  var script=document.createElement('script')
+  script.src=url
+  script.async=true
+  script.type='text/javascript'
+  window[callback]=function(data){
+    success&&success(data)
+  }
+  document.body.append(script)
+}
+```
 2）**CORS**：跨域资源共享。服务端设置Access-Control-Allow-Origin
 简单请求：
 1. 使用get、post、head请求
@@ -84,6 +100,7 @@ tags:
 3. xmlHttpRequestUpload没注册任何事件监听且可使用xmlHttpRequest.upload访问
 复杂请求：
 会使用option发预检请求、Access-Control—Request-Method告知服务器实际使用的方法，Access-Control-Request-Header告知服务器实际请求所携带自定义首部字段；预检请求完成后发送实际请求
+
 3）**document.domain**：只适用于二级域名相同的情况
 4）**location.hash**：通过中间页，不同域之间iframe用location.hash传值，相同域通过js访问
 5）**window.name**：跨域数据由iframe的window.name从外域传到本地域，利用window.name在不同页面加载后仍然存在

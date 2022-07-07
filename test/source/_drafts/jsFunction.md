@@ -1,12 +1,8 @@
 ---
-title: Javascript基础
-excerpt: <p>前端面试常考内容之JavaScript。</p>
-categories:
-  - 前端基础
-  - 前端技术体系
+title: jsFunction
 tags:
-  - JavaScript
 ---
+
 compose函数实现
 ```
 function compose(...funcs) {
