@@ -2,6 +2,17 @@
 title: jsFunction
 tags:
 ---
+数组展平
+```
+const flat = (array) => {
+  return array.reduce(
+    (acc, it) => acc.concat(Array.isArray(it) ? flat(it) : it),
+    []
+  );
+};
+const array = [1, [2, [3, [4, [5]]]]];
+const flatArray = flat(array); // [1, 2, 3, 4, 5]
+```
 
 compose函数实现
 ```
