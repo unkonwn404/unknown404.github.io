@@ -1,0 +1,836 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>Javascript基础 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"\n\njs 简介“解释型语言”，是通过解释器来实现的。运行过程：JS 代码-&gt;解析成 AST (期间伴随词法分析、语法分析)-&gt;生成字节码（V8）-&gt;生成机器码（编译器）\njs 数据类型\n基本类型：null,undefined,string,bool,number,bigInt,symbol\n引用类型：object,array,date\n\n存储位置：\n\n基本类型：栈，占据空间小，大小固定\n引用类型：堆，占据空间大，大小不固定；栈中存储指向实体起始地址\n\nnull vs undefined：null 是空对象，undefined 是声明的变量未定义\njs 类型判断typeof适用于判断基本类型，除 typeof null&#x3D;&#x3D;‘object’其他都可以识别\ninstanceof使用于判断引用类型，其原理是是判断在其原型链中能否找到该类型的原型。\n123456789function myInstanceOf(left,right)&#123;  var prototype=right.prototype  var left=left._proto_  while(true)&#123;    if(left==null||left==undefined)return false;    if(left==prototype)return true;    left=left._proto_  &#125;&#125;\n\nObject.prototype.toString.call辨析：为什么不直接用 obj.toString？Array、Function 类型作为 Object 实例重写了 toString 方法\n延伸问题：数组判断\nArray.isArray（arr）\narr instanceof Array\nObject.prototype.toString.call（arr）\n\njs 类型转换其他类型转换为 boolean\n\n\n原类型\nboolean\n\n\n\nfalse、null、undefined、0、’’、NaN\nfalse\n\n\n其他\ntrue\n\n\n其他类型转换为 number\n\n\n原类型\nnumber\n\n\n\nundefined\nNaN\n\n\nnull\n0\n\n\nfalse\n0\n\n\ntrue\n1\n\n\nstring\nNaN\n\n\n‘’\n0\n\n\n非空对象\nNaN\n\n\n其他类型转换为 string\n\n\n原类型\nstring\n\n\n\nundefined\n‘undefined’\n\n\nnull\n‘null’\n\n\nfalse\n‘false’\n\n\ntrue\n‘true’\n\n\nnumber\n$&#123;number&#125;\n\n\n[ 1,2 ]\n‘1,2’\n\n\n非空对象\n[ object Object ]\n\n\n&#x3D;&#x3D;强制转换规则\n如图所示，主要有以下几个步骤：\n\n类型是否相同\n是否 null&#x3D;&#x3D;undefined\nstring&#x3D;&#x3D;number？是的话统一 number\n是否有 boolean？有的话 boolean 转 number\nobject&#x3D;&#x3D;string&#x2F;number&#x2F;symbol？是的话 object 返回原始类型比较\n返回 false\n\nobject 转原始类型\n调用 valueOf，如果转换为基础类型，则返回\n调用 toString，如果转换为基础类型，则返回\n报错\n\n&#x3D;&#x3D;与 Object.is 的区别&#x3D;&#x3D;存在隐形类型转换使用 Object.is 来进行相等判断时，一般情况下和三等号的判断相同，即不存在类型转换。它处理了一些特殊的情况，比如 -0 和 +0 不再相等，两个 NaN 是相等的。\n四则运算转换1）+情况一方是字符串，则字符串拼接；如果一方不是字符串或者数字，那么会将它转换为数字或者字符串2）其他情况存在数字另一方则转数字\n对象拷贝浅拷贝定义：拷贝对象间享有相同的引用数据\n\nObject.assign\n…展开扩展符\nslice、concat\n\n深拷贝定义：两个对象有各自的存储区间\n\nJSON.stringify缺点：不能拷贝函数和循环引用\n递归函数\n\n123456789function deepCloneObj(obj)&#123;  var newObj=Array.isArray(obj)?[]:&#123;&#125;  for(let key in obj)&#123;    if(obj.hasOwnProperty(key))&#123;      newObj[key]=typeof obj[key]==&#x27;object&#x27;?deepCloneObj(obj[key]):obj[key]    &#125;  &#125;  return newObj&#125;\n\n原型和原型链原型：proto指向的对象原型链：当对象某一属性在当前对象找不到时会沿proto属性向上一个对象查找，如果没有就沿着proto属性继续向上查找，这个查找依据的规则就是原型链\n\n\n继承原型链继承1Child.prototype=new Parent()\n\n基本思路：利用原型让一个引用类型继承另一个引用类型的属性和方法特点：引用类型被共享，不可向父实例传参\n构造函数继承123function Child()&#123;  Parent.call(this)&#125;\n\n基本思路：在子类型的构造函数中调用超类型构造函数特点：每次创建实例都会创建一次方法，不能继承原型属性或者方法。\n组合继承（原型链继承+构造函数继承）12345function Child()&#123;  Parent.call(this)&#125;Child.prototype=new Parent()Child.prototype.constructor=Child\n\n基本思路：使用原型链实现对原型属性和方法的继承，而通过借用构造函数来实现对实例属性的继承。特点：调用了两次父类函数\n原型继承12345function object(o)&#123;    function F()&#123;&#125;;    F.prototype = o;    return new F();&#125;\n\n基本思路：可以基于已有的对象创建新的对象，同时还不必因此创建自定义类型。特点：可以实现基于一个对象的简单继承，不必创建构造函数；但缺点类似原型链继承\n寄生式继承基本思路：创建一个仅用于封装继承过程的函数，该函数在内部以某种方式增强对象，最后返回这个对象。特点：在主要考虑对象而不是自定义类型和构造函数的情况下，实现简单的继承；缺点类似构造函数继承\n寄生组合型继承1234567function extend(subClass,superClass)&#123;  var f=function()&#123;&#125;//预防子类原型和父类原型共用，原型链不清  f.prototype=superClass.prototype  subClass.prototype=new f()  subClass.prototype.constructor=subClass  return subClass&#125;\n\n基本思路：继承原型时，继承的不是超类的实例对象，而是原型对象是超类原型对象的一个实例对象，这样就解决了基类的原型对象中增添了不必要的超类的实例对象中的所有属性的问题。特点：解决了组合型调用 2 次父类构造函数的问题\nthisthis 的指向this 指向最后调用它的对象\n改变 this 指向的方法1）箭头函数 2）call、apply、bind 3）new\nthis 绑定显式绑定：call、apply、bind隐式绑定：直接被对象所包含的函数调用时默认绑定：全局环境默认绑定到 windownew 绑定\ncall 和 apply 区别传入的参数不同，apply 传入 this 指向和参数数组（或类数组）两个变量；call 传入 this 指向和其他参数，传入的参数数量不固定\ncall、apply、bind 的实现\ncall\n\n12345678Function.prototype.call=function(context)&#123;  var context=context||window  context.fn=this  var args=[...arguments].slice(1)  var res=context.fn(...args)  delete context.fn  return res&#125;\n\n\napply\n\n123456789101112Function.prototype.apply=function(context)&#123;  var context=context||window  context.fn=this  var res  if(arguments[1])&#123;    res=context.fn(...args)  &#125;else&#123;    res=context.fn()  &#125;  delete context.fn  return res&#125;\n\n\nbind\n\n12345678910Function.prototype.bind=function(context)&#123;  var args=[...arguments].slice(1),_this=this  return function F()&#123;    // 函数作为构造函数时this指向改变    if(this instanceof F)&#123;      return new F(...args,...arguments)    &#125;    return _this.apply(context,args.concat(...arguments))  &#125;&#125;\n\nbind 多次时 this 的指向以第一次为准\nnew 的过程\n创建新对象\n对象原型指向构造函数 prototype\n改变 this 指向\n返回对象\n\n123456function create()&#123;  var obj=&#123;&#125;,Construct=[].shift.call(arguments)  obj._proto_=Construct.prototype  var res=Construct.apply(obj,arguments)  return typeof res===&#x27;object&#x27;?res:obj&#125;\n\n作用域相关作用域：源码中定义变量的区域词法作用域：函数的作用域在函数定义时决定动态作用域：函数的作用域在函数调用时决定js 采用的是静态作用域，即函数的作用域在函数定义时就确定了。\n执行上下文定义：当前代码的执行环境，包括全局上下文、函数上下文、eval 上下文\n执行上下文 3 个重要属性\n变量对象（VO）：存储了上下文定义的变量和函数声明\n作用域链：一组对象列表，包括自身变量对象和指向父级变量对象作用域链属性\nthis\n\n执行过程\n进入执行上下文阶段变量对象内容：\n\n\n1）函数所有形参\n2）函数声明：由函数名+对应值变成变量对象属性；若变量对象由同名属性，则替换该属性\n3）变量声明：由变量名+undefined 变成变量对象属性；若变量名称与函数或形参相同，则不干扰已存在属性\n\n\n代码执行：根据代码修改变量对象的值PS：函数上下文的变量对象初始化只包括 arguments\n\n闭包定义：可以获取其他函数内变量的函数优点：1.可创建私有变量；2.防止全局变量污染；3.模仿块级作用域缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、闭包循环引用）\n偏函数与柯里化偏函数：将一个 n 元函数转为 n-x 函数\n1234567function partial(fn)&#123;  var args=[...arguments].slice(1)  return function()&#123;    var newArgs=args.concat([...arguments])    return fn.apply(this,newArgs)  &#125;&#125;\n\n柯里化：将一个 n 元函数转为 n 个一元函数\n1234567891011function curry(fn)&#123;  var args=[...arguments].slice(1)  return function()&#123;    var newArgs=args.concat([...arguments])    if(newArgs.length&lt;fn.length)&#123;      return curry.call(this,fn,newArgs)    &#125;else&#123;      return fn.apply(this,newArgs)    &#125;  &#125;&#125;\n\nJavaScript 异步编程异步编程的实现方式\ncallback：多个回调函数嵌套的时候会造成回调函数地狱\npromise：使用 Promise 的方式可以将嵌套的回调函数作为链式调用。\ngenerator：可以在函数的执行过程中，将函数的执行权转移出去，在函数外部还可以将执行权转移回来。当遇到异步函数执行的时候，将函数执行权转移出去，当异步函数执行完毕时再将执行权给转移回来。\nasync：generator 和 promise 实现的一个自动执行的语法糖，它内部自带执行器，当函数内部执行到一个 await 语句的时候，如果语句返回一个 promise 对象，那么函数将会等待 promise 对象的状态变为 resolve 后再继续向下执行。因此可以将异步逻辑，转化为同步的顺序来书写，并且这个函数可以自动执行。\n\n事件循环浏览器事件循环\nmacrotasks(宏任务):script(整体代码)、setTimeout、setInterval、setImmediate、I&#x2F;O、UI rendering\nmicrotasks(微任务):process.nextTick、Promises、Object.observe、MutationObserver\n\n浏览器循环机制JavaScript 有一个主线程和调用栈，所有的任务最终都会被放到调用栈等待主线程执行。宏任务会被放在调用栈中，按照顺序等待主线程依次执行。主线程之外存在一个回调队列，微任务有了结果后，会放入回调队列中。调用栈中任务执行完毕后，此时主线程处于空闲状态，会从回调队列中获取任务进行处理。上述过程不断重复。\n\n首先执行同步代码，这属于宏任务\n当执行完所有同步代码后，执行栈为空，查询是否有异步代码需要执行\n执行所有微任务\n当执行完所有微任务后，如有必要会渲染页面\n然后开始下一轮 Event Loop，执行宏任务中的异步代码，也就是 setTimeout 中的回调函数\n\n123456789101112131415161718192021222324console.log(&#x27;script start&#x27;)async function async1() &#123;  await async2()  console.log(&#x27;async1 end&#x27;)&#125;async function async2() &#123;  console.log(&#x27;async2 end&#x27;)&#125;async1()setTimeout(function() &#123;  console.log(&#x27;setTimeout&#x27;)&#125;, 0)new Promise(resolve =&gt; &#123;  console.log(&#x27;Promise&#x27;)  resolve()&#125;)  .then(function() &#123;    console.log(&#x27;promise1&#x27;)  &#125;)  .then(function() &#123;    console.log(&#x27;promise2&#x27;)  &#125;)console.log(&#x27;script end&#x27;)\n\n概念区分：进程 vs 线程进程：资源分配的基本单位线程：cpu 调度的基本单位\nnodejs 事件循环nodejs 的事件循环主要分为 6 个阶段：\n\ntimers 阶段：这个阶段执行 timer（setTimeout、setInterval）的回调\nI&#x2F;O callbacks：执行一些系统调用错误，比如网络通信的错误回调\nidle,prepare：仅 node 内部使用\npoll：获取新的 I&#x2F;O 事件, 适当的条件下 node 将阻塞在这里1）有到期的定时器，执行定时器回调2）处理 poll 队列：\n若队列为空：有 setImmediate 方法时 poll 阶段停止进入 check，执行回调；无 setImmediate 方法时等待新事件\n若队列不为空：遍历回调队列并同步执行\n\n\ncheck：执行 setImmediate() 的回调\nclose callbacks：执行 socket 的 close 事件回调\n\n\n\n参考文献（1）「2021」高频前端面试题汇总之 JavaScript 篇（下）\n","dateCreated":"2022-06-18T20:58:57+08:00","dateModified":"2022-08-28T18:29:31+08:00","datePublished":"2022-06-18T20:58:57+08:00","description":"前端面试常考内容之JavaScript。","headline":"Javascript基础","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/","keywords":"JavaScript"}</script>
+    <meta name="description" content="前端面试常考内容之JavaScript。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Javascript基础">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="前端面试常考内容之JavaScript。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/type-change.jpeg">
+<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/proto-pic.jpg">
+<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/eventLoop.png">
+<meta property="article:published_time" content="2022-06-18T12:58:57.000Z">
+<meta property="article:modified_time" content="2022-08-28T10:29:31.859Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/type-change.jpeg">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            Javascript基础
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-06-18T20:58:57+08:00">
+	
+		    6月 18, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/">前端基础</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#js-%E7%AE%80%E4%BB%8B"><span class="toc-text">js 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#js-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">js 数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#js-%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">js 类型判断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#typeof"><span class="toc-text">typeof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#instanceof"><span class="toc-text">instanceof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-prototype-toString-call"><span class="toc-text">Object.prototype.toString.call</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%97%AE%E9%A2%98%EF%BC%9A%E6%95%B0%E7%BB%84%E5%88%A4%E6%96%AD"><span class="toc-text">延伸问题：数组判断</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#js-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-text">js 类型转换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E4%B8%BA-boolean"><span class="toc-text">其他类型转换为 boolean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E4%B8%BA-number"><span class="toc-text">其他类型转换为 number</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E4%B8%BA-string"><span class="toc-text">其他类型转换为 string</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#x3D-x3D-%E5%BC%BA%E5%88%B6%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99"><span class="toc-text">&#x3D;&#x3D;强制转换规则</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#object-%E8%BD%AC%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B"><span class="toc-text">object 转原始类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#x3D-x3D-%E4%B8%8E-Object-is-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">&#x3D;&#x3D;与 Object.is 的区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97%E8%BD%AC%E6%8D%A2"><span class="toc-text">四则运算转换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E6%8B%B7%E8%B4%9D"><span class="toc-text">对象拷贝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="toc-text">浅拷贝</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D"><span class="toc-text">深拷贝</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E5%92%8C%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="toc-text">原型和原型链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF"><span class="toc-text">继承</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E7%BB%A7%E6%89%BF"><span class="toc-text">原型链继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%BB%A7%E6%89%BF"><span class="toc-text">构造函数继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%84%E5%90%88%E7%BB%A7%E6%89%BF%EF%BC%88%E5%8E%9F%E5%9E%8B%E9%93%BE%E7%BB%A7%E6%89%BF-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%BB%A7%E6%89%BF%EF%BC%89"><span class="toc-text">组合继承（原型链继承+构造函数继承）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E7%BB%A7%E6%89%BF"><span class="toc-text">原型继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%84%E7%94%9F%E5%BC%8F%E7%BB%A7%E6%89%BF"><span class="toc-text">寄生式继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%84%E7%94%9F%E7%BB%84%E5%90%88%E5%9E%8B%E7%BB%A7%E6%89%BF"><span class="toc-text">寄生组合型继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#this"><span class="toc-text">this</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#this-%E7%9A%84%E6%8C%87%E5%90%91"><span class="toc-text">this 的指向</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B9%E5%8F%98-this-%E6%8C%87%E5%90%91%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-text">改变 this 指向的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#this-%E7%BB%91%E5%AE%9A"><span class="toc-text">this 绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#call-%E5%92%8C-apply-%E5%8C%BA%E5%88%AB"><span class="toc-text">call 和 apply 区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#call%E3%80%81apply%E3%80%81bind-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">call、apply、bind 的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#new-%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="toc-text">new 的过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8%E5%9F%9F%E7%9B%B8%E5%85%B3"><span class="toc-text">作用域相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">执行上下文</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87-3-%E4%B8%AA%E9%87%8D%E8%A6%81%E5%B1%9E%E6%80%A7"><span class="toc-text">执行上下文 3 个重要属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-text">执行过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AD%E5%8C%85"><span class="toc-text">闭包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%8F%E5%87%BD%E6%95%B0%E4%B8%8E%E6%9F%AF%E9%87%8C%E5%8C%96"><span class="toc-text">偏函数与柯里化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JavaScript-%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B"><span class="toc-text">JavaScript 异步编程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">异步编程的实现方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="toc-text">事件循环</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="toc-text">浏览器事件循环</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BE%AA%E7%8E%AF%E6%9C%BA%E5%88%B6"><span class="toc-text">浏览器循环机制</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5%E5%8C%BA%E5%88%86%EF%BC%9A%E8%BF%9B%E7%A8%8B-vs-%E7%BA%BF%E7%A8%8B"><span class="toc-text">概念区分：进程 vs 线程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#nodejs-%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="toc-text">nodejs 事件循环</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+
+<h2 id="js-简介"><a href="#js-简介" class="headerlink" title="js 简介"></a>js 简介</h2><p>“解释型语言”，是通过解释器来实现的。运行过程：JS 代码-&gt;解析成 AST (期间伴随词法分析、语法分析)-&gt;生成字节码（V8）-&gt;生成机器码（编译器）</p>
+<h2 id="js-数据类型"><a href="#js-数据类型" class="headerlink" title="js 数据类型"></a>js 数据类型</h2><ul>
+<li>基本类型：null,undefined,string,bool,number,bigInt,symbol</li>
+<li>引用类型：object,array,date</li>
+</ul>
+<p>存储位置：</p>
+<ul>
+<li>基本类型：栈，占据空间小，大小固定</li>
+<li>引用类型：堆，占据空间大，大小不固定；栈中存储指向实体起始地址</li>
+</ul>
+<p>null vs undefined：null 是空对象，undefined 是声明的变量未定义</p>
+<h2 id="js-类型判断"><a href="#js-类型判断" class="headerlink" title="js 类型判断"></a>js 类型判断</h2><h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><p>适用于判断基本类型，除 typeof null&#x3D;&#x3D;‘object’其他都可以识别</p>
+<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><p>使用于判断引用类型，其原理是是判断在其原型链中能否找到该类型的原型。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function myInstanceOf(left,right)&#123;</span><br><span class="line">  var prototype=right.prototype</span><br><span class="line">  var left=left._proto_</span><br><span class="line">  while(true)&#123;</span><br><span class="line">    if(left==null||left==undefined)return false;</span><br><span class="line">    if(left==prototype)return true;</span><br><span class="line">    left=left._proto_</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Object-prototype-toString-call"><a href="#Object-prototype-toString-call" class="headerlink" title="Object.prototype.toString.call"></a>Object.prototype.toString.call</h3><p>辨析：为什么不直接用 obj.toString？<br>Array、Function 类型作为 Object 实例重写了 toString 方法</p>
+<h3 id="延伸问题：数组判断"><a href="#延伸问题：数组判断" class="headerlink" title="延伸问题：数组判断"></a>延伸问题：数组判断</h3><ol>
+<li>Array.isArray（arr）</li>
+<li>arr instanceof Array</li>
+<li>Object.prototype.toString.call（arr）</li>
+</ol>
+<h2 id="js-类型转换"><a href="#js-类型转换" class="headerlink" title="js 类型转换"></a>js 类型转换</h2><h3 id="其他类型转换为-boolean"><a href="#其他类型转换为-boolean" class="headerlink" title="其他类型转换为 boolean"></a>其他类型转换为 boolean</h3><table>
+<thead>
+<tr>
+<th align="center">原类型</th>
+<th align="center">boolean</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">false、null、undefined、0、’’、NaN</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">其他</td>
+<td align="center">true</td>
+</tr>
+</tbody></table>
+<h3 id="其他类型转换为-number"><a href="#其他类型转换为-number" class="headerlink" title="其他类型转换为 number"></a>其他类型转换为 number</h3><table>
+<thead>
+<tr>
+<th align="center">原类型</th>
+<th align="center">number</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">undefined</td>
+<td align="center">NaN</td>
+</tr>
+<tr>
+<td align="center">null</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">false</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">true</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">string</td>
+<td align="center">NaN</td>
+</tr>
+<tr>
+<td align="center">‘’</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">非空对象</td>
+<td align="center">NaN</td>
+</tr>
+</tbody></table>
+<h3 id="其他类型转换为-string"><a href="#其他类型转换为-string" class="headerlink" title="其他类型转换为 string"></a>其他类型转换为 string</h3><table>
+<thead>
+<tr>
+<th align="center">原类型</th>
+<th align="center">string</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">undefined</td>
+<td align="center">‘undefined’</td>
+</tr>
+<tr>
+<td align="center">null</td>
+<td align="center">‘null’</td>
+</tr>
+<tr>
+<td align="center">false</td>
+<td align="center">‘false’</td>
+</tr>
+<tr>
+<td align="center">true</td>
+<td align="center">‘true’</td>
+</tr>
+<tr>
+<td align="center">number</td>
+<td align="center"><code>$&#123;number&#125;</code></td>
+</tr>
+<tr>
+<td align="center">[ 1,2 ]</td>
+<td align="center">‘1,2’</td>
+</tr>
+<tr>
+<td align="center">非空对象</td>
+<td align="center">[ object Object ]</td>
+</tr>
+</tbody></table>
+<h3 id="x3D-x3D-强制转换规则"><a href="#x3D-x3D-强制转换规则" class="headerlink" title="&#x3D;&#x3D;强制转换规则"></a>&#x3D;&#x3D;强制转换规则</h3><div class="figure center" style="width:;"><img class="fig-img" src="type-change.jpeg" alt=""></div><div style="clear:both;"></div>
+<p>如图所示，主要有以下几个步骤：</p>
+<ol>
+<li>类型是否相同</li>
+<li>是否 null&#x3D;&#x3D;undefined</li>
+<li>string&#x3D;&#x3D;number？是的话统一 number</li>
+<li>是否有 boolean？有的话 boolean 转 number</li>
+<li>object&#x3D;&#x3D;string&#x2F;number&#x2F;symbol？是的话 object 返回原始类型比较</li>
+<li>返回 false</li>
+</ol>
+<h4 id="object-转原始类型"><a href="#object-转原始类型" class="headerlink" title="object 转原始类型"></a>object 转原始类型</h4><ol>
+<li>调用 valueOf，如果转换为基础类型，则返回</li>
+<li>调用 toString，如果转换为基础类型，则返回</li>
+<li>报错</li>
+</ol>
+<h4 id="x3D-x3D-与-Object-is-的区别"><a href="#x3D-x3D-与-Object-is-的区别" class="headerlink" title="&#x3D;&#x3D;与 Object.is 的区别"></a>&#x3D;&#x3D;与 Object.is 的区别</h4><p>&#x3D;&#x3D;存在隐形类型转换<br>使用 Object.is 来进行相等判断时，一般情况下和三等号的判断相同，即不存在类型转换。它处理了一些特殊的情况，比如 -0 和 +0 不再相等，两个 NaN 是相等的。</p>
+<h3 id="四则运算转换"><a href="#四则运算转换" class="headerlink" title="四则运算转换"></a>四则运算转换</h3><p>1）+情况一方是字符串，则字符串拼接；如果一方不是字符串或者数字，那么会将它转换为数字或者字符串<br>2）其他情况存在数字另一方则转数字</p>
+<h2 id="对象拷贝"><a href="#对象拷贝" class="headerlink" title="对象拷贝"></a>对象拷贝</h2><h3 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h3><p>定义：拷贝对象间享有相同的引用数据</p>
+<ol>
+<li><strong>Object.assign</strong></li>
+<li><strong>…展开扩展符</strong></li>
+<li><strong>slice、concat</strong></li>
+</ol>
+<h3 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h3><p>定义：两个对象有各自的存储区间</p>
+<ol>
+<li><strong>JSON.stringify</strong><br>缺点：不能拷贝函数和循环引用</li>
+<li>递归函数</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function deepCloneObj(obj)&#123;</span><br><span class="line">  var newObj=Array.isArray(obj)?[]:&#123;&#125;</span><br><span class="line">  for(let key in obj)&#123;</span><br><span class="line">    if(obj.hasOwnProperty(key))&#123;</span><br><span class="line">      newObj[key]=typeof obj[key]==&#x27;object&#x27;?deepCloneObj(obj[key]):obj[key]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return newObj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="原型和原型链"><a href="#原型和原型链" class="headerlink" title="原型和原型链"></a>原型和原型链</h2><p><strong>原型</strong>：<em>proto</em>指向的对象<br><strong>原型链</strong>：当对象某一属性在当前对象找不到时会沿<em>proto</em>属性向上一个对象查找，如果没有就沿着<em>proto</em>属性继续向上查找，这个查找依据的规则就是原型链</p>
+<div class="figure center" style="width:;"><img class="fig-img" src="proto-pic.jpg" alt=""></div><div style="clear:both;"></div>
+
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><h3 id="原型链继承"><a href="#原型链继承" class="headerlink" title="原型链继承"></a>原型链继承</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Child.prototype=new Parent()</span><br></pre></td></tr></table></figure>
+
+<p>基本思路：利用原型让一个引用类型继承另一个引用类型的属性和方法<br>特点：引用类型被共享，不可向父实例传参</p>
+<h3 id="构造函数继承"><a href="#构造函数继承" class="headerlink" title="构造函数继承"></a>构造函数继承</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function Child()&#123;</span><br><span class="line">  Parent.call(this)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基本思路：在子类型的构造函数中调用超类型构造函数<br>特点：每次创建实例都会创建一次方法，不能继承原型属性或者方法。</p>
+<h3 id="组合继承（原型链继承-构造函数继承）"><a href="#组合继承（原型链继承-构造函数继承）" class="headerlink" title="组合继承（原型链继承+构造函数继承）"></a>组合继承（原型链继承+构造函数继承）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function Child()&#123;</span><br><span class="line">  Parent.call(this)</span><br><span class="line">&#125;</span><br><span class="line">Child.prototype=new Parent()</span><br><span class="line">Child.prototype.constructor=Child</span><br></pre></td></tr></table></figure>
+
+<p>基本思路：使用原型链实现对原型属性和方法的继承，而通过借用构造函数来实现对实例属性的继承。<br>特点：调用了两次父类函数</p>
+<h3 id="原型继承"><a href="#原型继承" class="headerlink" title="原型继承"></a>原型继承</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function object(o)&#123;</span><br><span class="line">    function F()&#123;&#125;;</span><br><span class="line">    F.prototype = o;</span><br><span class="line">    return new F();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基本思路：可以基于已有的对象创建新的对象，同时还不必因此创建自定义类型。<br>特点：可以实现基于一个对象的简单继承，不必创建构造函数；但缺点类似原型链继承</p>
+<h3 id="寄生式继承"><a href="#寄生式继承" class="headerlink" title="寄生式继承"></a>寄生式继承</h3><p>基本思路：创建一个仅用于封装继承过程的函数，该函数在内部以某种方式增强对象，最后返回这个对象。<br>特点：在主要考虑对象而不是自定义类型和构造函数的情况下，实现简单的继承；缺点类似构造函数继承</p>
+<h3 id="寄生组合型继承"><a href="#寄生组合型继承" class="headerlink" title="寄生组合型继承"></a>寄生组合型继承</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function extend(subClass,superClass)&#123;</span><br><span class="line">  var f=function()&#123;&#125;//预防子类原型和父类原型共用，原型链不清</span><br><span class="line">  f.prototype=superClass.prototype</span><br><span class="line">  subClass.prototype=new f()</span><br><span class="line">  subClass.prototype.constructor=subClass</span><br><span class="line">  return subClass</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基本思路：继承原型时，继承的不是超类的实例对象，而是原型对象是超类原型对象的一个实例对象，这样就解决了基类的原型对象中增添了不必要的超类的实例对象中的所有属性的问题。<br>特点：解决了组合型调用 2 次父类构造函数的问题</p>
+<h2 id="this"><a href="#this" class="headerlink" title="this"></a>this</h2><h3 id="this-的指向"><a href="#this-的指向" class="headerlink" title="this 的指向"></a>this 的指向</h3><p>this 指向最后调用它的对象</p>
+<h3 id="改变-this-指向的方法"><a href="#改变-this-指向的方法" class="headerlink" title="改变 this 指向的方法"></a>改变 this 指向的方法</h3><p>1）箭头函数 2）call、apply、bind 3）new</p>
+<h3 id="this-绑定"><a href="#this-绑定" class="headerlink" title="this 绑定"></a>this 绑定</h3><p>显式绑定：call、apply、bind<br>隐式绑定：直接被对象所包含的函数调用时<br>默认绑定：全局环境默认绑定到 window<br>new 绑定</p>
+<h3 id="call-和-apply-区别"><a href="#call-和-apply-区别" class="headerlink" title="call 和 apply 区别"></a>call 和 apply 区别</h3><p>传入的参数不同，apply 传入 this 指向和参数数组（或类数组）两个变量；call 传入 this 指向和其他参数，传入的参数数量不固定</p>
+<h3 id="call、apply、bind-的实现"><a href="#call、apply、bind-的实现" class="headerlink" title="call、apply、bind 的实现"></a>call、apply、bind 的实现</h3><ol>
+<li>call</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Function</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">call</span>=<span class="keyword">function</span>(<span class="params">context</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> context=context||<span class="variable language_">window</span></span><br><span class="line">  context.<span class="property">fn</span>=<span class="variable language_">this</span></span><br><span class="line">  <span class="keyword">var</span> args=[...<span class="variable language_">arguments</span>].<span class="title function_">slice</span>(<span class="number">1</span>)</span><br><span class="line">  <span class="keyword">var</span> res=context.<span class="title function_">fn</span>(...args)</span><br><span class="line">  <span class="keyword">delete</span> context.<span class="property">fn</span></span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>apply</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Function</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">apply</span>=<span class="keyword">function</span>(<span class="params">context</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> context=context||<span class="variable language_">window</span></span><br><span class="line">  context.<span class="property">fn</span>=<span class="variable language_">this</span></span><br><span class="line">  <span class="keyword">var</span> res</span><br><span class="line">  <span class="keyword">if</span>(<span class="variable language_">arguments</span>[<span class="number">1</span>])&#123;</span><br><span class="line">    res=context.<span class="title function_">fn</span>(...args)</span><br><span class="line">  &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    res=context.<span class="title function_">fn</span>()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">delete</span> context.<span class="property">fn</span></span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>bind</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Function</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">bind</span>=<span class="keyword">function</span>(<span class="params">context</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> args=[...<span class="variable language_">arguments</span>].<span class="title function_">slice</span>(<span class="number">1</span>),_this=<span class="variable language_">this</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">function</span> <span class="title function_">F</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="comment">// 函数作为构造函数时this指向改变</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="variable language_">this</span> <span class="keyword">instanceof</span> F)&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> <span class="title function_">F</span>(...args,...<span class="variable language_">arguments</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> _this.<span class="title function_">apply</span>(context,args.<span class="title function_">concat</span>(...<span class="variable language_">arguments</span>))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>bind 多次时 this 的指向以第一次为准</p>
+<h3 id="new-的过程"><a href="#new-的过程" class="headerlink" title="new 的过程"></a>new 的过程</h3><ol>
+<li>创建新对象</li>
+<li>对象原型指向构造函数 prototype</li>
+<li>改变 this 指向</li>
+<li>返回对象</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">create</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> obj=&#123;&#125;,<span class="title class_">Construct</span>=[].<span class="property">shift</span>.<span class="title function_">call</span>(<span class="variable language_">arguments</span>)</span><br><span class="line">  obj.<span class="property">_proto_</span>=<span class="title class_">Construct</span>.<span class="property"><span class="keyword">prototype</span></span></span><br><span class="line">  <span class="keyword">var</span> res=<span class="title class_">Construct</span>.<span class="title function_">apply</span>(obj,<span class="variable language_">arguments</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">typeof</span> res===<span class="string">&#x27;object&#x27;</span>?<span class="attr">res</span>:obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="作用域相关"><a href="#作用域相关" class="headerlink" title="作用域相关"></a>作用域相关</h2><p>作用域：源码中定义变量的区域<br>词法作用域：函数的作用域在函数定义时决定<br>动态作用域：函数的作用域在函数调用时决定<br><strong>js 采用的是静态作用域，即函数的作用域在函数定义时就确定了。</strong></p>
+<h3 id="执行上下文"><a href="#执行上下文" class="headerlink" title="执行上下文"></a>执行上下文</h3><p>定义：当前代码的执行环境，包括全局上下文、函数上下文、eval 上下文</p>
+<h4 id="执行上下文-3-个重要属性"><a href="#执行上下文-3-个重要属性" class="headerlink" title="执行上下文 3 个重要属性"></a>执行上下文 3 个重要属性</h4><ol>
+<li>变量对象（VO）：存储了上下文定义的变量和函数声明</li>
+<li>作用域链：一组对象列表，包括自身变量对象和指向父级变量对象作用域链属性</li>
+<li>this</li>
+</ol>
+<h4 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h4><ol>
+<li>进入执行上下文阶段<br>变量对象内容：</li>
+</ol>
+<ul>
+<li>1）函数所有形参</li>
+<li>2）函数声明：由函数名+对应值变成变量对象属性；若变量对象由同名属性，则替换该属性</li>
+<li>3）变量声明：由变量名+undefined 变成变量对象属性；若变量名称与函数或形参相同，则不干扰已存在属性</li>
+</ul>
+<ol start="2">
+<li>代码执行：根据代码修改变量对象的值<br>PS：函数上下文的变量对象初始化只包括 arguments</li>
+</ol>
+<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>定义：可以获取其他函数内变量的函数<br>优点：1.可创建私有变量；2.防止全局变量污染；3.模仿块级作用域<br>缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、闭包循环引用）</p>
+<h3 id="偏函数与柯里化"><a href="#偏函数与柯里化" class="headerlink" title="偏函数与柯里化"></a>偏函数与柯里化</h3><p>偏函数：将一个 n 元函数转为 n-x 函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">partial</span>(<span class="params">fn</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> args=[...<span class="variable language_">arguments</span>].<span class="title function_">slice</span>(<span class="number">1</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">var</span> newArgs=args.<span class="title function_">concat</span>([...<span class="variable language_">arguments</span>])</span><br><span class="line">    <span class="keyword">return</span> fn.<span class="title function_">apply</span>(<span class="variable language_">this</span>,newArgs)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>柯里化：将一个 n 元函数转为 n 个一元函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">curry</span>(<span class="params">fn</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> args=[...<span class="variable language_">arguments</span>].<span class="title function_">slice</span>(<span class="number">1</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">var</span> newArgs=args.<span class="title function_">concat</span>([...<span class="variable language_">arguments</span>])</span><br><span class="line">    <span class="keyword">if</span>(newArgs.<span class="property">length</span>&lt;fn.<span class="property">length</span>)&#123;</span><br><span class="line">      <span class="keyword">return</span> curry.<span class="title function_">call</span>(<span class="variable language_">this</span>,fn,newArgs)</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">      <span class="keyword">return</span> fn.<span class="title function_">apply</span>(<span class="variable language_">this</span>,newArgs)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JavaScript-异步编程"><a href="#JavaScript-异步编程" class="headerlink" title="JavaScript 异步编程"></a>JavaScript 异步编程</h3><h4 id="异步编程的实现方式"><a href="#异步编程的实现方式" class="headerlink" title="异步编程的实现方式"></a>异步编程的实现方式</h4><ul>
+<li><strong>callback</strong>：多个回调函数嵌套的时候会造成回调函数地狱</li>
+<li><strong>promise</strong>：使用 Promise 的方式可以将嵌套的回调函数作为链式调用。</li>
+<li><strong>generator</strong>：可以在函数的执行过程中，将函数的执行权转移出去，在函数外部还可以将执行权转移回来。当遇到异步函数执行的时候，将函数执行权转移出去，当异步函数执行完毕时再将执行权给转移回来。</li>
+<li><strong>async</strong>：generator 和 promise 实现的一个自动执行的语法糖，它内部自带执行器，当函数内部执行到一个 await 语句的时候，如果语句返回一个 promise 对象，那么函数将会等待 promise 对象的状态变为 resolve 后再继续向下执行。因此可以将异步逻辑，转化为同步的顺序来书写，并且这个函数可以自动执行。</li>
+</ul>
+<h4 id="事件循环"><a href="#事件循环" class="headerlink" title="事件循环"></a>事件循环</h4><h5 id="浏览器事件循环"><a href="#浏览器事件循环" class="headerlink" title="浏览器事件循环"></a>浏览器事件循环</h5><ul>
+<li>macrotasks(宏任务):script(整体代码)、setTimeout、setInterval、setImmediate、I&#x2F;O、UI rendering</li>
+<li>microtasks(微任务):process.nextTick、Promises、Object.observe、MutationObserver</li>
+</ul>
+<h6 id="浏览器循环机制"><a href="#浏览器循环机制" class="headerlink" title="浏览器循环机制"></a>浏览器循环机制</h6><p>JavaScript 有一个主线程和调用栈，所有的任务最终都会被放到调用栈等待主线程执行。宏任务会被放在调用栈中，按照顺序等待主线程依次执行。主线程之外存在一个回调队列，微任务有了结果后，会放入回调队列中。调用栈中任务执行完毕后，此时主线程处于空闲状态，会从回调队列中获取任务进行处理。上述过程不断重复。</p>
+<ul>
+<li>首先执行同步代码，这属于宏任务</li>
+<li>当执行完所有同步代码后，执行栈为空，查询是否有异步代码需要执行</li>
+<li>执行所有微任务</li>
+<li>当执行完所有微任务后，如有必要会渲染页面</li>
+<li>然后开始下一轮 Event Loop，执行宏任务中的异步代码，也就是 setTimeout 中的回调函数</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;script start&#x27;</span>)</span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">async1</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">await</span> <span class="title function_">async2</span>()</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;async1 end&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">async2</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;async2 end&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">async1</span>()</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;setTimeout&#x27;</span>)</span><br><span class="line">&#125;, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Promise&#x27;</span>)</span><br><span class="line">  <span class="title function_">resolve</span>()</span><br><span class="line">&#125;)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;promise1&#x27;</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;promise2&#x27;</span>)</span><br><span class="line">  &#125;)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;script end&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h6 id="概念区分：进程-vs-线程"><a href="#概念区分：进程-vs-线程" class="headerlink" title="概念区分：进程 vs 线程"></a>概念区分：进程 vs 线程</h6><p>进程：资源分配的基本单位<br>线程：cpu 调度的基本单位</p>
+<h4 id="nodejs-事件循环"><a href="#nodejs-事件循环" class="headerlink" title="nodejs 事件循环"></a>nodejs 事件循环</h4><p>nodejs 的事件循环主要分为 6 个阶段：</p>
+<ul>
+<li>timers 阶段：这个阶段执行 timer（setTimeout、setInterval）的回调</li>
+<li>I&#x2F;O callbacks：执行一些系统调用错误，比如网络通信的错误回调</li>
+<li>idle,prepare：仅 node 内部使用</li>
+<li>poll：获取新的 I&#x2F;O 事件, 适当的条件下 node 将阻塞在这里<br>1）有到期的定时器，执行定时器回调<br>2）处理 poll 队列：<ul>
+<li>若队列为空：有 setImmediate 方法时 poll 阶段停止进入 check，执行回调；无 setImmediate 方法时等待新事件</li>
+<li>若队列不为空：遍历回调队列并同步执行</li>
+</ul>
+</li>
+<li>check：执行 setImmediate() 的回调</li>
+<li>close callbacks：执行 socket 的 close 事件回调</li>
+</ul>
+<div class="figure center" style="width:;"><img class="fig-img" src="eventLoop.png" alt=""></div><div style="clear:both;"></div>
+
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6941194115392634888">「2021」高频前端面试题汇总之 JavaScript 篇（下）</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/JavaScript/" rel="tag">JavaScript</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/08/rollup/"
+                    data-tooltip="rollup打包工具使用"
+                    aria-label="上一篇: rollup打包工具使用"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/18/mobileBrowser/"
+                    data-tooltip="移动端开发的踩坑经历"
+                    aria-label="下一篇: 移动端开发的踩坑经历"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/08/rollup/"
+                    data-tooltip="rollup打包工具使用"
+                    aria-label="上一篇: rollup打包工具使用"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/18/mobileBrowser/"
+                    data-tooltip="移动端开发的踩坑经历"
+                    aria-label="下一篇: 移动端开发的踩坑经历"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/18/javascript/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

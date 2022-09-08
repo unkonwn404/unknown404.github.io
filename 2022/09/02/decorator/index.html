@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>ES7装饰器语法 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"装饰器是是一种与类（class）相关的语法，用来注释或修改类和类方法。装饰器在 Python 和 Java 等语言中也被大量使用。目前在前端框架 Nestjs 也已经有应用。因此本文主要记录装饰器相关的知识点，帮助理解 Nestjs 程序。\n\n\n\n装饰器模式装饰器模式是一种结构型设计模式，它允许向一个现有的对象添加新的功能，同时又不改变其结构，是作为对现有类的一个包装。装饰器是针对这种设计模式的一个语法糖。其用法是：使用 @ 作为标识符，紧跟返回装饰器函数的表达式，被放置在被装饰代码前面。由于该语法目前还处于第 2 阶段提案中，使用它之前需要使用 Babel 模块编译成 ES5 或 ES6。\n装饰器用法装饰器主要用于:\n\n装饰类\n装饰方法或属性\n\n装饰类装饰类的时候，装饰器方法一般会接收一个目标类作为参数。\nbabel 编译情况编译前：\n123456@annotationclass MyClass &#123; &#125;function annotation(target) &#123;   target.annotated = true;&#125;\n\n编译后：\n1234567var _class;let MyClass = annotation(_class = class MyClass &#123;&#125;) || _class;function annotation(target) &#123;  target.annotated = true;&#125;\n\n从编译的结果可以看出类装饰器的第一个参数就是要装饰的类，它的功能就是对类进行处理。\n类装饰器的作用\n给目标类增加静态属性\n\n12345678function addAttribute(targetClass) &#123;  targetClass.isUseDecorator = true;&#125;@addAttributeclass TargetClass &#123; &#125;console.log(TargetClass.isUseDecorator); // true\n\n在上面这个例子中，我们定义了 addAttribute 的装饰器，用于为 TargetClass 添加静态属性 isUseDecorator 并设置为 true。另一方面，类装饰器可以使用表达式传入参数为静态属性赋值，利用装饰器工厂模式。如下面的代码：\n1234567891011function addAttribute(content) &#123;  return function decFn(targetClass) &#123;    targetClass.content = content;    return targetClass;  &#125;;&#125;@addAttribute(&#x27;这是内容～～～&#x27;)class TargetClass &#123; &#125;console.log(TargetClass.content); // 这是内容～～～\n\n该示例就是为 TargetClass 添加静态属性 content 并用传入的参数‘这是内容～～～’为 content 赋值。这种使用方法更加灵活。\n\n添加原型方法既然类装饰器接收的参数就是类定义本身，那么该装饰器也可以通过访问类的 prototype 属性来添加或修改原型方法\n\n12345678910111213function decorator(targetClass) &#123;  targetClass.prototype.decFun = function () &#123;    console.log(&#x27;这里是装饰器 decorator 添加的原型方法 decFun~&#x27;);  &#125;;&#125;@decoratorclass TargetClass &#123; &#125;const targetClass = new TargetClass();console.log(targetClass);targetClass.decFun();\n\n装饰方法和属性预备知识：属性描述符属性描述符表达了一个属性的相关信息(元数据）,本质上是一个对象。属性主要分为两种：访问器属性和数据属性。\n访问器属性特点：当给属性赋值或者取值的时候，会自动的运行一个函数。具有描述符属性：configurable、enumerable、get、set\n数据属性特点：在我们使用对象的过程中，对一个对象进行取值和赋值的时候，该属性称之为 数据属性具有描述符属性：configurable、enumerable、writable、value如示例所示：\n12345678910var o = &#123;&#125;;o.a = 1;// 等同于 :Object.defineProperty(o, &quot;a&quot;, &#123;  value : 1,  writable : true,  configurable : true,  enumerable : true&#125;);\n\n两种属性共有的属性为 configurable 和 enumerable。configurable：是否可配置，默认为 false。为 true 时，表示当前属性的‘属性表述符’对象可以被更改，该属性可以使用 delete 删除enumerable：是否可枚举，默认为 false。为 true 时，表示当前属性可以被枚举，也就是当前属性是否可以在 for…in 循环和 Object.keys() 中被遍历出来\n(value 和 writable)与(get 和 set)是不共存的，只要定义了其中一个，就定下来了该描述符的性质是数据属性还是访问器属性。\nbabel 编译情况根据ES6 系列之我们来聊聊装饰器,babel 编译后的方法装饰器可以分为 3 个处理步骤：\n\n拷贝需要装饰的属性其对应的属性描述符使用 Object.getOwnPropertyDescriptor 可以获得指定属性的属性描述符。该函数接收两个参数：属性所在对象和要取得描述的属性。其中 Babel 的 Class 为了与 decorator 配合而产生了一个属性 initializer\n应用多个 decorators 方法：当同一个方法使用多个装饰器模型时，遵从洋葱模型，从外到内进入，然后由内向外执行\n\n123456789101112131415function decorator1() &#123;  console.log(&#x27;decorator1&#x27;);  return function decFn1(targetClass) &#123;    console.log(&#x27;decFn1&#x27;);    return targetClass;  &#125;;&#125;function decorator2() &#123;  console.log(&#x27;decorator2&#x27;);  return function decFn2(targetClass) &#123;    console.log(&#x27;decFn2&#x27;);    return targetClass;  &#125;;&#125;\n\n假如存在装饰器 decorator1、decorator2，修饰同一个方法 targetFunc，其输出结果为：decorator1-&gt;decorator2-&gt;decFn2-&gt;decFn1\n123@decorator1()@decorator2()targetFunc()\n\n\n处理需要装饰的属性或方法，属性描述符的调整最终还是由 Object.defineProperty 来实现\n\n方法装饰器使用方法1234567891011function readonly(target, name, descriptor) &#123;  descriptor.writable = false;  return descriptor;&#125;class Person &#123;  @readonly  name = &#x27;zhangsan&#x27;;&#125;const person = new Person();\n\n如示例所示，方法装饰器接收的入参同 Object.defineProperty 一致，包括：\n\n要定义属性的对象（obj）\n要定义或修改的属性名或 Symbol（props）\n要定义或修改的属性描述符（descriptor）\n\n装饰器应用redux使用高阶函数 connect 时，需要将代码写成以下格式：\n123class MyReactComponent extends React.Component &#123;&#125;export default connect(mapStateToProps, mapDispatchToProps)(MyReactComponent);\n\n而使用装饰器后代码可简化为：\n12@connect(mapStateToProps, mapDispatchToProps)export default class MyReactComponent extends React.Component &#123;&#125;;\n\n语义也更加简洁明了\n防抖和节流在频繁触发事件的场景下，为了提升性能常会用防抖和节流函数，其特点是会返回一个匿名函数。为了能在组件销毁时能有效解绑事件，需要用变量将匿名函数存储起来。但使用装饰器语法后就不需要再设置多余的变量了。防抖装饰器的实现如下：\n12345678910111213141516171819202122232425262728293031323334353637383940414243//防抖函数function _debounce(func, wait, immediate) &#123;    var timeout;    return function () &#123;        var context = this;        var args = arguments;        if (timeout) clearTimeout(timeout);        if (immediate) &#123;            var callNow = !timeout;            timeout = setTimeout(function()&#123;                timeout = null;            &#125;, wait)            if (callNow) func.apply(context, args)        &#125;        else &#123;            timeout = setTimeout(function()&#123;                func.apply(context, args)            &#125;, wait);        &#125;    &#125;&#125;//防抖装饰器function debounce(wait, immediate) &#123;  return function handleDescriptor(target, key, descriptor) &#123;    const callback = descriptor.value;    if (typeof callback !== &#x27;function&#x27;) &#123;      throw new SyntaxError(&#x27;Only functions can be debounced&#x27;);    &#125;    var fn = _debounce(callback, wait, immediate)    return &#123;      ...descriptor,      value() &#123;        fn()      &#125;    &#125;;  &#125;&#125;\n\n在使用时只需要在目标函数上方添加@debounce，传入等待时间和是否立即响应的变量即可。\n123456789101112131415class Toggle extends React.Component &#123;  @debounce(500, true)  handleClick() &#123;    console.log(&#x27;toggle&#x27;)  &#125;  render() &#123;    return (      &lt;button onClick=&#123;this.handleClick&#125;&gt;        button      &lt;/button&gt;    );  &#125;&#125;\n\n节流的实现也基本相似，这里不再列举。\n参考文献（1）系列之我们来聊聊装饰器（1）Decorator 装饰器（1）都2020年了，你还不会JavaScript 装饰器\n","dateCreated":"2022-09-02T15:50:56+08:00","dateModified":"2022-09-08T22:38:20+08:00","datePublished":"2022-09-02T15:50:56+08:00","description":"装饰器是是一种与类（class）相关的语法，用来注释或修改类和类方法。装饰器在 Python 和 Java 等语言中也被大量使用。目前在前端框架 Nestjs 也已经有应用。因此本文主要记录装饰器相关的知识点，帮助理解 Nestjs 程序。","headline":"ES7装饰器语法","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/","keywords":"ES6, JavaScript"}</script>
+    <meta name="description" content="装饰器是是一种与类（class）相关的语法，用来注释或修改类和类方法。装饰器在 Python 和 Java 等语言中也被大量使用。目前在前端框架 Nestjs 也已经有应用。因此本文主要记录装饰器相关的知识点，帮助理解 Nestjs 程序。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="ES7装饰器语法">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="装饰器是是一种与类（class）相关的语法，用来注释或修改类和类方法。装饰器在 Python 和 Java 等语言中也被大量使用。目前在前端框架 Nestjs 也已经有应用。因此本文主要记录装饰器相关的知识点，帮助理解 Nestjs 程序。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-02T07:50:56.000Z">
+<meta property="article:modified_time" content="2022-09-08T14:38:20.422Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="ES6">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            ES7装饰器语法
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-09-02T15:50:56+08:00">
+	
+		    9月 02, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/">前端技术体系</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>装饰器是是一种与类（class）相关的语法，用来注释或修改类和类方法。装饰器在 Python 和 Java 等语言中也被大量使用。目前在前端框架 Nestjs 也已经有应用。因此本文主要记录装饰器相关的知识点，帮助理解 Nestjs 程序。</p>
+<span id="more"></span>
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="toc-text">装饰器模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A3%85%E9%A5%B0%E5%99%A8%E7%94%A8%E6%B3%95"><span class="toc-text">装饰器用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A3%85%E9%A5%B0%E7%B1%BB"><span class="toc-text">装饰类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#babel-%E7%BC%96%E8%AF%91%E6%83%85%E5%86%B5"><span class="toc-text">babel 编译情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B1%BB%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">类装饰器的作用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A3%85%E9%A5%B0%E6%96%B9%E6%B3%95%E5%92%8C%E5%B1%9E%E6%80%A7"><span class="toc-text">装饰方法和属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%EF%BC%9A%E5%B1%9E%E6%80%A7%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">预备知识：属性描述符</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">访问器属性</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%B1%9E%E6%80%A7"><span class="toc-text">数据属性</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#babel-%E7%BC%96%E8%AF%91%E6%83%85%E5%86%B5-1"><span class="toc-text">babel 编译情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E8%A3%85%E9%A5%B0%E5%99%A8%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-text">方法装饰器使用方法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A3%85%E9%A5%B0%E5%99%A8%E5%BA%94%E7%94%A8"><span class="toc-text">装饰器应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#redux"><span class="toc-text">redux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81"><span class="toc-text">防抖和节流</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text"></span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+
+<h2 id="装饰器模式"><a href="#装饰器模式" class="headerlink" title="装饰器模式"></a>装饰器模式</h2><p>装饰器模式是一种结构型设计模式，它允许向一个现有的对象添加新的功能，同时又不改变其结构，是作为对现有类的一个包装。<br>装饰器是针对这种设计模式的一个语法糖。其用法是：使用 @ 作为标识符，紧跟返回装饰器函数的表达式，被放置在被装饰代码前面。<br>由于该语法目前还处于第 2 阶段提案中，使用它之前需要使用 Babel 模块编译成 ES5 或 ES6。</p>
+<h2 id="装饰器用法"><a href="#装饰器用法" class="headerlink" title="装饰器用法"></a>装饰器用法</h2><p>装饰器主要用于:</p>
+<ol>
+<li>装饰类</li>
+<li>装饰方法或属性</li>
+</ol>
+<h3 id="装饰类"><a href="#装饰类" class="headerlink" title="装饰类"></a>装饰类</h3><p>装饰类的时候，装饰器方法一般会接收一个目标类作为参数。</p>
+<h4 id="babel-编译情况"><a href="#babel-编译情况" class="headerlink" title="babel 编译情况"></a>babel 编译情况</h4><p>编译前：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@annotation</span><br><span class="line">class MyClass &#123; &#125;</span><br><span class="line"></span><br><span class="line">function annotation(target) &#123;</span><br><span class="line">   target.annotated = true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译后：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var _class;</span><br><span class="line"></span><br><span class="line">let MyClass = annotation(_class = class MyClass &#123;&#125;) || _class;</span><br><span class="line"></span><br><span class="line">function annotation(target) &#123;</span><br><span class="line">  target.annotated = true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从编译的结果可以看出类装饰器的第一个参数就是要装饰的类，它的功能就是对类进行处理。</p>
+<h4 id="类装饰器的作用"><a href="#类装饰器的作用" class="headerlink" title="类装饰器的作用"></a>类装饰器的作用</h4><ol>
+<li>给目标类增加静态属性</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function addAttribute(targetClass) &#123;</span><br><span class="line">  targetClass.isUseDecorator = true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@addAttribute</span><br><span class="line">class TargetClass &#123; &#125;</span><br><span class="line"></span><br><span class="line">console.log(TargetClass.isUseDecorator); // true</span><br></pre></td></tr></table></figure>
+
+<p>在上面这个例子中，我们定义了 addAttribute 的装饰器，用于为 TargetClass 添加静态属性 isUseDecorator 并设置为 true。<br>另一方面，类装饰器可以使用表达式传入参数为静态属性赋值，利用装饰器工厂模式。如下面的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function addAttribute(content) &#123;</span><br><span class="line">  return function decFn(targetClass) &#123;</span><br><span class="line">    targetClass.content = content;</span><br><span class="line">    return targetClass;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@addAttribute(&#x27;这是内容～～～&#x27;)</span><br><span class="line">class TargetClass &#123; &#125;</span><br><span class="line"></span><br><span class="line">console.log(TargetClass.content); // 这是内容～～～</span><br></pre></td></tr></table></figure>
+
+<p>该示例就是为 TargetClass 添加静态属性 content 并用传入的参数‘这是内容～～～’为 content 赋值。这种使用方法更加灵活。</p>
+<ol start="2">
+<li>添加原型方法<br>既然类装饰器接收的参数就是类定义本身，那么该装饰器也可以通过访问类的 prototype 属性来添加或修改原型方法</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function decorator(targetClass) &#123;</span><br><span class="line">  targetClass.prototype.decFun = function () &#123;</span><br><span class="line">    console.log(&#x27;这里是装饰器 decorator 添加的原型方法 decFun~&#x27;);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@decorator</span><br><span class="line">class TargetClass &#123; &#125;</span><br><span class="line"></span><br><span class="line">const targetClass = new TargetClass();</span><br><span class="line"></span><br><span class="line">console.log(targetClass);</span><br><span class="line">targetClass.decFun();</span><br></pre></td></tr></table></figure>
+
+<h3 id="装饰方法和属性"><a href="#装饰方法和属性" class="headerlink" title="装饰方法和属性"></a>装饰方法和属性</h3><h4 id="预备知识：属性描述符"><a href="#预备知识：属性描述符" class="headerlink" title="预备知识：属性描述符"></a>预备知识：属性描述符</h4><p>属性描述符表达了一个属性的相关信息(元数据）,本质上是一个对象。属性主要分为两种：访问器属性和数据属性。</p>
+<h5 id="访问器属性"><a href="#访问器属性" class="headerlink" title="访问器属性"></a>访问器属性</h5><p>特点：当给属性赋值或者取值的时候，会自动的运行一个函数。<br>具有描述符属性：configurable、enumerable、get、set</p>
+<h5 id="数据属性"><a href="#数据属性" class="headerlink" title="数据属性"></a>数据属性</h5><p>特点：在我们使用对象的过程中，对一个对象进行取值和赋值的时候，该属性称之为 数据属性<br>具有描述符属性：configurable、enumerable、writable、value<br>如示例所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var o = &#123;&#125;;</span><br><span class="line">o.a = 1;</span><br><span class="line"></span><br><span class="line">// 等同于 :</span><br><span class="line">Object.defineProperty(o, &quot;a&quot;, &#123;</span><br><span class="line">  value : 1,</span><br><span class="line">  writable : true,</span><br><span class="line">  configurable : true,</span><br><span class="line">  enumerable : true</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>两种属性共有的属性为 configurable 和 enumerable。<br>configurable：是否可配置，默认为 false。为 true 时，表示当前属性的‘属性表述符’对象可以被更改，该属性可以使用 delete 删除<br>enumerable：是否可枚举，默认为 false。为 true 时，表示当前属性可以被枚举，也就是当前属性是否可以在 for…in 循环和 Object.keys() 中被遍历出来</p>
+<p>(value 和 writable)与(get 和 set)是不共存的，只要定义了其中一个，就定下来了该描述符的性质是数据属性还是访问器属性。</p>
+<h4 id="babel-编译情况-1"><a href="#babel-编译情况-1" class="headerlink" title="babel 编译情况"></a>babel 编译情况</h4><p>根据<a target="_blank" rel="noopener" href="https://github.com/mqyqingfeng/Blog/issues/109">ES6 系列之我们来聊聊装饰器</a>,babel 编译后的方法装饰器可以分为 3 个处理步骤：</p>
+<ol>
+<li>拷贝需要装饰的属性其对应的属性描述符<br>使用 Object.getOwnPropertyDescriptor 可以获得指定属性的属性描述符。该函数接收两个参数：属性所在对象和要取得描述的属性。<br>其中 Babel 的 Class 为了与 decorator 配合而产生了一个属性 initializer</li>
+<li>应用多个 decorators 方法：当同一个方法使用多个装饰器模型时，遵从洋葱模型，从外到内进入，然后由内向外执行</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">function decorator1() &#123;</span><br><span class="line">  console.log(&#x27;decorator1&#x27;);</span><br><span class="line">  return function decFn1(targetClass) &#123;</span><br><span class="line">    console.log(&#x27;decFn1&#x27;);</span><br><span class="line">    return targetClass;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function decorator2() &#123;</span><br><span class="line">  console.log(&#x27;decorator2&#x27;);</span><br><span class="line">  return function decFn2(targetClass) &#123;</span><br><span class="line">    console.log(&#x27;decFn2&#x27;);</span><br><span class="line">    return targetClass;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假如存在装饰器 decorator1、decorator2，修饰同一个方法 targetFunc，其输出结果为：<code>decorator1-&gt;decorator2-&gt;decFn2-&gt;decFn1</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@decorator1()</span><br><span class="line">@decorator2()</span><br><span class="line">targetFunc()</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>处理需要装饰的属性或方法，属性描述符的调整最终还是由 Object.defineProperty 来实现</li>
+</ol>
+<h4 id="方法装饰器使用方法"><a href="#方法装饰器使用方法" class="headerlink" title="方法装饰器使用方法"></a>方法装饰器使用方法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function readonly(target, name, descriptor) &#123;</span><br><span class="line">  descriptor.writable = false;</span><br><span class="line">  return descriptor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Person &#123;</span><br><span class="line">  @readonly</span><br><span class="line">  name = &#x27;zhangsan&#x27;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const person = new Person();</span><br></pre></td></tr></table></figure>
+
+<p>如示例所示，方法装饰器接收的入参同 Object.defineProperty 一致，包括：</p>
+<ul>
+<li>要定义属性的对象（obj）</li>
+<li>要定义或修改的属性名或 Symbol（props）</li>
+<li>要定义或修改的属性描述符（descriptor）</li>
+</ul>
+<h2 id="装饰器应用"><a href="#装饰器应用" class="headerlink" title="装饰器应用"></a>装饰器应用</h2><h3 id="redux"><a href="#redux" class="headerlink" title="redux"></a>redux</h3><p>使用高阶函数 connect 时，需要将代码写成以下格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class MyReactComponent extends React.Component &#123;&#125;</span><br><span class="line"></span><br><span class="line">export default connect(mapStateToProps, mapDispatchToProps)(MyReactComponent);</span><br></pre></td></tr></table></figure>
+
+<p>而使用装饰器后代码可简化为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@connect(mapStateToProps, mapDispatchToProps)</span><br><span class="line">export default class MyReactComponent extends React.Component &#123;&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>语义也更加简洁明了</p>
+<h3 id="防抖和节流"><a href="#防抖和节流" class="headerlink" title="防抖和节流"></a>防抖和节流</h3><p>在频繁触发事件的场景下，为了提升性能常会用防抖和节流函数，其特点是会返回一个匿名函数。为了能在组件销毁时能有效解绑事件，需要用变量将匿名函数存储起来。但使用装饰器语法后就不需要再设置多余的变量了。防抖装饰器的实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">//防抖函数</span><br><span class="line">function _debounce(func, wait, immediate) &#123;</span><br><span class="line"></span><br><span class="line">    var timeout;</span><br><span class="line"></span><br><span class="line">    return function () &#123;</span><br><span class="line">        var context = this;</span><br><span class="line">        var args = arguments;</span><br><span class="line"></span><br><span class="line">        if (timeout) clearTimeout(timeout);</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            var callNow = !timeout;</span><br><span class="line">            timeout = setTimeout(function()&#123;</span><br><span class="line">                timeout = null;</span><br><span class="line">            &#125;, wait)</span><br><span class="line">            if (callNow) func.apply(context, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timeout = setTimeout(function()&#123;</span><br><span class="line">                func.apply(context, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">//防抖装饰器</span><br><span class="line">function debounce(wait, immediate) &#123;</span><br><span class="line">  return function handleDescriptor(target, key, descriptor) &#123;</span><br><span class="line">    const callback = descriptor.value;</span><br><span class="line"></span><br><span class="line">    if (typeof callback !== &#x27;function&#x27;) &#123;</span><br><span class="line">      throw new SyntaxError(&#x27;Only functions can be debounced&#x27;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var fn = _debounce(callback, wait, immediate)</span><br><span class="line"></span><br><span class="line">    return &#123;</span><br><span class="line">      ...descriptor,</span><br><span class="line">      value() &#123;</span><br><span class="line">        fn()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在使用时只需要在目标函数上方添加@debounce，传入等待时间和是否立即响应的变量即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class Toggle extends React.Component &#123;</span><br><span class="line"></span><br><span class="line">  @debounce(500, true)</span><br><span class="line">  handleClick() &#123;</span><br><span class="line">    console.log(&#x27;toggle&#x27;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;button onClick=&#123;this.handleClick&#125;&gt;</span><br><span class="line">        button</span><br><span class="line">      &lt;/button&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>节流的实现也基本相似，这里不再列举。</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://github.com/mqyqingfeng/Blog/issues/109">系列之我们来聊聊装饰器</a><br>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7072883925764276254">Decorator 装饰器</a><br>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904100144889864">都2020年了，你还不会JavaScript 装饰器</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/ES6/" rel="tag">ES6</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/JavaScript/" rel="tag">JavaScript</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/29/es6/"
+                    data-tooltip="ES6语法"
+                    aria-label="下一篇: ES6语法"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/29/es6/"
+                    data-tooltip="ES6语法"
+                    aria-label="下一篇: ES6语法"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/02/decorator/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
