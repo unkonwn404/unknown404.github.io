@@ -377,5 +377,6 @@ propertyDescriptor - 函数的属性描述符
 ## 参考文献
 
 （1）[系列之我们来聊聊装饰器](https://github.com/mqyqingfeng/Blog/issues/109)
-（1）[Decorator 装饰器](https://juejin.cn/post/7072883925764276254)
-（1）[都 2020 年了，你还不会 JavaScript 装饰器](https://juejin.cn/post/6844904100144889864)
+（2）[Decorator 装饰器](https://juejin.cn/post/7072883925764276254)
+（3）[都 2020 年了，你还不会 JavaScript 装饰器](https://juejin.cn/post/6844904100144889864)
+（4）[TypeScript 装饰器的基本语法](https://juejin.cn/post/6996590290555371534)
