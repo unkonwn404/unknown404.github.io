@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>小程序踩坑经历--canvas层级过高 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"小程序开发弹窗功能时遇到的问题。\n\n\n需求说明需要在某一计算结果页设置收集信息弹窗，点击按钮时弹窗悬浮于页面正中；计算结果页包含绘制的饼图\n存在问题canvas 属于原生组件，拥有最高层级，页面中其他组件无论设置 z-index 多少都无法覆盖在 canvas 上；且 canvas 标签不能使用visibility:hidden或 opacity: 0;去隐藏，放在父元素设置同样不可行\n解决方法对于只需要展示文字或图片的简单弹窗，可以使用 cover-view 组件，该组件有小程序最高层级。对于功能相对复杂的弹窗，则需要将 canvas 转为图片。具体操作内容：\n\n模版部分：新增替代 canvas 的图片模块，与 canvas 同级。这里为方便新增的模块和 canvas 同类名以便获取同样的样式大小设置。新增变量 imgHide 和 chartImg，分别用于控制 canvas 到图片切换的过程和获取导出图片的临时路径。\n\n1234567891011121314151617&lt;template&gt;    ...    &lt;canvas        :hidden=&quot;!imgHide&quot;        class=&quot;chart-canvas&quot;        canvas-id=&quot;ringCanvas&quot;    &gt;&lt;/canvas&gt;    &lt;view class=&quot;chart-canvas&quot; :hidden=&quot;imgHide&quot;&gt;        &lt;img :src=&quot;chartImg&quot;/&gt;    &lt;/view&gt;    ...    &lt;view @click=&quot;modalShow&quot;&gt;tap&lt;/view&gt;    &lt;view class=&quot;modal&quot;&gt;        ...    &lt;/view&gt;&lt;/template&gt;\n\n\nJS 逻辑部分：1）初始化 imgHide 和 chartImg，分别设为 false 和’’2）增加新方法 canvasToImg，处理 canvas 导出图片的任务。这里 destWidth、destHeight 都设置为原宽高的 2 倍是因为 canvas 是位图，将它渲染到高清屏时,会被放大,每个像素点会用 devicePixelRatio 的平方个物理像素点来渲染,因此图片会变得模糊。使用 2 倍图可以解决问题。绘制成功时将文件路径赋值给 chartImg\n\n123456789101112131415161718192021canvasToImg(width, height) &#123;    setTimeout(() =&gt; &#123;        wx.canvasToTempFilePath(&#123;            x: 0,            y: 0,            width,            height,            destWidth: width * 2,            destHeight: height * 2,            canvasId: &#x27;ringCanvas&#x27;,            success: res =&gt; &#123;                const filePath = res.tempFilePath                console.log(&#x27;tempFilePath&#x27;, filePath)                this.chartImg = filePath            &#125;,            fail: rej =&gt; &#123;                throw rej            &#125;        &#125;)    &#125;, 1000)&#125;\n\n\n选择 canvas 切 img 的时机。如果在拿到导出图片路径时立即切图片，会导致页面的 chart 有一段不自然的闪烁看起来很奇怪；如果不考虑切换操作，直接在图片位置加 loading 图直到拿到导出图片路径，则体感加载时间会很长，因为 loading 时间包括了 canvas 绘制和图片导出，都是比较耗时的操作。既然 canvas 换图片的操作是为了解决弹窗被遮挡的问题，那么可以将改变 imgHide 时机放置在点击按钮、弹出弹窗的方法中。同时考虑到 canvas 导出图片的时间很长，如果在未完成该操作时弹窗就关闭的话用户就会看到空白的图片，所以需要在弹窗关闭的方法中增加是否需要切回 canvas 的判断。\n\n123456789modalShow() &#123;    ...    this.imgHide = false&#125;modalClose() &#123;    if(this.chartImg != &#x27;&#x27;) &#123;        this.imgHide = true    &#125;&#125;\n\n需要注意的点是如果 canvas 的面积大于弹窗的面积，那么当点击弹窗、canvas 尚未导出图片路径时，仍可以透过弹窗的 mask 看到没图的 img 元素的边框。（这时最好不要做这个功能了）\n\n如果是需要反复绘制的场景，需要注意绘制前 canvas 是否仍然存在，否则 canvas 无法重新绘制，转成图片自然也不执行。\n\n1234onShow() &#123;    ...    this.imgHide = true&#125;\n\n参考文献（1）微信小程序 canvas 层级过高，遮住弹窗解决方法\n","dateCreated":"2022-09-30T16:54:38+08:00","dateModified":"2022-11-29T21:41:02+08:00","datePublished":"2022-09-30T16:54:38+08:00","description":"小程序开发弹窗功能时遇到的问题。","headline":"小程序踩坑经历--canvas层级过高","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/","keywords":"小程序"}</script>
+    <meta name="description" content="小程序开发弹窗功能时遇到的问题。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="小程序踩坑经历--canvas层级过高">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="小程序开发弹窗功能时遇到的问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-30T08:54:38.000Z">
+<meta property="article:modified_time" content="2022-11-29T13:41:02.783Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="小程序">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            小程序踩坑经历--canvas层级过高
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-09-30T16:54:38+08:00">
+	
+		    9月 30, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/">踩坑经历</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>小程序开发弹窗功能时遇到的问题。</p>
+<span id="more"></span>
+
+<h2 id="需求说明"><a href="#需求说明" class="headerlink" title="需求说明"></a>需求说明</h2><p>需要在某一计算结果页设置收集信息弹窗，点击按钮时弹窗悬浮于页面正中；计算结果页包含绘制的饼图</p>
+<h2 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h2><p>canvas 属于原生组件，拥有最高层级，页面中其他组件无论设置 z-index 多少都无法覆盖在 canvas 上；且 canvas 标签不能使用<code>visibility:hidden</code>或 <code>opacity: 0;</code>去隐藏，放在父元素设置同样不可行</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>对于只需要展示文字或图片的简单弹窗，可以使用 cover-view 组件，该组件有小程序最高层级。<br>对于功能相对复杂的弹窗，则需要将 canvas 转为图片。<br>具体操作内容：</p>
+<ol>
+<li>模版部分：<br>新增替代 canvas 的图片模块，与 canvas 同级。这里为方便新增的模块和 canvas 同类名以便获取同样的样式大小设置。<br>新增变量 imgHide 和 chartImg，分别用于控制 canvas 到图片切换的过程和获取导出图片的临时路径。</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    ...</span><br><span class="line">    &lt;canvas</span><br><span class="line">        :hidden=&quot;!imgHide&quot;</span><br><span class="line">        class=&quot;chart-canvas&quot;</span><br><span class="line">        canvas-id=&quot;ringCanvas&quot;</span><br><span class="line">    &gt;&lt;/canvas&gt;</span><br><span class="line">    &lt;view class=&quot;chart-canvas&quot; :hidden=&quot;imgHide&quot;&gt;</span><br><span class="line">        &lt;img :src=&quot;chartImg&quot;/&gt;</span><br><span class="line">    &lt;/view&gt;</span><br><span class="line">    ...</span><br><span class="line">    &lt;view @click=&quot;modalShow&quot;&gt;tap&lt;/view&gt;</span><br><span class="line">    &lt;view class=&quot;modal&quot;&gt;</span><br><span class="line">        ...</span><br><span class="line">    &lt;/view&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>JS 逻辑部分：<br>1）初始化 imgHide 和 chartImg，分别设为 false 和’’<br>2）增加新方法 canvasToImg，处理 canvas 导出图片的任务。这里 destWidth、destHeight 都设置为原宽高的 2 倍是因为 canvas 是位图，将它渲染到高清屏时,会被放大,每个像素点会用 devicePixelRatio 的平方个物理像素点来渲染,因此图片会变得模糊。使用 2 倍图可以解决问题。绘制成功时将文件路径赋值给 chartImg</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">canvasToImg</span>(<span class="params">width, height</span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        wx.<span class="title function_">canvasToTempFilePath</span>(&#123;</span><br><span class="line">            <span class="attr">x</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">y</span>: <span class="number">0</span>,</span><br><span class="line">            width,</span><br><span class="line">            height,</span><br><span class="line">            <span class="attr">destWidth</span>: width * <span class="number">2</span>,</span><br><span class="line">            <span class="attr">destHeight</span>: height * <span class="number">2</span>,</span><br><span class="line">            <span class="attr">canvasId</span>: <span class="string">&#x27;ringCanvas&#x27;</span>,</span><br><span class="line">            <span class="attr">success</span>: <span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">const</span> filePath = res.<span class="property">tempFilePath</span></span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;tempFilePath&#x27;</span>, filePath)</span><br><span class="line">                <span class="variable language_">this</span>.<span class="property">chartImg</span> = filePath</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">fail</span>: <span class="function"><span class="params">rej</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> rej</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;, <span class="number">1000</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>选择 canvas 切 img 的时机。<br>如果在拿到导出图片路径时立即切图片，会导致页面的 chart 有一段不自然的闪烁看起来很奇怪；如果不考虑切换操作，直接在图片位置加 loading 图直到拿到导出图片路径，则体感加载时间会很长，因为 loading 时间包括了 canvas 绘制和图片导出，都是比较耗时的操作。<br>既然 canvas 换图片的操作是为了解决弹窗被遮挡的问题，那么可以将改变 imgHide 时机放置在点击按钮、弹出弹窗的方法中。<br>同时考虑到 canvas 导出图片的时间很长，如果在未完成该操作时弹窗就关闭的话用户就会看到空白的图片，所以需要在弹窗关闭的方法中增加是否需要切回 canvas 的判断。</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">modalShow</span>(<span class="params"></span>) &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">imgHide</span> = <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">modalClose</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable language_">this</span>.<span class="property">chartImg</span> != <span class="string">&#x27;&#x27;</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">imgHide</span> = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的点是如果 canvas 的面积大于弹窗的面积，那么当点击弹窗、canvas 尚未导出图片路径时，仍可以透过弹窗的 mask 看到没图的 img 元素的边框。<del>（这时最好不要做这个功能了）</del></p>
+<ol start="4">
+<li>如果是需要反复绘制的场景，需要注意绘制前 canvas 是否仍然存在，否则 canvas 无法重新绘制，转成图片自然也不执行。</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">onShow</span>(<span class="params"></span>) &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">imgHide</span> = <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://wenku.baidu.com/view/9d46b515ba0d6c85ec3a87c24028915f804d842d.html">微信小程序 canvas 层级过高，遮住弹窗解决方法</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/" rel="tag">小程序</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/11/29/nvmProblemSearch/"
+                    data-tooltip="依赖失踪之谜 —— 记一次失败的问题查找"
+                    aria-label="上一篇: 依赖失踪之谜 —— 记一次失败的问题查找"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/09/20/webpackConfig/"
+                    data-tooltip="webpack配置踩坑经历"
+                    aria-label="下一篇: webpack配置踩坑经历"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/11/29/nvmProblemSearch/"
+                    data-tooltip="依赖失踪之谜 —— 记一次失败的问题查找"
+                    aria-label="上一篇: 依赖失踪之谜 —— 记一次失败的问题查找"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/09/20/webpackConfig/"
+                    data-tooltip="webpack配置踩坑经历"
+                    aria-label="下一篇: webpack配置踩坑经历"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/30/appletCanvas/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

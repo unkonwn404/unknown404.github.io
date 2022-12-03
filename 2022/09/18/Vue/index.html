@@ -1,0 +1,771 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>Vue - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"前端 vue 框架方面知识整理。\n\n\n\nVue 相关基本概念MVVM 和 MVC 的区别MVVM\nModel 代表数据模型，数据和业务逻辑都在 Model 层中定义；\nView 代表 UI 视图，负责数据的展示；\nViewModel 负责监听 Model 中数据的改变并且控制视图的更新，处理用户交互操作；\n\nViewModel 通过双向数据绑定连接 view 和 model，view 和 model 间的同步工作是自动的，无需手动操作 DOM\nMVC\nModel 代表数据模型，数据和业务逻辑都在 Model 层中定义，Model 发生的变化会通知到 View 层；\nView 代表 UI 视图，负责数据的展示；\nController 主要负责用户与应用的响应操作，用户与页面产生交互的时候，Controller 中的事件触发器会调用合适的 model 处理问题；\n\n双向绑定&#x2F;响应式原理Object.defineProperty 劫持数据，添加 setter&#x2F;getter 属性监听数据变化情况，发消息给订阅者触发监听回调\n\n实现一个监听器 observer：遍历对象属性，添加 setter&#x2F;getter，数据改变时可通过 setter 听到变化\n实现一个编译器 compiler：编译模版，将模版的变量替换为数据，指令节点绑定更新函数\n实现一个订阅者 watcher：连接 observer 和 compiler 桥梁，订阅 observer 属性变化消息，接收变化时触发 compiler 更新函数\n实现一个订阅器 dep：订阅发布管理模式，统一管理 watcher 和 observer\n\nVue 属性data 为什么是一个函数而不是对象如果 data 是对象，当组件复用时，由于多个实例引用同一个对象，只要一个实例对这个对象进行操作，其他实例中的数据也会发生变化。\ncomputed 和 watch 区别computed\n\n支持缓存\n不支持异步\n如果 computed 属性的属性值是函数，那么默认使用 get 方法，函数的返回值就是属性的属性值；在 computed 中，属性有一个 get 方法和一个 set 方法，当数据被赋值时，会调用 set 方法。\n第一次加载时会监听\ncomputed 属性函数需要 return\n\nwatch\n\n不支持缓存\n支持异步\n监听数据必须是 data 中声明的或者父组件传递过来的 props 中的数据\n第一次加载时默认不监听，除非 immediate 为 true\nwatch 属性函数不需要 return\n\nVue 模版指令v-show 和 v-if 区别v-show 只是在 display: none 和 display: block 之间切换。DOM 一直存在v-if 的话就得说到 Vue 底层的编译了。当属性初始为 false 时，组件就不会被渲染，直到条件为 true，并且切换条件时会触发销毁&#x2F;挂载组件\nv-if 和 v-for 共用时控制台报错当它们同时存在于一个节点上时，v-if 比 v-for 的优先级更高。这意味着 v-if 的条件将无法访问到 v-for 作用域内定义的变量别名正确写法：\n12345&lt;template v-for=&quot;todo in todos&quot;&gt;  &lt;li v-if=&quot;!todo.isComplete&quot;&gt;    &#123;&#123; todo.name &#125;&#125;  &lt;/li&gt;&lt;/template&gt;\n\nVue3.0 新特性Proxy 替代 Object.definePropertyProxy 特点\n可以直接监听整个对象而非属性；\nProxy 可以直接监听数组的变化；\nProxy 与 Object.defineProperty 相比有更多拦截方法；\nProxy 返回的是一个新对象，可以只操作新的对象达到目的，而 Object.defineProperty 只能遍历对象属性直接修改;\n\nObject.defineProperty 特点\nObject.defineProperty 只能劫持对象的属性,因此我们需要对每个对象的每个属性进行遍历\nObject.defineProperty 也不能对 es6 新产生的 Map,Set 这些数据结构做出监听，不能监听数组和对象\nObject.defineProperty 不能监听新增和删除操作\n\n组合式 APIVue 之前的风格可以说属于选项式 API，用包含多个选项的对象来描述组件的逻辑，例如 data、methods 和 mounted。组合式 API 是写在标签&lt;script setup&gt;的内部的，风格接近 react 钩子函数\n特点1）生命周期钩子只有 onBeforeMount、onMounted、onBeforeUpdate、onUpdated、onBeforeUnmount 和 onUnmounted，不存在跟 beforeCreate 和 created 生命周期相关的钩子2）父子组件之间的数据交互依赖于函数 defineProps 和 defineEmits、defineExpose3）不会使用 this（因为不存在组件实例了）4）需要使用 ref 或者 reactive 创建响应式数据\nref 和 reactive 区别ref：通常用来定义常用的基础类型(String,Number,Boolean 等等)，ref 函数包裹的数据需要用.value 来查询reactive：通常用来定义对象\n支持 TypeScriptVue 3.0 是用 TypeScript 编写的，因此支持 TypeScript。在单文件组件中使用 TypeScript，需要在 &lt;script&gt; 标签上加上 lang&#x3D;”ts” 的 attribute。类型推断对比\n\n     \n      \n        组合式API\n      选项式API\n   \n    \n      props类型推导\n           defineProps\n           defineComponent\n   \n    \n      emits类型推导\n           defineEmits\n           defineComponent\n   \n    \n      计算属性类型推导\n           泛型参数显式指定computed()类型\n           显式地标记出计算属性的类型\n   \n    \n      事件处理函数类型推导\n           显式地强制转换 event 上的属性(例：event.target as HTMLInputElement）\n   \n    \n      ref类型推导\n           Ref传入泛型参数;ref初始化时也会推导类型\n           无\n   \n     \n      reactive类型推导\n           interface定义\n   \n\n\n新内置组件 Suspense、Teleport\nSuspense：组件有两个插槽：#default 和 #fallback。两个插槽都只允许一个直接子节点。初始渲染时渲染默认的插槽内容。如果遇到异步依赖，则会进入挂起状态。在挂起状态期间，展示的是后备内容。当所有遇到的异步依赖都完成后，将展示出默认插槽的内容。\nTeleport：接收一个 to 的属性来指定传送的目标。to 的值可以是 CSS 选择器字符串，也可以是一个 DOM 元素对象。被 Teleport 标签包裹的模块将置于 to 指定的 DOM 之下。适用于子组件调用公共组件如全局提示框的场景\n\nVue 生命周期（Vue3.0 版本）\n\nbeforeCreate实例初始化完成、props 解析之后、data() 和 computed 等选项处理之前立即调用。\ncreateddata、computed、method、watch 已经设置完成。跟 DOM 操作相关的属性方法仍不可使用。\nbeforeMount即将首次执行 DOM 渲染过程。\n服务器渲染流程不包括该生命周期。\nmounted组件挂载完之后调用。挂载完成的定义为：所有同步子组件都已经被挂载且其自身的 DOM 树已经创建完成并插入了父容器中。该生命周期通常用于执行需要访问组件所渲染的 DOM 树相关的副作用。\n服务器渲染流程不包括该生命周期。\nbeforeUpdate响应式数据更新时调用，可以用来在 Vue 更新 DOM 之前访问 DOM 状态。\n服务器渲染流程不包括该生命周期。\nupdated调用时，组件 DOM 已经更新，所以可以执行依赖于 DOM 的操作。\n服务器渲染流程不包括该生命周期。\nbeforeUnmount一个组件实例被卸载之前调用。当这个钩子被调用时，组件实例依然还保有全部的功能。\n服务器渲染流程不包括该生命周期。\nunmounted一个组件实例被卸载之后调用。可以在这个钩子中手动清理一些副作用，例如计时器、DOM 事件监听器或者与服务器的连接。\n服务器渲染流程不包括该生命周期。备注：Vue2 的生命周期钩子除了最后两个的名称是 beforeDestroy 和 destroyed，其他都一样\nKeepAlive 组件生命周期KeepAlive 组件简介vue 的内置组件，它的功能是在多个组件间动态切换时缓存被移除的组件实例。\nactivated在首次挂载、以及每次从缓存中被重新插入的时候调用\ndeactivated在从 DOM 上移除、进入缓存以及组件卸载时调用\n适合做异步请求的生命周期created、beforeMount、mounted 都可以做异步请求，因为在这三个钩子函数中，data 已经创建，可以将服务端端返回的数据进行赋值。考虑到服务端渲染不包括周期 beforeMount、mounted，异步请求放在 created 一致性更好；另一方面 created 调用异步数据相比其他周期调用页面加载时间会缩短。\n组件间通信父子组件通信1）props通过 props 传递数据给子组件2）emit父组件可以通过 v-on 或 @ 来选择性地监听子组件上抛的事件，如示例中自定义的事件 increaseBy；该属性的处理函数可以写在父组件的 method 里子组件调用内置的 $emit 方法，通过传入事件名称来抛出一个事件；也可以通过设置 emits 属性实现\n1234567// 父组件&lt;MyButton @increase-by=&quot;(n) =&gt; count += n&quot; /&gt;// 子组件&lt;button @click=&quot;$emit(&#x27;increaseBy&#x27;, 1)&quot;&gt;  Increase by 1&lt;/button&gt;\n\n3）v-model当 v-model 指令用于自定义的组件时，等效于如下写法：\n1234&lt;CustomInput  :modelValue=&quot;searchText&quot;  @update:modelValue=&quot;newValue =&gt; searchText = newValue&quot;/&gt;\n\n如果要实现和原生元素 input 一样的绑定效果，自定义组件 CustomInput 内部需要做如下操作：\n123456789101112131415&lt;!-- CustomInput.vue --&gt;&lt;script&gt;export default &#123;  props: [&#x27;modelValue&#x27;],  emits: [&#x27;update:modelValue&#x27;]&#125;&lt;/script&gt;&lt;template&gt;  &lt;input    :value=&quot;modelValue&quot;    @input=&quot;$emit(&#x27;update:modelValue&#x27;, $event.target.value)&quot;  /&gt;&lt;/template&gt;\n\n子组件中通过将属性 modelValue 和原生元素 input 的 value 绑定，当 input 的值变化时通过 emit 向上传递变化的值\n4）ref使用选项式 API 时，可以通过 this.$refs.name 的方式获取指定元素或者组件\n123456789101112131415161718192021222324252627282930// 父组件&lt;template&gt;&lt;child ref=&quot;childNode&quot;&gt;&lt;/child&gt;&lt;/template&gt;&lt;script&gt;export default&#123;  data()&#123;&#125;,  methods:&#123;    test()&#123;      this.$refs.childNode.childMethod()    &#125;  &#125;&#125;&lt;/script&gt;/////////////////////////////////////////////////// 子组件(child)&lt;script&gt;export default&#123;  data()&#123;&#125;,  methods:&#123;    childMethod()&#123;      console.log(&#x27;test&#x27;)    &#125;  &#125;&#125;&lt;/script&gt;\n\n5) $attrs子组件的$attrs 对象包含了除组件所声明的 props 和 emits 之外的所有其他 attribute，例如 class，style，v-on 监听器等等。子组件可以利用v-bind=&quot;$attrs&quot;将属性传到目标元素上。vue2 中$listeners包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。而在vue3，$listeners 被移除了\n兄弟组件通信$parent$parent 可以让组件访问父组件的实例（访问的是上一级父组件的属性和方法）可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。\neventBusVue3 中移除了事件总线，但是可以借助于第三方工具来完成，Vue 官方推荐 mitt 或 tiny-emitter；但基本的使用方法保持不变，组件 1 使用 emit 函数发送事件名和参数，组件 2 使用 on 函数监听对应的事件名，执行处理函数\n跨多层次组件通信provide、inject祖先组件：使用 provide 属性或方法，指定想要提供给后代组件的数据或方法后代组件：使用 inject 获取祖先组件的值\n123456789101112131415161718192021222324252627282930313233343536373839// 祖先组件&lt;script setup&gt;import &#123; ref, provide &#125; from &#x27;vue&#x27;import &#123; fooSymbol &#125; from &#x27;./injectionSymbols&#x27;// 提供静态值provide(&#x27;foo&#x27;, &#x27;bar&#x27;)// 提供响应式的值const count = ref(0)provide(&#x27;count&#x27;, count)// 提供时将 Symbol 作为 keyprovide(fooSymbol, count)&lt;/script&gt;/////////////////////////////////////////////////// 后代组件&lt;script setup&gt;import &#123; inject &#125; from &#x27;vue&#x27;import &#123; fooSymbol &#125; from &#x27;./injectionSymbols&#x27;// 注入值的默认方式const foo = inject(&#x27;foo&#x27;)// 注入响应式的值const count = inject(&#x27;count&#x27;)// 通过 Symbol 类型的 key 注入const foo2 = inject(fooSymbol)// 注入一个值，若为空则使用提供的默认值const bar = inject(&#x27;foo&#x27;, &#x27;default value&#x27;)// 注入时为了表明提供的默认值是个函数，需要传入第三个参数const fn = inject(&#x27;function&#x27;, () =&gt; &#123;&#125;, false)&lt;/script&gt;\n\nVue 生态vue-routerhash 模式和 history 模式区别hash 模式开发中默认的模式，它的 URL 带着一个#。特点：hash 值会出现在 URL 里面，但是不会出现在 HTTP 请求中，对后端完全没有影响。所以改变 hash 值，不会重新加载页面。原理： hash 模式的主要原理就是 onhashchange()事件\nhistory 模式传统的路由分发模式，即用户在输入一个 URL 时，服务器会接收这个请求，并解析这个 URL，然后做出相应的逻辑处理。URL 不会带#。特点：history 模式下的某些路径如果后台没有配置，访问时会返回 404。解决方法为需要在服务器上添加一个简单的回退路由。\n$route 和$router 的区别$route 是“路由信息对象”，包括 path，params，hash，query，fullPath，matched，name 等路由信息参数$router 是“路由实例”对象包括了路由的跳转方法，钩子函数等。\n路由守卫全局路由钩子beforeEach触发时机：进入路由之前应用：登录态判断跳转beforeResolve触发时机：进入路由之前、可以访问 route 配置中自定义的 meta 变量。在 beforeRouteEnter 之后应用：页面访问权限判断跳转afterEach触发时机：进入路由之后应用：跳转之后滚动条回到顶部\n单个路由钩子beforeEnter在路由配置文件中使用，beforeEnter 属性可传入函数数组触发时机：只在进入路由时触发，不会在 params、query 或 hash 改变时触发。应用：为不同的路由配置重定向逻辑\n路由组件内钩子beforeRouteEnter触发时机 ∶ 进入组件前触发，此时组件未创建，不能用 thisbeforeRouteUpdate触发时机 ∶ 当前地址改变并且改组件被复用时触发，举例来说，带有动态参数的路径 foo&#x2F;∶id，在 &#x2F;foo&#x2F;1 和 &#x2F;foo&#x2F;2 之间跳转的时候，由于会渲染同样的 foo 组件，这个钩子在这种情况下就会被调用。发生在 beforeEnter 前beforeRouteLeave触发时机 ∶ 离开组件被调用应用：离开页面前弹出提示语\n路由钩子执行生命周期的顺序\n导航被触发。\n在失活的组件里调用 beforeRouteLeave 守卫。\n调用全局的 beforeEach 守卫。\n在重用的组件里调用 beforeRouteUpdate 守卫(2.2+)。\n在路由配置里调用 beforeEnter。\n解析异步路由组件。\n在被激活的组件里调用 beforeRouteEnter。\n调用全局的 beforeResolve 守卫(2.5+)。\n导航被确认。\n调用全局的 afterEach 钩子。\n触发 DOM 更新。\n调用 beforeRouteEnter 守卫中传给 next 的回调函数，创建好的组件实例会作为回调函数的参数传入。\n\nvuex为 Vue.js 应用程序开发的状态管理模式。\nvuex 属性\nstate：数据源存放地\ngetters：从基本数据 state 派生出来的数据，store的计算属性\nmutations：同步提交更改数据的方法(目的：方便调试)\nactions：异步调用 mutation 方法\nmodule：模块化 vuexvuex vs localStorage\n\n\n存储位置：vuex存储在内存，localStorage 则以文件的方式存储在本地\n存储内容：localStorage只能存储字符串类型的数据\n持久性：刷新页面时vuex存储的值会丢失，localstorage不会\n\npinia全新的 Vue 状态管理库，vuex 的代替者。\npinia 特点\nVue2 和 Vue3 都能支持\n抛弃传统的 mutation ，只有 state, getter 和 action ，简化状态管理库\n不需要嵌套模块，符合 Vue3 的 Composition api，让代码扁平化\nTypeScript 支持\n\npinia 数据修改简单数据修改：直接操作 store.属性名进行修改多条数据修改：\n\n使用$patch 方法。patch接受对象和函数作为入参。在涉及集合的修改(例如，从数组中推送、移除、拼接一个元素)的操作，使用对象的语法更加耗时，官方文档推荐使用函数。代码示例：\n\n12345678store.$patch(&#123;  var1:store.var1++,  var2:store.var2++&#125;)store.$patch((store)=&gt;&#123;  var1:store.var1++,  var2:store.var2++&#125;)\n\n\n使用store的action方法\n\n参考文献（1）「2021」高频前端面试题汇总之 Vue 篇（下）\n","dateCreated":"2022-09-18T17:02:00+08:00","dateModified":"2022-10-31T23:43:01+08:00","datePublished":"2022-09-18T17:02:00+08:00","description":"前端 vue 框架方面知识整理。","headline":"Vue","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/","keywords":"vue"}</script>
+    <meta name="description" content="前端 vue 框架方面知识整理。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Vue">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="前端 vue 框架方面知识整理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/life-cycle.png">
+<meta property="article:published_time" content="2022-09-18T09:02:00.000Z">
+<meta property="article:modified_time" content="2022-10-31T15:43:01.748Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="vue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/life-cycle.png">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            Vue
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-09-18T17:02:00+08:00">
+	
+		    9月 18, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/">前端基础</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>前端 vue 框架方面知识整理。</p>
+<span id="more"></span>
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-%E7%9B%B8%E5%85%B3%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">Vue 相关基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MVVM-%E5%92%8C-MVC-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">MVVM 和 MVC 的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MVVM"><span class="toc-text">MVVM</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MVC"><span class="toc-text">MVC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A-x2F-%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86"><span class="toc-text">双向绑定&#x2F;响应式原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-%E5%B1%9E%E6%80%A7"><span class="toc-text">Vue 属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#data-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E8%80%8C%E4%B8%8D%E6%98%AF%E5%AF%B9%E8%B1%A1"><span class="toc-text">data 为什么是一个函数而不是对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#computed-%E5%92%8C-watch-%E5%8C%BA%E5%88%AB"><span class="toc-text">computed 和 watch 区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-%E6%A8%A1%E7%89%88%E6%8C%87%E4%BB%A4"><span class="toc-text">Vue 模版指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#v-show-%E5%92%8C-v-if-%E5%8C%BA%E5%88%AB"><span class="toc-text">v-show 和 v-if 区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#v-if-%E5%92%8C-v-for-%E5%85%B1%E7%94%A8%E6%97%B6%E6%8E%A7%E5%88%B6%E5%8F%B0%E6%8A%A5%E9%94%99"><span class="toc-text">v-if 和 v-for 共用时控制台报错</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue3-0-%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-text">Vue3.0 新特性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Proxy-%E6%9B%BF%E4%BB%A3-Object-defineProperty"><span class="toc-text">Proxy 替代 Object.defineProperty</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Proxy-%E7%89%B9%E7%82%B9"><span class="toc-text">Proxy 特点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Object-defineProperty-%E7%89%B9%E7%82%B9"><span class="toc-text">Object.defineProperty 特点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%84%E5%90%88%E5%BC%8F-API"><span class="toc-text">组合式 API</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%89%B9%E7%82%B9"><span class="toc-text">特点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ref-%E5%92%8C-reactive-%E5%8C%BA%E5%88%AB"><span class="toc-text">ref 和 reactive 区别</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%AF%E6%8C%81-TypeScript"><span class="toc-text">支持 TypeScript</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%86%85%E7%BD%AE%E7%BB%84%E4%BB%B6-Suspense%E3%80%81Teleport"><span class="toc-text">新内置组件 Suspense、Teleport</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%88Vue3-0-%E7%89%88%E6%9C%AC%EF%BC%89"><span class="toc-text">Vue 生命周期（Vue3.0 版本）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#beforeCreate"><span class="toc-text">beforeCreate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#created"><span class="toc-text">created</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#beforeMount"><span class="toc-text">beforeMount</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mounted"><span class="toc-text">mounted</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#beforeUpdate"><span class="toc-text">beforeUpdate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#updated"><span class="toc-text">updated</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#beforeUnmount"><span class="toc-text">beforeUnmount</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unmounted"><span class="toc-text">unmounted</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KeepAlive-%E7%BB%84%E4%BB%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">KeepAlive 组件生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#KeepAlive-%E7%BB%84%E4%BB%B6%E7%AE%80%E4%BB%8B"><span class="toc-text">KeepAlive 组件简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#activated"><span class="toc-text">activated</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#deactivated"><span class="toc-text">deactivated</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%82%E5%90%88%E5%81%9A%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">适合做异步请求的生命周期</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%97%B4%E9%80%9A%E4%BF%A1"><span class="toc-text">组件间通信</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%88%B6%E5%AD%90%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1"><span class="toc-text">父子组件通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%84%E5%BC%9F%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1"><span class="toc-text">兄弟组件通信</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#parent"><span class="toc-text">$parent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#eventBus"><span class="toc-text">eventBus</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%A8%E5%A4%9A%E5%B1%82%E6%AC%A1%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1"><span class="toc-text">跨多层次组件通信</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#provide%E3%80%81inject"><span class="toc-text">provide、inject</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-%E7%94%9F%E6%80%81"><span class="toc-text">Vue 生态</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vue-router"><span class="toc-text">vue-router</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#hash-%E6%A8%A1%E5%BC%8F%E5%92%8C-history-%E6%A8%A1%E5%BC%8F%E5%8C%BA%E5%88%AB"><span class="toc-text">hash 模式和 history 模式区别</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#hash-%E6%A8%A1%E5%BC%8F"><span class="toc-text">hash 模式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#history-%E6%A8%A1%E5%BC%8F"><span class="toc-text">history 模式</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#route-%E5%92%8C-router-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">$route 和$router 的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E5%AE%88%E5%8D%AB"><span class="toc-text">路由守卫</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E8%B7%AF%E7%94%B1%E9%92%A9%E5%AD%90"><span class="toc-text">全局路由钩子</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8D%95%E4%B8%AA%E8%B7%AF%E7%94%B1%E9%92%A9%E5%AD%90"><span class="toc-text">单个路由钩子</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6%E5%86%85%E9%92%A9%E5%AD%90"><span class="toc-text">路由组件内钩子</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E9%92%A9%E5%AD%90%E6%89%A7%E8%A1%8C%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E9%A1%BA%E5%BA%8F"><span class="toc-text">路由钩子执行生命周期的顺序</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vuex"><span class="toc-text">vuex</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vuex-%E5%B1%9E%E6%80%A7"><span class="toc-text">vuex 属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vuex-vs-localStorage"><span class="toc-text">vuex vs localStorage</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pinia"><span class="toc-text">pinia</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#pinia-%E7%89%B9%E7%82%B9"><span class="toc-text">pinia 特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#pinia-%E6%95%B0%E6%8D%AE%E4%BF%AE%E6%94%B9"><span class="toc-text">pinia 数据修改</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+
+<h2 id="Vue-相关基本概念"><a href="#Vue-相关基本概念" class="headerlink" title="Vue 相关基本概念"></a>Vue 相关基本概念</h2><h3 id="MVVM-和-MVC-的区别"><a href="#MVVM-和-MVC-的区别" class="headerlink" title="MVVM 和 MVC 的区别"></a>MVVM 和 MVC 的区别</h3><h4 id="MVVM"><a href="#MVVM" class="headerlink" title="MVVM"></a>MVVM</h4><ul>
+<li>Model 代表数据模型，数据和业务逻辑都在 Model 层中定义；</li>
+<li>View 代表 UI 视图，负责数据的展示；</li>
+<li>ViewModel 负责监听 Model 中数据的改变并且控制视图的更新，处理用户交互操作；</li>
+</ul>
+<p>ViewModel 通过双向数据绑定连接 view 和 model，view 和 model 间的同步工作是自动的，无需手动操作 DOM</p>
+<h4 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h4><ul>
+<li>Model 代表数据模型，数据和业务逻辑都在 Model 层中定义，Model 发生的变化会通知到 View 层；</li>
+<li>View 代表 UI 视图，负责数据的展示；</li>
+<li>Controller 主要负责用户与应用的响应操作，用户与页面产生交互的时候，Controller 中的事件触发器会调用合适的 model 处理问题；</li>
+</ul>
+<h3 id="双向绑定-x2F-响应式原理"><a href="#双向绑定-x2F-响应式原理" class="headerlink" title="双向绑定&#x2F;响应式原理"></a>双向绑定&#x2F;响应式原理</h3><p>Object.defineProperty 劫持数据，添加 setter&#x2F;getter 属性监听数据变化情况，发消息给订阅者触发监听回调</p>
+<ol>
+<li>实现一个监听器 observer：遍历对象属性，添加 setter&#x2F;getter，数据改变时可通过 setter 听到变化</li>
+<li>实现一个编译器 compiler：编译模版，将模版的变量替换为数据，指令节点绑定更新函数</li>
+<li>实现一个订阅者 watcher：连接 observer 和 compiler 桥梁，订阅 observer 属性变化消息，接收变化时触发 compiler 更新函数</li>
+<li>实现一个订阅器 dep：订阅发布管理模式，统一管理 watcher 和 observer</li>
+</ol>
+<h3 id="Vue-属性"><a href="#Vue-属性" class="headerlink" title="Vue 属性"></a>Vue 属性</h3><h4 id="data-为什么是一个函数而不是对象"><a href="#data-为什么是一个函数而不是对象" class="headerlink" title="data 为什么是一个函数而不是对象"></a>data 为什么是一个函数而不是对象</h4><p>如果 data 是对象，当组件复用时，由于多个实例引用同一个对象，只要一个实例对这个对象进行操作，其他实例中的数据也会发生变化。</p>
+<h4 id="computed-和-watch-区别"><a href="#computed-和-watch-区别" class="headerlink" title="computed 和 watch 区别"></a>computed 和 watch 区别</h4><p><strong>computed</strong></p>
+<ol>
+<li>支持缓存</li>
+<li>不支持异步</li>
+<li>如果 computed 属性的属性值是函数，那么默认使用 get 方法，函数的返回值就是属性的属性值；在 computed 中，属性有一个 get 方法和一个 set 方法，当数据被赋值时，会调用 set 方法。</li>
+<li>第一次加载时会监听</li>
+<li>computed 属性函数需要 return</li>
+</ol>
+<p><strong>watch</strong></p>
+<ol>
+<li>不支持缓存</li>
+<li>支持异步</li>
+<li>监听数据必须是 data 中声明的或者父组件传递过来的 props 中的数据</li>
+<li>第一次加载时默认不监听，除非 immediate 为 true</li>
+<li>watch 属性函数不需要 return</li>
+</ol>
+<h3 id="Vue-模版指令"><a href="#Vue-模版指令" class="headerlink" title="Vue 模版指令"></a>Vue 模版指令</h3><h4 id="v-show-和-v-if-区别"><a href="#v-show-和-v-if-区别" class="headerlink" title="v-show 和 v-if 区别"></a>v-show 和 v-if 区别</h4><p>v-show 只是在 display: none 和 display: block 之间切换。DOM 一直存在<br>v-if 的话就得说到 Vue 底层的编译了。当属性初始为 false 时，组件就不会被渲染，直到条件为 true，并且切换条件时会触发销毁&#x2F;挂载组件</p>
+<h4 id="v-if-和-v-for-共用时控制台报错"><a href="#v-if-和-v-for-共用时控制台报错" class="headerlink" title="v-if 和 v-for 共用时控制台报错"></a>v-if 和 v-for 共用时控制台报错</h4><p>当它们同时存在于一个节点上时，v-if 比 v-for 的优先级更高。这意味着 v-if 的条件将无法访问到 v-for 作用域内定义的变量别名<br>正确写法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;template v-for=&quot;todo in todos&quot;&gt;</span><br><span class="line">  &lt;li v-if=&quot;!todo.isComplete&quot;&gt;</span><br><span class="line">    &#123;&#123; todo.name &#125;&#125;</span><br><span class="line">  &lt;/li&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Vue3-0-新特性"><a href="#Vue3-0-新特性" class="headerlink" title="Vue3.0 新特性"></a>Vue3.0 新特性</h3><h4 id="Proxy-替代-Object-defineProperty"><a href="#Proxy-替代-Object-defineProperty" class="headerlink" title="Proxy 替代 Object.defineProperty"></a>Proxy 替代 Object.defineProperty</h4><h5 id="Proxy-特点"><a href="#Proxy-特点" class="headerlink" title="Proxy 特点"></a>Proxy 特点</h5><ol>
+<li>可以直接监听整个对象而非属性；</li>
+<li>Proxy 可以直接监听数组的变化；</li>
+<li>Proxy 与 Object.defineProperty 相比有更多拦截方法；</li>
+<li>Proxy 返回的是一个新对象，可以只操作新的对象达到目的，而 Object.defineProperty 只能遍历对象属性直接修改;</li>
+</ol>
+<h5 id="Object-defineProperty-特点"><a href="#Object-defineProperty-特点" class="headerlink" title="Object.defineProperty 特点"></a>Object.defineProperty 特点</h5><ol>
+<li>Object.defineProperty 只能劫持对象的属性,因此我们需要对每个对象的每个属性进行遍历</li>
+<li>Object.defineProperty 也不能对 es6 新产生的 Map,Set 这些数据结构做出监听，不能监听数组和对象</li>
+<li>Object.defineProperty 不能监听新增和删除操作</li>
+</ol>
+<h4 id="组合式-API"><a href="#组合式-API" class="headerlink" title="组合式 API"></a>组合式 API</h4><p>Vue 之前的风格可以说属于选项式 API，用包含多个选项的对象来描述组件的逻辑，例如 data、methods 和 mounted。组合式 API 是写在标签<code>&lt;script setup&gt;</code>的内部的，风格接近 react 钩子函数</p>
+<h5 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h5><p>1）生命周期钩子只有 onBeforeMount、onMounted、onBeforeUpdate、onUpdated、onBeforeUnmount 和 onUnmounted，不存在跟 beforeCreate 和 created 生命周期相关的钩子<br>2）父子组件之间的数据交互依赖于函数 defineProps 和 defineEmits、defineExpose<br>3）不会使用 this（因为不存在组件实例了）<br>4）需要使用 ref 或者 reactive 创建响应式数据</p>
+<h5 id="ref-和-reactive-区别"><a href="#ref-和-reactive-区别" class="headerlink" title="ref 和 reactive 区别"></a>ref 和 reactive 区别</h5><p><strong>ref</strong>：通常用来定义常用的基础类型(String,Number,Boolean 等等)，ref 函数包裹的数据需要用.value 来查询<br><strong>reactive</strong>：通常用来定义对象</p>
+<h4 id="支持-TypeScript"><a href="#支持-TypeScript" class="headerlink" title="支持 TypeScript"></a>支持 TypeScript</h4><p>Vue 3.0 是用 TypeScript 编写的，因此支持 TypeScript。<br>在单文件组件中使用 TypeScript，需要在 <code>&lt;script&gt;</code> 标签上加上 lang&#x3D;”ts” 的 attribute。<br><strong>类型推断对比</strong></p>
+<table style="text-align:center;">
+    <tr> 
+      <th></th>
+        <th>组合式API</th>
+      <th>选项式API</th>
+   </tr>
+   <tr> 
+      <td>props类型推导</td>
+           <td>defineProps</td>
+           <td>defineComponent</td>
+   </tr>
+   <tr> 
+      <td>emits类型推导</td>
+           <td>defineEmits</td>
+           <td>defineComponent</td>
+   </tr>
+   <tr> 
+      <td>计算属性类型推导</td>
+           <td>泛型参数显式指定computed()类型</td>
+           <td>显式地标记出计算属性的类型</td>
+   </tr>
+   <tr> 
+      <td>事件处理函数类型推导</td>
+           <td colspan="2">显式地强制转换 event 上的属性(例：event.target as HTMLInputElement）</td>
+   </tr>
+   <tr> 
+      <td>ref类型推导</td>
+           <td>Ref传入泛型参数;ref初始化时也会推导类型</td>
+           <td rowspan="2">无</td>
+   </tr>
+    <tr> 
+      <td>reactive类型推导</td>
+           <td>interface定义</td>
+   </tr>
+</table>
+
+<h3 id="新内置组件-Suspense、Teleport"><a href="#新内置组件-Suspense、Teleport" class="headerlink" title="新内置组件 Suspense、Teleport"></a>新内置组件 Suspense、Teleport</h3><ul>
+<li><strong>Suspense</strong>：组件有两个插槽：#default 和 #fallback。两个插槽都只允许一个直接子节点。初始渲染时渲染默认的插槽内容。如果遇到异步依赖，则会进入挂起状态。在挂起状态期间，展示的是后备内容。当所有遇到的异步依赖都完成后，将展示出默认插槽的内容。</li>
+<li><strong>Teleport</strong>：接收一个 to 的属性来指定传送的目标。to 的值可以是 CSS 选择器字符串，也可以是一个 DOM 元素对象。被 Teleport 标签包裹的模块将置于 to 指定的 DOM 之下。适用于子组件调用公共组件如全局提示框的场景</li>
+</ul>
+<h2 id="Vue-生命周期（Vue3-0-版本）"><a href="#Vue-生命周期（Vue3-0-版本）" class="headerlink" title="Vue 生命周期（Vue3.0 版本）"></a>Vue 生命周期（Vue3.0 版本）</h2><div class="figure center" style="width:;"><img class="fig-img" src="life-cycle.png" alt=""></div><div style="clear:both;"></div>
+
+<h3 id="beforeCreate"><a href="#beforeCreate" class="headerlink" title="beforeCreate"></a>beforeCreate</h3><p>实例初始化完成、props 解析之后、data() 和 computed 等选项处理之前立即调用。</p>
+<h3 id="created"><a href="#created" class="headerlink" title="created"></a>created</h3><p>data、computed、method、watch 已经设置完成。跟 DOM 操作相关的属性方法仍不可使用。</p>
+<h3 id="beforeMount"><a href="#beforeMount" class="headerlink" title="beforeMount"></a>beforeMount</h3><p>即将首次执行 DOM 渲染过程。</p>
+<p>服务器渲染流程不包括该生命周期。</p>
+<h3 id="mounted"><a href="#mounted" class="headerlink" title="mounted"></a>mounted</h3><p>组件挂载完之后调用。挂载完成的定义为：所有同步子组件都已经被挂载且其自身的 DOM 树已经创建完成并插入了父容器中。<br>该生命周期通常用于执行需要访问组件所渲染的 DOM 树相关的副作用。</p>
+<p>服务器渲染流程不包括该生命周期。</p>
+<h3 id="beforeUpdate"><a href="#beforeUpdate" class="headerlink" title="beforeUpdate"></a>beforeUpdate</h3><p>响应式数据更新时调用，可以用来在 Vue 更新 DOM 之前访问 DOM 状态。</p>
+<p>服务器渲染流程不包括该生命周期。</p>
+<h3 id="updated"><a href="#updated" class="headerlink" title="updated"></a>updated</h3><p>调用时，组件 DOM 已经更新，所以可以执行依赖于 DOM 的操作。</p>
+<p>服务器渲染流程不包括该生命周期。</p>
+<h3 id="beforeUnmount"><a href="#beforeUnmount" class="headerlink" title="beforeUnmount"></a>beforeUnmount</h3><p>一个组件实例被卸载之前调用。当这个钩子被调用时，组件实例依然还保有全部的功能。</p>
+<p>服务器渲染流程不包括该生命周期。</p>
+<h3 id="unmounted"><a href="#unmounted" class="headerlink" title="unmounted"></a>unmounted</h3><p>一个组件实例被卸载之后调用。可以在这个钩子中手动清理一些副作用，例如计时器、DOM 事件监听器或者与服务器的连接。</p>
+<p>服务器渲染流程不包括该生命周期。<br><strong>备注</strong>：<br>Vue2 的生命周期钩子除了最后两个的名称是 beforeDestroy 和 destroyed，其他都一样</p>
+<h3 id="KeepAlive-组件生命周期"><a href="#KeepAlive-组件生命周期" class="headerlink" title="KeepAlive 组件生命周期"></a>KeepAlive 组件生命周期</h3><h4 id="KeepAlive-组件简介"><a href="#KeepAlive-组件简介" class="headerlink" title="KeepAlive 组件简介"></a>KeepAlive 组件简介</h4><p>vue 的内置组件，它的功能是在多个组件间动态切换时缓存被移除的组件实例。</p>
+<h4 id="activated"><a href="#activated" class="headerlink" title="activated"></a>activated</h4><p>在首次挂载、以及每次从缓存中被重新插入的时候调用</p>
+<h4 id="deactivated"><a href="#deactivated" class="headerlink" title="deactivated"></a>deactivated</h4><p>在从 DOM 上移除、进入缓存以及组件卸载时调用</p>
+<h3 id="适合做异步请求的生命周期"><a href="#适合做异步请求的生命周期" class="headerlink" title="适合做异步请求的生命周期"></a>适合做异步请求的生命周期</h3><p>created、beforeMount、mounted 都可以做异步请求，因为在这三个钩子函数中，data 已经创建，可以将服务端端返回的数据进行赋值。<br>考虑到服务端渲染不包括周期 beforeMount、mounted，异步请求放在 created 一致性更好；另一方面 created 调用异步数据相比其他周期调用页面加载时间会缩短。</p>
+<h2 id="组件间通信"><a href="#组件间通信" class="headerlink" title="组件间通信"></a>组件间通信</h2><h3 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h3><p><strong>1）props</strong><br>通过 props 传递数据给子组件<br><strong>2）emit</strong><br>父组件可以通过 v-on 或 @ 来选择性地监听子组件上抛的事件，如示例中自定义的事件 increaseBy；该属性的处理函数可以写在父组件的 method 里<br>子组件调用内置的 $emit 方法，通过传入事件名称来抛出一个事件；也可以通过设置 emits 属性实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 父组件</span><br><span class="line">&lt;MyButton @increase-by=&quot;(n) =&gt; count += n&quot; /&gt;</span><br><span class="line"></span><br><span class="line">// 子组件</span><br><span class="line">&lt;button @click=&quot;$emit(&#x27;increaseBy&#x27;, 1)&quot;&gt;</span><br><span class="line">  Increase by 1</span><br><span class="line">&lt;/button&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3）v-model</strong><br>当 v-model 指令用于自定义的组件时，等效于如下写法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;CustomInput</span><br><span class="line">  :modelValue=&quot;searchText&quot;</span><br><span class="line">  @update:modelValue=&quot;newValue =&gt; searchText = newValue&quot;</span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果要实现和原生元素 input 一样的绑定效果，自定义组件 CustomInput 内部需要做如下操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- CustomInput.vue --&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">  props: [&#x27;modelValue&#x27;],</span><br><span class="line">  emits: [&#x27;update:modelValue&#x27;]</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;input</span><br><span class="line">    :value=&quot;modelValue&quot;</span><br><span class="line">    @input=&quot;$emit(&#x27;update:modelValue&#x27;, $event.target.value)&quot;</span><br><span class="line">  /&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>子组件中通过将属性 modelValue 和原生元素 input 的 value 绑定，当 input 的值变化时通过 emit 向上传递变化的值</p>
+<p><strong>4）ref</strong><br>使用选项式 API 时，可以通过 this.$refs.name 的方式获取指定元素或者组件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// 父组件</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">&lt;child ref=&quot;childNode&quot;&gt;&lt;/child&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default&#123;</span><br><span class="line">  data()&#123;&#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    test()&#123;</span><br><span class="line">      this.$refs.childNode.childMethod()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">/////////////////////////////////////////////////</span><br><span class="line"></span><br><span class="line">// 子组件(child)</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default&#123;</span><br><span class="line">  data()&#123;&#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    childMethod()&#123;</span><br><span class="line">      console.log(&#x27;test&#x27;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>5) $attrs</strong><br>子组件的$attrs 对象包含了除组件所声明的 props 和 emits 之外的所有其他 attribute，例如 class，style，v-on 监听器等等。子组件可以利用<code>v-bind=&quot;$attrs&quot;</code>将属性传到目标元素上。<br>vue2 中$listeners包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。而在vue3，$listeners 被移除了</p>
+<h3 id="兄弟组件通信"><a href="#兄弟组件通信" class="headerlink" title="兄弟组件通信"></a>兄弟组件通信</h3><h4 id="parent"><a href="#parent" class="headerlink" title="$parent"></a>$parent</h4><p>$parent 可以让组件访问父组件的实例（访问的是上一级父组件的属性和方法）<br>可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。</p>
+<h4 id="eventBus"><a href="#eventBus" class="headerlink" title="eventBus"></a>eventBus</h4><p>Vue3 中移除了事件总线，但是可以借助于第三方工具来完成，Vue 官方推荐 mitt 或 tiny-emitter；<br>但基本的使用方法保持不变，组件 1 使用 emit 函数发送事件名和参数，组件 2 使用 on 函数监听对应的事件名，执行处理函数</p>
+<h3 id="跨多层次组件通信"><a href="#跨多层次组件通信" class="headerlink" title="跨多层次组件通信"></a>跨多层次组件通信</h3><h4 id="provide、inject"><a href="#provide、inject" class="headerlink" title="provide、inject"></a>provide、inject</h4><p>祖先组件：使用 provide 属性或方法，指定想要提供给后代组件的数据或方法<br>后代组件：使用 inject 获取祖先组件的值</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">// 祖先组件</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; ref, provide &#125; from &#x27;vue&#x27;</span><br><span class="line">import &#123; fooSymbol &#125; from &#x27;./injectionSymbols&#x27;</span><br><span class="line"></span><br><span class="line">// 提供静态值</span><br><span class="line">provide(&#x27;foo&#x27;, &#x27;bar&#x27;)</span><br><span class="line"></span><br><span class="line">// 提供响应式的值</span><br><span class="line">const count = ref(0)</span><br><span class="line">provide(&#x27;count&#x27;, count)</span><br><span class="line"></span><br><span class="line">// 提供时将 Symbol 作为 key</span><br><span class="line">provide(fooSymbol, count)</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">/////////////////////////////////////////////////</span><br><span class="line">// 后代组件</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; inject &#125; from &#x27;vue&#x27;</span><br><span class="line">import &#123; fooSymbol &#125; from &#x27;./injectionSymbols&#x27;</span><br><span class="line"></span><br><span class="line">// 注入值的默认方式</span><br><span class="line">const foo = inject(&#x27;foo&#x27;)</span><br><span class="line"></span><br><span class="line">// 注入响应式的值</span><br><span class="line">const count = inject(&#x27;count&#x27;)</span><br><span class="line"></span><br><span class="line">// 通过 Symbol 类型的 key 注入</span><br><span class="line">const foo2 = inject(fooSymbol)</span><br><span class="line"></span><br><span class="line">// 注入一个值，若为空则使用提供的默认值</span><br><span class="line">const bar = inject(&#x27;foo&#x27;, &#x27;default value&#x27;)</span><br><span class="line"></span><br><span class="line">// 注入时为了表明提供的默认值是个函数，需要传入第三个参数</span><br><span class="line">const fn = inject(&#x27;function&#x27;, () =&gt; &#123;&#125;, false)</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="Vue-生态"><a href="#Vue-生态" class="headerlink" title="Vue 生态"></a>Vue 生态</h2><h3 id="vue-router"><a href="#vue-router" class="headerlink" title="vue-router"></a>vue-router</h3><h4 id="hash-模式和-history-模式区别"><a href="#hash-模式和-history-模式区别" class="headerlink" title="hash 模式和 history 模式区别"></a>hash 模式和 history 模式区别</h4><h5 id="hash-模式"><a href="#hash-模式" class="headerlink" title="hash 模式"></a>hash 模式</h5><p>开发中默认的模式，它的 URL 带着一个#。<br>特点：hash 值会出现在 URL 里面，但是不会出现在 HTTP 请求中，对后端完全没有影响。所以改变 hash 值，不会重新加载页面。<br>原理： hash 模式的主要原理就是 onhashchange()事件</p>
+<h5 id="history-模式"><a href="#history-模式" class="headerlink" title="history 模式"></a>history 模式</h5><p>传统的路由分发模式，即用户在输入一个 URL 时，服务器会接收这个请求，并解析这个 URL，然后做出相应的逻辑处理。URL 不会带#。<br>特点：history 模式下的某些路径如果后台没有配置，访问时会返回 404。解决方法为需要在服务器上添加一个简单的回退路由。</p>
+<h4 id="route-和-router-的区别"><a href="#route-和-router-的区别" class="headerlink" title="$route 和$router 的区别"></a>$route 和$router 的区别</h4><p>$route 是“路由信息对象”，包括 path，params，hash，query，fullPath，matched，name 等路由信息参数<br>$router 是“路由实例”对象包括了路由的跳转方法，钩子函数等。</p>
+<h4 id="路由守卫"><a href="#路由守卫" class="headerlink" title="路由守卫"></a>路由守卫</h4><h5 id="全局路由钩子"><a href="#全局路由钩子" class="headerlink" title="全局路由钩子"></a>全局路由钩子</h5><p><strong>beforeEach</strong><br>触发时机：进入路由之前<br>应用：登录态判断跳转<br><strong>beforeResolve</strong><br>触发时机：进入路由之前、可以访问 route 配置中自定义的 meta 变量。在 beforeRouteEnter 之后<br>应用：页面访问权限判断跳转<br><strong>afterEach</strong><br>触发时机：进入路由之后<br>应用：跳转之后滚动条回到顶部</p>
+<h5 id="单个路由钩子"><a href="#单个路由钩子" class="headerlink" title="单个路由钩子"></a>单个路由钩子</h5><p><strong>beforeEnter</strong><br>在路由配置文件中使用，beforeEnter 属性可传入函数数组<br>触发时机：只在进入路由时触发，不会在 params、query 或 hash 改变时触发。<br>应用：为不同的路由配置重定向逻辑</p>
+<h5 id="路由组件内钩子"><a href="#路由组件内钩子" class="headerlink" title="路由组件内钩子"></a>路由组件内钩子</h5><p><strong>beforeRouteEnter</strong><br>触发时机 ∶ 进入组件前触发，此时组件未创建，不能用 this<br><strong>beforeRouteUpdate</strong><br>触发时机 ∶ 当前地址改变并且改组件被复用时触发，举例来说，带有动态参数的路径 foo&#x2F;∶id，在 &#x2F;foo&#x2F;1 和 &#x2F;foo&#x2F;2 之间跳转的时候，由于会渲染同样的 foo 组件，这个钩子在这种情况下就会被调用。发生在 beforeEnter 前<br><strong>beforeRouteLeave</strong><br>触发时机 ∶ 离开组件被调用<br>应用：离开页面前弹出提示语</p>
+<h5 id="路由钩子执行生命周期的顺序"><a href="#路由钩子执行生命周期的顺序" class="headerlink" title="路由钩子执行生命周期的顺序"></a>路由钩子执行生命周期的顺序</h5><ol>
+<li>导航被触发。</li>
+<li>在失活的组件里调用 beforeRouteLeave 守卫。</li>
+<li>调用全局的 beforeEach 守卫。</li>
+<li>在重用的组件里调用 beforeRouteUpdate 守卫(2.2+)。</li>
+<li>在路由配置里调用 beforeEnter。</li>
+<li>解析异步路由组件。</li>
+<li>在被激活的组件里调用 beforeRouteEnter。</li>
+<li>调用全局的 beforeResolve 守卫(2.5+)。</li>
+<li>导航被确认。</li>
+<li>调用全局的 afterEach 钩子。</li>
+<li>触发 DOM 更新。</li>
+<li>调用 beforeRouteEnter 守卫中传给 next 的回调函数，创建好的组件实例会作为回调函数的参数传入。</li>
+</ol>
+<h3 id="vuex"><a href="#vuex" class="headerlink" title="vuex"></a>vuex</h3><p>为 Vue.js 应用程序开发的状态管理模式。</p>
+<h4 id="vuex-属性"><a href="#vuex-属性" class="headerlink" title="vuex 属性"></a>vuex 属性</h4><ul>
+<li>state：数据源存放地</li>
+<li>getters：从基本数据 state 派生出来的数据，store的计算属性</li>
+<li>mutations：同步提交更改数据的方法(目的：方便调试)</li>
+<li>actions：异步调用 mutation 方法</li>
+<li>module：模块化 vuex<h4 id="vuex-vs-localStorage"><a href="#vuex-vs-localStorage" class="headerlink" title="vuex vs localStorage"></a>vuex vs localStorage</h4></li>
+</ul>
+<ol>
+<li>存储位置：vuex存储在内存，localStorage 则以文件的方式存储在本地</li>
+<li>存储内容：localStorage只能存储字符串类型的数据</li>
+<li>持久性：刷新页面时vuex存储的值会丢失，localstorage不会</li>
+</ol>
+<h3 id="pinia"><a href="#pinia" class="headerlink" title="pinia"></a>pinia</h3><p>全新的 Vue 状态管理库，vuex 的代替者。</p>
+<h4 id="pinia-特点"><a href="#pinia-特点" class="headerlink" title="pinia 特点"></a>pinia 特点</h4><ol>
+<li>Vue2 和 Vue3 都能支持</li>
+<li>抛弃传统的 mutation ，只有 state, getter 和 action ，简化状态管理库</li>
+<li>不需要嵌套模块，符合 Vue3 的 Composition api，让代码扁平化</li>
+<li>TypeScript 支持</li>
+</ol>
+<h4 id="pinia-数据修改"><a href="#pinia-数据修改" class="headerlink" title="pinia 数据修改"></a>pinia 数据修改</h4><p><strong>简单数据修改</strong>：直接操作 <code>store.属性名</code>进行修改<br><strong>多条数据修改</strong>：</p>
+<ol>
+<li>使用$patch 方法。patch接受对象和函数作为入参。在涉及集合的修改(例如，从数组中推送、移除、拼接一个元素)的操作，使用对象的语法更加耗时，官方文档推荐使用函数。代码示例：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">store.$patch(&#123;</span><br><span class="line">  var1:store.var1++,</span><br><span class="line">  var2:store.var2++</span><br><span class="line">&#125;)</span><br><span class="line">store.$patch((store)=&gt;&#123;</span><br><span class="line">  var1:store.var1++,</span><br><span class="line">  var2:store.var2++</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用store的action方法</li>
+</ol>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6964779204462247950/">「2021」高频前端面试题汇总之 Vue 篇（下）</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/vue/" rel="tag">vue</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/09/20/webpackConfig/"
+                    data-tooltip="webpack配置踩坑经历"
+                    aria-label="上一篇: webpack配置踩坑经历"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/09/02/decorator/"
+                    data-tooltip="ES7装饰器语法"
+                    aria-label="下一篇: ES7装饰器语法"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/09/20/webpackConfig/"
+                    data-tooltip="webpack配置踩坑经历"
+                    aria-label="上一篇: webpack配置踩坑经历"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/09/02/decorator/"
+                    data-tooltip="ES7装饰器语法"
+                    aria-label="下一篇: ES7装饰器语法"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/09/18/Vue/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
