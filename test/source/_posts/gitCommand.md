@@ -324,38 +324,59 @@ commit-id 为某次提交的 hash 值。该指令会创建一个新的提交来�
 当新需求中某一项功能因为种种原因不能上线时可以使用该指令。这样既可以留下记录又不会导致其他人分支不同步。
 
 ### 仓库、分支迁移
+
 因业务需求、工作交接等原因，有时需要对仓库或者分支内容迁移到别处。
+
 ### 仓库迁移
+
 - 1）将原仓库代码拉到本地
+
 ```
 git clone <origin_address>
 ```
-- 2）将原仓库gitlab地址替换成为目标仓库的gitlab地址
+
+- 2）将原仓库 gitlab 地址替换成为目标仓库的 gitlab 地址
+
 ```
 git remote set-url origin <target_address>
 ```
+
 - 3）本地仓库推送到远程
+
 ```
 git push origin --all 推送主干和分支
 
 git push --tags 推送标签
 ```
+
 #### 仓库迁移可能存在的问题
-问题：上述操作完成之后由于目标仓库的部分分支被保护、原仓库同分支名的推送失败，导致原仓库的其他分支与该被保护分支之间历史不同，git merge发生`fatal: refusing to merge unrelated histories`的报错。
-解决方法：git merge时增加--allow-unrelated-histories让git允许提交不关联的历史代码。
+
+问题：上述操作完成之后由于目标仓库的部分分支被保护、原仓库同分支名的推送失败，导致原仓库的其他分支与该被保护分支之间历史不同，git merge 发生`fatal: refusing to merge unrelated histories`的报错。
+解决方法：git merge 时增加--allow-unrelated-histories 让 git 允许提交不关联的历史代码。
+
 ### 分支迁移
+
 - 1）将原仓库代码拉到本地
+
 ```
 git clone <origin_address>
 ```
-- 2）将目标仓库的gitlab地址添加进来并为仓库取一个新名字（下面的指令是将仓库命名为了global）
+
+- 2）将目标仓库的 gitlab 地址添加进来并为仓库取一个新名字（下面的指令是将仓库命名为了 global）
+
 ```
 git remote add global <target_address>
 ```
+
 - 3）将当前分支内容推送到目标仓库的分支
+
 ```
 git push global <branch-name>
 ```
+
+如果是本地初始化的工程可以先拉取远程仓库某一分支，使用 git merge 指令将本地工程的代码合到远程仓库。
+根据网上资料可以使用`git pull --rebase global <branch-name>`解决将本地代码推到远程仓库时报错`error: failed to push some refs to XXX`。实际操作的时候出现了很多错误，不得不取消了 rebase 操作。究其原因应该是该方法只适用于远程库与本地库代码没有同步的情况，而不是本地代码和远程代码完全无关的情况。
+
 ## 参考资料
 
 （1）[commit 规范+commitlint+CHANGELOG 自动生成一条龙服务](https://juejin.cn/post/6934292467160514567#heading-0)
