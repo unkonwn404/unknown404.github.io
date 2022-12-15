@@ -4,7 +4,7 @@ date: 2022-08-18 20:31:52
 categories:
   - 工作技巧
 tags:
-  - javaScript
+  - JavaScript
 ---
 
 记录一些常用的工具函数（不定期更新）。

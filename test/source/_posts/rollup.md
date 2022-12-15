@@ -3,7 +3,6 @@ title: rollup打包工具使用
 date: 2022-08-08 20:14:13
 categories:
   - 前端技术体系
-  - 前端打包工具
 tags:
   - rollup
   - 前端打包工具

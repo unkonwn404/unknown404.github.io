@@ -4,7 +4,7 @@ date: 2022-06-09 20:47:30
 categories:
   - 前端基础
 tags:
-  - react
+  - React
 ---
 
 前端 react 框架方面知识整理。

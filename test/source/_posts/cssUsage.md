@@ -4,7 +4,7 @@ date: 2022-12-02 09:46:33
 categories:
   - 踩坑经历
 tags:
-  - css
+  - CSS
 ---
 
 记一次 css 踩坑经历
