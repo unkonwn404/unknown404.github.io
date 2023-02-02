@@ -322,6 +322,8 @@ git revert <commit-id>
 commit-id 为某次提交的 hash 值。该指令会创建一个新的提交来去除指定的某次 commit 的内容。
 
 当新需求中某一项功能因为种种原因不能上线时可以使用该指令。这样既可以留下记录又不会导致其他人分支不同步。
+revert的时候会进入编辑器模式，如果没有指定编辑器，通常会默认使用系统的编辑器，即`vi`。界面提示"Please enter a commit message for your changes"。在该行之前输入`i`进入插入阶段，输入想要的内容后单击esc退出插入模式，输入`:wq`回车即可保存退出。
+
 
 ### 仓库、分支迁移
 
@@ -384,3 +386,4 @@ git push global <branch-name>
 （3）[多年 Git 使用心得 & 常见问题整理](https://juejin.cn/post/6844904191203213326)
 （4）[我在工作中是如何使用 git 的](https://juejin.cn/post/6974184935804534815)
 （5）[DAY11-git cherry-pick 和 revert](https://ithelp.ithome.com.tw/articles/10244481)
+（6）["Please enter a commit message for your changes"](https://stackoverflow.com/questions/73012357/please-enter-a-commit-message-for-your-changes)
