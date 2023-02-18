@@ -13,7 +13,7 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://unknown-four-hundred-and-four.gitee.io/unknown_404
+url: https://unknown404.github.io/unkown404.github.io
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -103,8 +103,8 @@ theme: tranquilpeak
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repository: https://gitee.com/unknown-four-hundred-and-four/unknown_404.git
-  branch: master
+  repository: https://github.com/unkonwn404/unkown404.github.io.git
+  branch: main
 feed:
     type: atom
     path: atom.xml
