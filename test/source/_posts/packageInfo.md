@@ -13,7 +13,7 @@ tags:
 前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。
 
 <!-- more -->
-<!-- toc -->
+
 
 ## npm
 
@@ -222,7 +222,7 @@ Yarn 仅以 flatten 格式 描述各个包之间的依赖关系，并依赖于�
 ### 依赖关系
 
 为了解决 npm、yarn 安装时依赖可能复制多次、占用磁盘空间的问题，pnpm 采用了全局仓库保存依赖、项目通过 link 的方式访问内容。
-{% image center clear pnpm.png  %}
+![](/img/pnpm.png)
 
 当执行 pnpm install 时，项目的 node_modules 文件夹下除了安装的包名 bar、其依赖保持原有的树状、不进行提升，还会有.pnpm 目录，目录下是以展平结构管理每个版本包的源码内容，以硬链接方式指向 pnpm-store 中的文件地址。pnpm-store 是全局的 store，存储所有 npm 包，同一版本的包仅存储一份内容，甚至不同版本的包也仅存储 diff 内容。
 如上图所示一个包的寻找需要经过三层结构：`node_modules/bar` > 软链接 `node_modules/.pnpm/bar@1.0.0/node_modules/bar` > 硬链接 `~/.pnpm-store/v3/files/00/xxxxxx`。

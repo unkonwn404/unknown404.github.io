@@ -10,7 +10,7 @@ tags:
 前端 vue 框架方面知识整理。
 
 <!-- more -->
-<!-- toc -->
+
 
 ## Vue 相关基本概念
 
@@ -165,7 +165,7 @@ Vue 3.0 是用 TypeScript 编写的，因此支持 TypeScript。
 
 ## Vue 生命周期（Vue3.0 版本）
 
-{% image center clear life-cycle.png  %}
+![](/img/life-cycle.png)
 
 ### beforeCreate
 

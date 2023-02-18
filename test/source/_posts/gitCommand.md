@@ -16,12 +16,12 @@ tags:
 2）[Version Controlling with Git in Visual Studio Code and Azure DevOps](https://almvm.devopshub.cn/labs/azuredevops/git/)
 虽说界面化是挺好的，但万一哪天需要书写或修改部署文件时会比较头疼，所以还是要记录一点
 
-<!-- toc -->
+
 
 ## 背景
 
 git 是一个分布式版本控制软件。其工作流程如下图所示：
-{% image center clear git.jpeg  %}
+![](/img/git.jpeg)
 
 涉及的基本工作区概念有：
 **Workspace**：工作区，平时开发时改动的地方

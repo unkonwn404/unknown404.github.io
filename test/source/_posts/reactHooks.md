@@ -10,7 +10,7 @@ date: 2022-04-08 14:47:53
 记录常用的 React 钩子的使用方法。
 
 <!-- more -->
-<!-- toc -->
+
 
 ## React Hook 规则
 
@@ -139,9 +139,9 @@ export default App;
 ### useEffect 与 async 同时使用时的报错
 
 async 函数会返回 promise，但 useEffect 只允许返回一个清除函数，所以在控制台可以看到警告提醒
-{% alert info  %}
+{% note info %}
 Warning: useEffect function must return a cleanup function or nothing. Promises and useEffect(async () => …) are not supported, but you can call an async function inside an effect
-{% endalert %}
+{% endnote %}
 解决方式：async 函数的定义分离出 useEffect 回调函数，回调函数内部执行 async 函数。
 
 ### useEffect vs useLayoutEffect

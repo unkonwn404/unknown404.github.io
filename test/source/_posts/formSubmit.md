@@ -10,7 +10,7 @@ tags:
 表单提交的操作可以被多个元素触发，包括 input、button、回车键等，需要辨析其中的区别。
 
 <!-- more -->
-<!-- toc -->
+
 
 ## input[type="submit"]
 

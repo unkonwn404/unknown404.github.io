@@ -52,7 +52,7 @@ source ~/.bash_profile
 ```
 
 根目录已省略。尝试将这两个变量添加到 path 后，执行指令发`source .zshrc`现并没有解决问题。为了明确为什么找不到依赖包执行了指令`cd ~/.nvm/versions/node/v15.14.0/lib/node_modules`到全局依赖目录下，尝试查看内容列表，然而执行指令`ls`后什么也没发生，即该目录下的内容已空！！为什么会空了呢？完全不知道原因，和其他版本的依赖目录比较发现连 npm 都没有了？？
-{% image center clear log.png  %}
+![](/img/log.png)
 
 问题排查到这里已经进行不下去了，只能进行依赖重装。
 

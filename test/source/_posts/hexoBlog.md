@@ -6,10 +6,10 @@ categories:
   - 技术学习
 tags:
   - Hexo
-thumbnailImage: cover.jpg
+index_img: /img/cover.jpg
 ---
 
-<!-- toc -->
+
 
 ## 准备工具
 
@@ -19,13 +19,13 @@ thumbnailImage: cover.jpg
 ## 本地建站流程
 
 1.在[Gitee](https://gitee.com/)注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名可随意设置。但注意初始化时不要加文件。
-{% image center clear gitee-init.png  %}
+![](/img/gitee-init.png)
 
-{% alert info  %}
+{% note info %}
 根据网上大多数博客的说法仓库名应该设置为用户名，否则 hexo 打包的 css 路径会找不到。但是实际操作中并没有遇到这样的问题推测有两个可能性。
 1）这个问题只出现在 GitHub Page 开设的流程。
 2）配置更新了，现在新版 hexo 的打包确保了相对路径的可查找性。
-{% endalert %} 
+{% endnote %} 
 2.将空仓库拉到本地，安装 hexo，安装指令如下：
 
 ```
@@ -147,7 +147,7 @@ tags:
 ```
 如果是草稿则没有自动生成的date变量，执行语句`hexo publish draft  <title>`、移动到source/_posts 文件夹时应该会出现。
 根据自己的需要，可以在文件头部增加内容。以tranquilpeak为例，该样式支持categories、thumbnailImage、excerpt等配置。配置categories可以在分类页面看到自己这篇文章的归类情况；配置thumbnailImage时会在文章列表增加缩略图，但本地是看不到效果的，只有打包上传到gitee后才可以；配置excerpt时首页文章列表不会展示全文而只会展示摘要。
-tranquilpeak模版还支持两个标签语法：`<!-- more -->`和`<!-- toc -->`。前者是将标志之前的内容将会自动生成首页的概览，后者则是自动生成文章目录。
+tranquilpeak模版还支持两个标签语法：`<!-- more -->`和``。前者是将标志之前的内容将会自动生成首页的概览，后者则是自动生成文章目录。
 具体的内容书写可以参考markdown语法。
 
 ## 推送到gitee
@@ -171,15 +171,15 @@ deploy:
 这里URL需要改成静态资源最后部署的域名，按照配置文件的说明，应该是`https://{username}.github.io/{project}`的格式，username是GitHub用户名，在GitHub上仓库名和用户名是相同，但在gitee上可以不一样，所以要注意实际上需要填入的是仓库名。project对应当前博客的工程名。
 deploy选项里repository对应博客仓库的git地址，branch可根据需要修改，部署到page时注意一致性即可。
 3）文件生成成功后执行`hexo deploy`指令，将文件推到远程仓库的master分支上。
-{% image center clear gitee-master.png  %}
+![](/img/gitee-master.png)
 
 ## gitee page服务启动
 1）在gitee仓库首页选择“服务-Gitee Page”
-{% image center clear gitee-page.png  %}
+![](/img/gitee-page.png)
 
 2）如果没有实名认证的话开启Page服务需要验证，还需要绑定手机号。
 3）进入到Gitee Pages 服务页面，选择部署分支，注意和工程文件夹下的\_config.yml的deploy配置一致，如果选择了强制使用https，则工程文件夹下\_config.yml的url配置也必须是https。
-{% image center clear gitee-start.png  %}
+![](/img/gitee-start.png)
 
 ## 其他客户端拉取代码的注意事项
 本博客使用的主题tranquilpeak其资源assets是被列入忽略文件夹的内容，因此拉下来的代码不会包括这部分资源，如果直接启动无法正常看到页面样式。需要使用者在拉取代码以后进入主题的文件夹下按要求操作`npm install && npm run prod`才可在本地看到正常的样式。如果之前将头像等资源放在assets文件夹下的话也需要在新生成的assets文件夹下重新加入。

@@ -8,7 +8,7 @@ categories:
 date: 2022-06-18 20:58:57
 ---
 
-<!-- toc -->
+
 
 ## js 简介
 
@@ -94,7 +94,7 @@ Array、Function 类型作为 Object 实例重写了 toString 方法
 
 ### ==强制转换规则
 
-{% image center clear type-change.jpeg  %}
+![](/img/type-change.jpeg)
 如图所示，主要有以下几个步骤：
 
 1. 类型是否相同
@@ -154,7 +154,7 @@ function deepCloneObj(obj){
 
 **原型**：*proto*指向的对象
 **原型链**：当对象某一属性在当前对象找不到时会沿*proto*属性向上一个对象查找，如果没有就沿着*proto*属性继续向上查找，这个查找依据的规则就是原型链
-{% image center clear proto-pic.jpg  %}
+![](/img/proto-pic.jpg)
 
 ## 继承
 
@@ -448,7 +448,7 @@ nodejs 的事件循环主要分为 6 个阶段：
 - check：执行 setImmediate() 的回调
 - close callbacks：执行 socket 的 close 事件回调
 
-{% image center clear eventLoop.png  %}
+![](/img/eventLoop.png)
 
 ## 参考文献
 

@@ -7,15 +7,15 @@ categories:
 tags:
   - Elasticsearch
 ---
-<!-- toc -->
+
 
 es 中的查询请求有两种方式，一种是简易版的查询，另外一种是使用 JSON 完整的请求体，叫做结构化查询（DSL）。DSL 的查询方式是 POST 过去一个 json，由于 post 的请求是 json 格式的，所以存在很多灵活性，也有很多形式。笔者出于使用 nodejs 技术调用 es 查询的需求，因此主要搜集的资料是关于 DSL 的。
 
 本文并不是查询方法的全列举，而是针对自己实际使用的几种方法进行比较辨析。如果日后尝试使用其他方法，也会在这里添加补充说明。
 
-{% alert info  %}
+{% note info %}
 使用 DSL 查询语法时，由于使用 json 字符串时存在特殊符号例如`*,/,\`等影响解析，因此需要使用两个反斜杠`\\`进行转义
-{% endalert %}
+{% endnote %}
 
 ```TypeScript
 const calcQueryString=(keyword:string)=>{
