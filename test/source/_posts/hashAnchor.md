@@ -1,6 +1,7 @@
 ---
 title: hash路由使用锚点解决方案
 date: 2022-12-16 10:57:34
+excerpt: 路由在 hash 模式下已经将#占用, 页面的锚点功能失效
 categories:
   - 踩坑经历
 tags:

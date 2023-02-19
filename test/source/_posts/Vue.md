@@ -11,7 +11,6 @@ tags:
 
 <!-- more -->
 
-
 ## Vue 相关基本概念
 
 ### MVVM 和 MVC 的区别
@@ -38,6 +37,14 @@ Object.defineProperty 劫持数据，添加 setter/getter 属性监听数据变�
 2. 实现一个编译器 compiler：编译模版，将模版的变量替换为数据，指令节点绑定更新函数
 3. 实现一个订阅者 watcher：连接 observer 和 compiler 桥梁，订阅 observer 属性变化消息，接收变化时触发 compiler 更新函数
 4. 实现一个订阅器 dep：订阅发布管理模式，统一管理 watcher 和 observer
+
+### Vue diff 算法
+
+#### vue 2.x - 双端 diff
+
+双端 diff 算法是头尾指针向中间移动，分别判断头尾节点是否可以复用，如果没有找到可复用的节点再去遍历查找对应节点的下标，然后移动。全部处理完之后也要对剩下的节点进行批量的新增和删除。
+
+#### vue 3 - 最长递增子序列
 
 ### Vue 属性
 
@@ -233,6 +240,13 @@ vue 的内置组件，它的功能是在多个组件间动态切换时缓存被�
 created、beforeMount、mounted 都可以做异步请求，因为在这三个钩子函数中，data 已经创建，可以将服务端端返回的数据进行赋值。
 考虑到服务端渲染不包括周期 beforeMount、mounted，异步请求放在 created 一致性更好；另一方面 created 调用异步数据相比其他周期调用页面加载时间会缩短。
 
+### 父子组件嵌套时，父组件和子组件生命周期钩子执行顺序
+
+- **加载渲染过程** 父 beforeCreate -> 父 created -> 父 beforeMount -> 子 beforeCreate -> 子 created -> 子 beforeMount -> 子 mounted -> 父 mounted
+- **子组件更新过程** 父 beforeUpdate -> 子 beforeUpdate -> 子 updated -> 父 updated
+- **父组件更新过程** 父 beforeUpdate -> 父 updated
+- **销毁过程** 父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
+
 ## 组件间通信
 
 ### 父子组件通信
@@ -390,18 +404,28 @@ const fn = inject('function', () => {}, false)
 
 ### vue-router
 
+#### 前端路由和后端路由区别
+
+前端路由：页面跳转的 URL 规则匹配由前端来控制，把渲染的任务交给了浏览器，通过客户端的算力来解决页面的构建
+后端路由：浏览器地址输入栏输入 URL 回车时后端根据路径将对应的 html 模版渲染好返回给前端
+
+#### 直接使用 a 链接与使用 router-link 的区别
+
+抹平了两种模式下 href 的书写方式，会得到正确的 href 值；history 模式下调用 pushState 并阻止默认行为。
+
 #### hash 模式和 history 模式区别
 
 ##### hash 模式
 
 开发中默认的模式，它的 URL 带着一个#。
 特点：hash 值会出现在 URL 里面，但是不会出现在 HTTP 请求中，对后端完全没有影响。所以改变 hash 值，不会重新加载页面。
-原理： hash 模式的主要原理就是 onhashchange()事件
+原理： hash 模式的主要原理就是监听 onhashchange()事件
 
 ##### history 模式
 
 传统的路由分发模式，即用户在输入一个 URL 时，服务器会接收这个请求，并解析这个 URL，然后做出相应的逻辑处理。URL 不会带#。
-特点：history 模式下的某些路径如果后台没有配置，访问时会返回 404。解决方法为需要在服务器上添加一个简单的回退路由。
+特点：history 模式下的某些路径如果后台没有配置，URL 输入访问时会返回 404。解决方法为需要在服务器上添加一个简单的回退路由。
+原理：通过按钮进行的路由跳转用 pushState、replaceState 来改变路由但不触发后端请求，再用回调函数调用新页面组件；点击浏览器前进后退按钮时监听 popstate 事件进行页面切换
 
 #### $route 和$router 的区别
 
@@ -461,14 +485,16 @@ $router 是“路由实例”对象包括了路由的跳转方法，钩子函数
 #### vuex 属性
 
 - state：数据源存放地
-- getters：从基本数据 state 派生出来的数据，store的计算属性
+- getters：从基本数据 state 派生出来的数据，store 的计算属性
 - mutations：同步提交更改数据的方法(目的：方便调试)
 - actions：异步调用 mutation 方法
 - module：模块化 vuex
+
 #### vuex vs localStorage
-1. 存储位置：vuex存储在内存，localStorage 则以文件的方式存储在本地
-2. 存储内容：localStorage只能存储字符串类型的数据
-3. 持久性：刷新页面时vuex存储的值会丢失，localstorage不会
+
+1. 存储位置：vuex 存储在内存，localStorage 则以文件的方式存储在本地
+2. 存储内容：localStorage 只能存储字符串类型的数据
+3. 持久性：刷新页面时 vuex 存储的值会丢失，localstorage 不会
 
 ### pinia
 
@@ -485,7 +511,8 @@ $router 是“路由实例”对象包括了路由的跳转方法，钩子函数
 
 **简单数据修改**：直接操作 `store.属性名`进行修改
 **多条数据修改**：
-1. 使用$patch 方法。patch接受对象和函数作为入参。在涉及集合的修改(例如，从数组中推送、移除、拼接一个元素)的操作，使用对象的语法更加耗时，官方文档推荐使用函数。代码示例：
+
+1. 使用$patch 方法。patch 接受对象和函数作为入参。在涉及集合的修改(例如，从数组中推送、移除、拼接一个元素)的操作，使用对象的语法更加耗时，官方文档推荐使用函数。代码示例：
 
 ```
 store.$patch({
@@ -498,8 +525,42 @@ store.$patch((store)=>{
 })
 ```
 
-2. 使用store的action方法
+2. 使用 store 的 action 方法
+
+## Vue 项目开发注意事项
+
+### assets 和 static 的区别
+
+相同点：都是存放静态资源文件。
+不同点：assets 中存放的静态资源文件在项目打包时会进行压缩体积，代码格式化操作。static 文件夹下的文件则不会。
+
+### Class 与 Style 如何动态绑定
+
+使用对象语法或数组语法进行绑定。这里以 class 为例，style 类似
+
+- 对象语法
+
+```
+<div v-bind:class="{ active: isActive, 'text-danger': hasError }"></div>
+
+data: {
+  isActive: true,
+  hasError: false
+}
+```
+
+- 数组语法
+
+```
+<div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+
+data: {
+  activeClass: 'active',
+  errorClass: 'text-danger'
+}
+```
 
 ## 参考文献
 
 （1）[「2021」高频前端面试题汇总之 Vue 篇（下）](https://juejin.cn/post/6964779204462247950/)
+（2）[ Vue 这一块拿捏了](https://juejin.cn/post/7064368176846340132)
