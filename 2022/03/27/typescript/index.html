@@ -1,276 +1,303 @@
 
+
 <!DOCTYPE html>
-<html lang="zh-cn">
-    
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="小白的文件整理箱">
-    <title>TypeScript - 小白的文件整理箱</title>
-    <meta name="author" content="小白的文件整理箱">
-    
-    
-    
-        
-            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
-        
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"\n\n背景知识类型系统按照「是否允许隐式类型转换」来分类，可以分为强类型和弱类型。JavaScript 就属于弱类型语言，灵活性强，但不利的一点是没有编译过程，语言的类型错误只有运行时才会发现（JavaScript 因此被称为动态语言）。而 TypeScript 可以弥补这一点：TypeScript 在运行前需要先编译为 JavaScript，而在编译阶段就会进行类型检查并报错（TypeScript 对应称为静态语言）。同时 TypeScript 增强了编辑器（IDE）的功能，包括代码补全、接口提示、跳转到定义、代码重构等，这在很大程度上提高了开发效率。\n本文主要记录一些常用的 typescript 语法及一些需要辨析的注意点。\nanyScript 使用方法用于代码标红但确实不知道如何声明的场景\n123// @ts-nocheck 禁用整个文件的ts校验，置于文件头顶// @ts-ignore 禁用单行ts校验，放在报错行的上方使用any和unknown\n\n在遇到确实难以定义类型的场景下可以使用以上方法逃课，以后再思考可能的改进方式。\n基础类型在 TypeScript 3.1 的文档里，基础类型包括：boolean,string,number,Array&lt;&gt;,Tuple,any,void,undefined,null,never简单记录下使用偏少的类型它的特点。\n辨析点：\n1）unknown vs anyunknown 与 any 一样，所有类型都可以分配给 unknown，unknown 类型的值只能赋给 unknown 本身和 any 类型。但 unknown 仍然有静态检测能力，个人理解是 unknown 没有放弃类型的推断，并不是所有类型的内部方法 unknown 类型数据都可以随便调用\n2）void，null 和 undefined相同点是这 3 个本身在声明变量的过程中用处不大。\n123let unusable: void = undefined;let u: undefined = undefined;let n: null = null;\n\n默认情况下 null 和 undefined 是所有类型的子类型。undefined 也是 void 的一个子集。当你对函数返回值并不在意（number、boolean、undefined 都可以是返回值）时，使用 void 而不是 undefined。\n接口与类型别名接口可用于对象类型命名和定义类型参数。基本语法：interface SquareConfig &#123;&#125;接口名开头需大写，因为定义的是一种类型。\n可选属性使用写法：\n1234interface SquareConfig &#123;  color?: string;  width?: number;&#125;\n\n根据使用经验，在调用该类型 SquareConfig 的变量其属性时编译等效于：\n1234interface SquareConfig &#123;  color: string｜undefined;  width: number｜undefined;&#125;\n\n所以假如使用变量的 color 属性调用 string 的默认方法或者赋值给一个 string 变量时就会报错\n只读属性一些对象属性只能在对象刚刚创建的时候修改其值。可以在属性名前用 readonly 来指定只读属性：\n1234interface Point &#123;    readonly x: number;    readonly y: number;&#125;\n\n辨析点：const vs readonly：const 可以防止变量的值被修改，readonly 可以防止变量的属性被修改。\n索引签名描述了对象索引的类型，还有相应的索引返回值类型。索引签名只支持以下两种：\n\n字符串索引签名\n数字索引签名一个接口中最多只能定义一个字符串索引签名，该签名会约束对象类型的所有属性类型。\n\n12345interface NumberDictionary &#123;  [index: string]: number;  length: number;    // 可以，length是number类型  name: string       // 错误，`name`的类型与索引类型返回值的类型不匹配&#125;\n\n类型别名类型别名声明可以为 TypeScript 中任意类型命名基本语法：type AliasType=string｜boolean｜number\ninterface 与 type 区别\ntype 可以用于非对象类型，而接口只能用于对象类型\n接口可以继承其他对象类型，type 不支持继承只能用交叉类型实现继承效果。\n\n123456&lt;!-- type类型扩展方式 --&gt;type Name = &#123; name: string &#125;;type Person = Name &amp; &#123; age: number &#125;;&lt;!-- interface类型扩展方式 --&gt;interface IName &#123; name: string &#125;;interface IPerson extends IName &#123; age: number &#125;;\n\n\n接口具有声明合并的行为，type 没有\n\n运算符使用非空断言运算符 !置于变量名后，用于强调元素不是 null 或 undefined。\n123const test=(func:()=&gt;void)=&gt;&#123;    func!()&#125;\n\n可选链运算符 ?.ES11(ES2020)新增的特性。?.用来判断左侧的变量是否存在，不存在不会继续表达式运算。例如书写 a?.b 时实际上等效于\n1a === null || a === void 0 ? void 0 : a.b;\n\n空值合并运算符 ??ES11(ES2020)新增的特性。当左侧的操作数为 null 或者 undefined 时，返回其右侧操作数，否则返回左侧操作数。let b &#x3D; a ?? 10 等效于\n1let b = a !== null &amp;&amp; a !== void 0 ? a : 10;\n\n数字分割符_可以用于长数字分隔，方便阅读，不会编译进 JavaScript。个人理解类似计算器的数字每隔 3 位加一个逗号方便阅读的作用。\n1let num:number = 12_345.678_9\n\n内置工具类型Partial作用是将泛型 T 所有属性变为可选属性。\n123type Partial&lt;T&gt; = &#123;\t[P in keyof T]?: T[P]&#125;\n\nRequired1234作用是将泛型T所有属性变为必选属性。type Required&lt;T&gt; = &#123;  [P in keyof T]-?: T[P]&#125;\n\nRecord&lt;K, T&gt;作用是将 K 中所有属性值转化为 T 类型。K 提供对象属性名的联合类型，T 提供对象属性类型。因为 K 是用作对象属性名设置，所以参数 K 必须能够赋值给 string ｜ number ｜ symbol 类型。\n123type Record&lt;K extends keyof any,T&gt; = &#123;  [key in K]: T&#125;\n\n示例：\n123type K=&#x27;x&#x27;|&#x27;y&#x27;type R=Record&lt;K,number&gt;const a:R=&#123;x:0,y:0&#125;\n\nPick&lt;T, K&gt;作用是将 T 类型中的 K 键列表提取，K 必须为对象类型 T 存在的属性。\n123type Pick&lt;T, K extends keyof T&gt; = &#123;  [P in K]: T[P]&#125;\n\n示例：\n12interface Point=&#123;x:number,y:number&#125;type T=Pick&lt;Point,&#x27;x&#x27;|&#x27;y&#x27;&gt;//&#123;x:number,y:number&#125;\n\nOmit&lt;T, K&gt;与Pick&lt;T, K&gt;互补。用于去除类型 T 中包含 K 的键值对。如果 K 为 T 不存在的属性则新类型等同于 T。\nExclude&lt;T, U&gt;在 T 类型中，去除 T 类型和 U 类型的交集。\nExtract&lt;T, U&gt;与Exclude&lt;T, U&gt;互补。获取 T 类型中所有能赋值给 U 的类型，没有返回 never。\nReturnType获取 T 类型(函数)对应的返回值类型。\n12function foo(x: string | number): string | number &#123; /*..*/ &#125;type FooType = ReturnType&lt;foo&gt;;  // string | number\n\n参考资料（1）TypeScript 高级用法（2）一篇够用的 TypeScript 总结（3）TypeScript 文档\n","dateCreated":"2022-03-27T19:05:48+08:00","dateModified":"2022-06-19T18:43:22+08:00","datePublished":"2022-03-27T19:05:48+08:00","description":"TypeScript一些特性记录和辨析，方便自己记忆，为日后使用准备。","headline":"TypeScript","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/","keywords":"TypeScript"}</script>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unkown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unkown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
     <meta name="description" content="TypeScript一些特性记录和辨析，方便自己记忆，为日后使用准备。">
-<meta property="og:type" content="blog">
+<meta property="og:type" content="article">
 <meta property="og:title" content="TypeScript">
-<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/index.html">
+<meta property="og:url" content="https://unknown404.github.io/unkown404.github.io/2022/03/27/typescript/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="TypeScript一些特性记录和辨析，方便自己记忆，为日后使用准备。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-03-27T11:05:48.000Z">
-<meta property="article:modified_time" content="2022-06-19T10:43:22.797Z">
+<meta property="article:modified_time" content="2023-02-19T03:19:04.433Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="TypeScript">
-<meta name="twitter:card" content="summary">
-    
-    
-        
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
-    
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>TypeScript - 小白的文件整理箱</title>
 
-    <!--STYLES END-->
-    
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    
 
-    
-        
-    
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unkown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unkown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unkown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unknown404.github.io","root":"/unkown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unkown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unkown404.github.io/js/utils.js" ></script>
+  <script  src="/unkown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unkown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
 
+<body>
+  
 
-    
-        
-            
-        
+  <header>
     
 
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/unknown_404/"
-            aria-label=""
-        >
-            小白的文件整理箱
-        </a>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unkown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unkown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unkown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unkown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unkown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unkown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="打开链接: /unknown_404/#about"
-            >
-        
-        
-            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-
-        
-    
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-            <div class="sidebar-profile">
-                <a
-                    href="/unknown_404/#about"
-                    aria-label="阅读有关作者的更多信息"
-                >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-                </a>
-                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
-                
-                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
-</h5>
-                
-            </div>
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/"
-                            
-                            rel="noopener"
-                            title="首页"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">首页</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-categories"
-                            
-                            rel="noopener"
-                            title="分类"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">分类</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-tags"
-                            
-                            rel="noopener"
-                            title="标签"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">标签</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-archives"
-                            
-                            rel="noopener"
-                            title="归档"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">归档</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="搜索"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">搜索</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="关于"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
+  </div>
 </nav>
 
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            TypeScript
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2022-03-27T19:05:48+08:00">
-	
-		    3月 27, 2022
-    	
-    </time>
-    
-        <span>发布在 </span>
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unkown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="TypeScript"></span>
+          
+        </div>
+
         
-    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/">前端技术体系</a>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-27 19:05" pubdate>
+          2022年3月27日 晚上
+        </time>
+      </span>
+    
+  </div>
 
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.5k 字
+        
+      </span>
+    
 
     
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
 </div>
 
-    
 </div>
 
-    
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="toc-text">背景知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#anyScript-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-text">anyScript 使用方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%B1%BB%E5%9E%8B"><span class="toc-text">基础类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%EF%BC%89unknown-vs-any"><span class="toc-text">1）unknown vs any</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%EF%BC%89void%EF%BC%8Cnull-%E5%92%8C-undefined"><span class="toc-text">2）void，null 和 undefined</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E4%B8%8E%E7%B1%BB%E5%9E%8B%E5%88%AB%E5%90%8D"><span class="toc-text">接口与类型别名</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3"><span class="toc-text">接口</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AF%E9%80%89%E5%B1%9E%E6%80%A7"><span class="toc-text">可选属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AA%E8%AF%BB%E5%B1%9E%E6%80%A7"><span class="toc-text">只读属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E7%AD%BE%E5%90%8D"><span class="toc-text">索引签名</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%88%AB%E5%90%8D"><span class="toc-text">类型别名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#interface-%E4%B8%8E-type-%E5%8C%BA%E5%88%AB"><span class="toc-text">interface 与 type 区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BD%BF%E7%94%A8"><span class="toc-text">运算符使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E7%A9%BA%E6%96%AD%E8%A8%80%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-text">非空断言运算符 !</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E9%80%89%E9%93%BE%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-text">可选链运算符 ?.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A9%BA%E5%80%BC%E5%90%88%E5%B9%B6%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-text">空值合并运算符 ??</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E5%88%86%E5%89%B2%E7%AC%A6"><span class="toc-text">数字分割符_</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7%E7%B1%BB%E5%9E%8B"><span class="toc-text">内置工具类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Partial"><span class="toc-text">Partial</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Required"><span class="toc-text">Required</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Record-lt-K-T-gt"><span class="toc-text">Record&lt;K, T&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pick-lt-T-K-gt"><span class="toc-text">Pick&lt;T, K&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Omit-lt-T-K-gt"><span class="toc-text">Omit&lt;T, K&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exclude-lt-T-U-gt"><span class="toc-text">Exclude&lt;T, U&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Extract-lt-T-U-gt"><span class="toc-text">Extract&lt;T, U&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReturnType"><span class="toc-text">ReturnType</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+  </header>
 
-<h2 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h2><p>类型系统按照「是否允许隐式类型转换」来分类，可以分为强类型和弱类型。<br>JavaScript 就属于弱类型语言，灵活性强，但不利的一点是没有编译过程，语言的类型错误只有运行时才会发现（JavaScript 因此被称为动态语言）。而 TypeScript 可以弥补这一点：TypeScript 在运行前需要先编译为 JavaScript，而在编译阶段就会进行类型检查并报错（TypeScript 对应称为静态语言）。同时 TypeScript 增强了编辑器（IDE）的功能，包括代码补全、接口提示、跳转到定义、代码重构等，这在很大程度上提高了开发效率。</p>
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">TypeScript</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h2><p>类型系统按照「是否允许隐式类型转换」来分类，可以分为强类型和弱类型。<br>JavaScript 就属于弱类型语言，灵活性强，但不利的一点是没有编译过程，语言的类型错误只有运行时才会发现（JavaScript 因此被称为动态语言）。而 TypeScript 可以弥补这一点：TypeScript 在运行前需要先编译为 JavaScript，而在编译阶段就会进行类型检查并报错（TypeScript 对应称为静态语言）。同时 TypeScript 增强了编辑器（IDE）的功能，包括代码补全、接口提示、跳转到定义、代码重构等，这在很大程度上提高了开发效率。</p>
 <p>本文主要记录一些常用的 typescript 语法及一些需要辨析的注意点。</p>
 <h2 id="anyScript-使用方法"><a href="#anyScript-使用方法" class="headerlink" title="anyScript 使用方法"></a>anyScript 使用方法</h2><p>用于代码标红但确实不知道如何声明的场景</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// @ts-nocheck 禁用整个文件的ts校验，置于文件头顶</span><br><span class="line">// @ts-ignore 禁用单行ts校验，放在报错行的上方使用</span><br><span class="line">any和unknown</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span> @ts-nocheck 禁用整个文件的ts校验，置于文件头顶<br><span class="hljs-regexp">//</span> @ts-ignore 禁用单行ts校验，放在报错行的上方使用<br>any和unknown<br></code></pre></td></tr></table></figure>
 
 <p>在遇到确实难以定义类型的场景下可以使用以上方法逃课，以后再思考可能的改进方式。</p>
 <h2 id="基础类型"><a href="#基础类型" class="headerlink" title="基础类型"></a>基础类型</h2><p>在 TypeScript 3.1 的文档里，基础类型包括：boolean,string,number,Array&lt;&gt;,Tuple,any,void,undefined,null,never<br>简单记录下使用偏少的类型它的特点。</p>
 <p>辨析点：</p>
 <h3 id="1）unknown-vs-any"><a href="#1）unknown-vs-any" class="headerlink" title="1）unknown vs any"></a>1）unknown vs any</h3><p>unknown 与 any 一样，所有类型都可以分配给 unknown，unknown 类型的值只能赋给 unknown 本身和 any 类型。但 unknown 仍然有静态检测能力，个人理解是 unknown 没有放弃类型的推断，并不是所有类型的内部方法 unknown 类型数据都可以随便调用</p>
 <h3 id="2）void，null-和-undefined"><a href="#2）void，null-和-undefined" class="headerlink" title="2）void，null 和 undefined"></a>2）void，null 和 undefined</h3><p>相同点是这 3 个本身在声明变量的过程中用处不大。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let unusable: void = undefined;</span><br><span class="line">let u: undefined = undefined;</span><br><span class="line">let n: null = null;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> <span class="hljs-attr">unusable</span>: <span class="hljs-keyword">void</span> = <span class="hljs-literal">undefined</span>;<br><span class="hljs-keyword">let</span> <span class="hljs-attr">u</span>: <span class="hljs-literal">undefined</span> = <span class="hljs-literal">undefined</span>;<br><span class="hljs-keyword">let</span> <span class="hljs-attr">n</span>: <span class="hljs-literal">null</span> = <span class="hljs-literal">null</span>;<br></code></pre></td></tr></table></figure>
 
 <p>默认情况下 null 和 undefined 是所有类型的子类型。<br>undefined 也是 void 的一个子集。当你对函数返回值并不在意（number、boolean、undefined 都可以是返回值）时，使用 void 而不是 undefined。</p>
 <h2 id="接口与类型别名"><a href="#接口与类型别名" class="headerlink" title="接口与类型别名"></a>接口与类型别名</h2><h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><p>可用于对象类型命名和定义类型参数。<br>基本语法：<code>interface SquareConfig &#123;&#125;</code><br>接口名开头需大写，因为定义的是一种类型。</p>
 <h4 id="可选属性"><a href="#可选属性" class="headerlink" title="可选属性"></a>可选属性</h4><p>使用写法：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">interface SquareConfig &#123;</span><br><span class="line">  color?: string;</span><br><span class="line">  width?: number;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css">interface SquareConfig &#123;<br>  <span class="hljs-attribute">color</span>?: string;<br>  <span class="hljs-attribute">width</span>?: number;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>根据使用经验，在调用该类型 SquareConfig 的变量其属性时编译等效于：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">interface SquareConfig &#123;</span><br><span class="line">  color: string｜undefined;</span><br><span class="line">  width: number｜undefined;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">SquareConfig</span> &#123;<br>  <span class="hljs-attr">color</span>: <span class="hljs-built_in">string</span>｜<span class="hljs-literal">undefined</span>;<br>  <span class="hljs-attr">width</span>: <span class="hljs-built_in">number</span>｜<span class="hljs-literal">undefined</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>所以假如使用变量的 color 属性调用 string 的默认方法或者赋值给一个 string 变量时就会报错</p>
 <h4 id="只读属性"><a href="#只读属性" class="headerlink" title="只读属性"></a>只读属性</h4><p>一些对象属性只能在对象刚刚创建的时候修改其值。可以在属性名前用 readonly 来指定只读属性：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">interface Point &#123;</span><br><span class="line">    readonly x: number;</span><br><span class="line">    readonly y: number;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Point</span> &#123;<br>    <span class="hljs-keyword">readonly</span> <span class="hljs-attr">x</span>: <span class="hljs-built_in">number</span>;<br>    <span class="hljs-keyword">readonly</span> <span class="hljs-attr">y</span>: <span class="hljs-built_in">number</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>辨析点：<br><strong>const vs readonly</strong>：const 可以防止变量的值被修改，readonly 可以防止变量的属性被修改。</p>
 <h4 id="索引签名"><a href="#索引签名" class="headerlink" title="索引签名"></a>索引签名</h4><p>描述了对象索引的类型，还有相应的索引返回值类型。索引签名只支持以下两种：</p>
@@ -278,385 +305,421 @@
 <li>字符串索引签名</li>
 <li>数字索引签名<br>一个接口中最多只能定义一个字符串索引签名，该签名会约束对象类型的所有属性类型。</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">interface NumberDictionary &#123;</span><br><span class="line">  [index: string]: number;</span><br><span class="line">  length: number;    // 可以，length是number类型</span><br><span class="line">  name: string       // 错误，`name`的类型与索引类型返回值的类型不匹配</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs fortran"><span class="hljs-keyword">interface</span> NumberDictionary &#123;<br>  [<span class="hljs-built_in">index</span>: string]: <span class="hljs-keyword">number</span>;<br>  length: <span class="hljs-keyword">number</span>;    // 可以，length是<span class="hljs-keyword">number</span>类型<br>  <span class="hljs-keyword">name</span>: string       // 错误，`<span class="hljs-keyword">name</span>`的类型与索引类型返回值的类型不匹配<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h3><p>类型别名声明可以为 TypeScript 中任意类型命名<br>基本语法：<code>type AliasType=string｜boolean｜number</code></p>
 <h3 id="interface-与-type-区别"><a href="#interface-与-type-区别" class="headerlink" title="interface 与 type 区别"></a>interface 与 type 区别</h3><ol>
 <li>type 可以用于非对象类型，而接口只能用于对象类型</li>
 <li>接口可以继承其他对象类型，type 不支持继承只能用交叉类型实现继承效果。</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- type类型扩展方式 --&gt;</span><br><span class="line">type Name = &#123; name: string &#125;;</span><br><span class="line">type Person = Name &amp; &#123; age: number &#125;;</span><br><span class="line">&lt;!-- interface类型扩展方式 --&gt;</span><br><span class="line">interface IName &#123; name: string &#125;;</span><br><span class="line">interface IPerson extends IName &#123; age: number &#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml"><span class="hljs-comment">&lt;!-- type类型扩展方式 --&gt;</span></span><br><span class="language-xml">type Name = </span><span class="hljs-template-variable">&#123; name: string &#125;</span><span class="language-xml">;</span><br><span class="language-xml">type Person = Name &amp; </span><span class="hljs-template-variable">&#123; age: number &#125;</span><span class="language-xml">;</span><br><span class="language-xml"><span class="hljs-comment">&lt;!-- interface类型扩展方式 --&gt;</span></span><br><span class="language-xml">interface IName </span><span class="hljs-template-variable">&#123; name: string &#125;</span><span class="language-xml">;</span><br><span class="language-xml">interface IPerson extends IName </span><span class="hljs-template-variable">&#123; age: number &#125;</span><span class="language-xml">;</span><br></code></pre></td></tr></table></figure>
 
 <ol start="3">
 <li>接口具有声明合并的行为，type 没有</li>
 </ol>
 <h2 id="运算符使用"><a href="#运算符使用" class="headerlink" title="运算符使用"></a>运算符使用</h2><h3 id="非空断言运算符"><a href="#非空断言运算符" class="headerlink" title="非空断言运算符 !"></a>非空断言运算符 !</h3><p>置于变量名后，用于强调元素不是 null 或 undefined。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const test=(func:()=&gt;void)=&gt;&#123;</span><br><span class="line">    func!()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs autoit"><span class="hljs-keyword">const</span> test=(<span class="hljs-keyword">func</span>:<span class="hljs-params">()</span>=&gt;<span class="hljs-title function_">void</span>)=&gt;&#123;<br>    <span class="hljs-keyword">func</span>!<span class="hljs-params">()</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="可选链运算符"><a href="#可选链运算符" class="headerlink" title="可选链运算符 ?."></a>可选链运算符 ?.</h3><p>ES11(ES2020)新增的特性。?.用来判断左侧的变量是否存在，不存在不会继续表达式运算。例如书写 a?.b 时实际上等效于</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a === null || a === void 0 ? void 0 : a.b;</span><br></pre></td></tr></table></figure>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs actionscript">a === <span class="hljs-literal">null</span> || a === <span class="hljs-keyword">void</span> <span class="hljs-number">0</span> ? <span class="hljs-keyword">void</span> <span class="hljs-number">0</span> : a.b;<br></code></pre></td></tr></table></figure>
 
 <h3 id="空值合并运算符"><a href="#空值合并运算符" class="headerlink" title="空值合并运算符 ??"></a>空值合并运算符 ??</h3><p>ES11(ES2020)新增的特性。当左侧的操作数为 null 或者 undefined 时，返回其右侧操作数，否则返回左侧操作数。<br>let b &#x3D; a ?? 10 等效于</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let b = a !== null &amp;&amp; a !== void 0 ? a : 10;</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">let</span> <span class="hljs-string">b</span> <span class="hljs-string">=</span> <span class="hljs-string">a</span> <span class="hljs-type">!==</span> <span class="hljs-literal">null</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">a</span> <span class="hljs-type">!==</span> <span class="hljs-string">void</span> <span class="hljs-number">0</span> <span class="hljs-string">?</span> <span class="hljs-attr">a :</span> <span class="hljs-number">10</span><span class="hljs-string">;</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="数字分割符"><a href="#数字分割符" class="headerlink" title="数字分割符_"></a>数字分割符_</h3><p>可以用于长数字分隔，方便阅读，不会编译进 JavaScript。个人理解类似计算器的数字每隔 3 位加一个逗号方便阅读的作用。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let num:number = 12_345.678_9</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">let</span> num:number = <span class="hljs-number">12</span>_345.<span class="hljs-number">678</span>_9<br></code></pre></td></tr></table></figure>
 
 <h2 id="内置工具类型"><a href="#内置工具类型" class="headerlink" title="内置工具类型"></a>内置工具类型</h2><h3 id="Partial"><a href="#Partial" class="headerlink" title="Partial"></a>Partial<T></h3><p>作用是将泛型 T 所有属性变为可选属性。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type Partial&lt;T&gt; = &#123;</span><br><span class="line">	[P in keyof T]?: T[P]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs elm"><span class="hljs-keyword">type</span> <span class="hljs-type">Partial</span>&lt;<span class="hljs-type">T</span>&gt; = &#123;<br>	[<span class="hljs-type">P</span> in keyof <span class="hljs-type">T</span>]?: <span class="hljs-type">T</span>[<span class="hljs-type">P</span>]<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h3 id="Required"><a href="#Required" class="headerlink" title="Required"></a>Required<T></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">作用是将泛型T所有属性变为必选属性。</span><br><span class="line">type Required&lt;T&gt; = &#123;</span><br><span class="line">  [P in keyof T]-?: T[P]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Required"><a href="#Required" class="headerlink" title="Required"></a>Required<T></h3><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs elm">作用是将泛型<span class="hljs-type">T</span>所有属性变为必选属性。<br><span class="hljs-keyword">type</span> <span class="hljs-type">Required</span>&lt;<span class="hljs-type">T</span>&gt; = &#123;<br>  [<span class="hljs-type">P</span> in keyof <span class="hljs-type">T</span>]-?: <span class="hljs-type">T</span>[<span class="hljs-type">P</span>]<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="Record-lt-K-T-gt"><a href="#Record-lt-K-T-gt" class="headerlink" title="Record&lt;K, T&gt;"></a>Record&lt;K, T&gt;</h3><p>作用是将 K 中所有属性值转化为 T 类型。K 提供对象属性名的联合类型，T 提供对象属性类型。<br>因为 K 是用作对象属性名设置，所以参数 K 必须能够赋值给 string ｜ number ｜ symbol 类型。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type Record&lt;K extends keyof any,T&gt; = &#123;</span><br><span class="line">  [key in K]: T</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Record&lt;K</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">keyof</span> <span class="hljs-title">any</span>,<span class="hljs-title">T&gt;</span> </span>= &#123;<br>  [key in <span class="hljs-type">K</span>]: <span class="hljs-type">T</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type K=&#x27;x&#x27;|&#x27;y&#x27;</span><br><span class="line">type R=Record&lt;K,number&gt;</span><br><span class="line">const a:R=&#123;x:0,y:0&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs oxygene"><span class="hljs-keyword">type</span> K=<span class="hljs-string">&#x27;x&#x27;</span>|<span class="hljs-string">&#x27;y&#x27;</span><br><span class="hljs-keyword">type</span> R=<span class="hljs-keyword">Record</span>&lt;K,number&gt;<br><span class="hljs-keyword">const</span> a:R=<span class="hljs-comment">&#123;x:0,y:0&#125;</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="Pick-lt-T-K-gt"><a href="#Pick-lt-T-K-gt" class="headerlink" title="Pick&lt;T, K&gt;"></a>Pick&lt;T, K&gt;</h3><p>作用是将 T 类型中的 K 键列表提取，K 必须为对象类型 T 存在的属性。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type Pick&lt;T, K extends keyof T&gt; = &#123;</span><br><span class="line">  [P in K]: T[P]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">Pick&lt;T</span>, <span class="hljs-title">K</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">keyof</span> <span class="hljs-title">T&gt;</span> </span>= &#123;<br>  [<span class="hljs-type">P</span> in <span class="hljs-type">K</span>]: <span class="hljs-type">T</span>[<span class="hljs-type">P</span>]<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">interface Point=&#123;x:number,y:number&#125;</span><br><span class="line">type T=Pick&lt;Point,&#x27;x&#x27;|&#x27;y&#x27;&gt;//&#123;x:number,y:number&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs arcade">interface <span class="hljs-built_in">Point</span>=&#123;<span class="hljs-attr">x</span>:<span class="hljs-built_in">number</span>,<span class="hljs-attr">y</span>:<span class="hljs-built_in">number</span>&#125;<br>type T=Pick&lt;<span class="hljs-built_in">Point</span>,<span class="hljs-string">&#x27;x&#x27;</span>|<span class="hljs-string">&#x27;y&#x27;</span>&gt;<span class="hljs-comment">//&#123;x:number,y:number&#125;</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="Omit-lt-T-K-gt"><a href="#Omit-lt-T-K-gt" class="headerlink" title="Omit&lt;T, K&gt;"></a>Omit&lt;T, K&gt;</h3><p>与<code>Pick&lt;T, K&gt;</code>互补。用于去除类型 T 中包含 K 的键值对。如果 K 为 T 不存在的属性则新类型等同于 T。</p>
 <h3 id="Exclude-lt-T-U-gt"><a href="#Exclude-lt-T-U-gt" class="headerlink" title="Exclude&lt;T, U&gt;"></a>Exclude&lt;T, U&gt;</h3><p>在 T 类型中，去除 T 类型和 U 类型的交集。</p>
 <h3 id="Extract-lt-T-U-gt"><a href="#Extract-lt-T-U-gt" class="headerlink" title="Extract&lt;T, U&gt;"></a>Extract&lt;T, U&gt;</h3><p>与<code>Exclude&lt;T, U&gt;</code>互补。获取 T 类型中所有能赋值给 U 的类型，没有返回 never。</p>
 <h3 id="ReturnType"><a href="#ReturnType" class="headerlink" title="ReturnType"></a>ReturnType<T></h3><p>获取 T 类型(函数)对应的返回值类型。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">function foo(x: string | number): string | number &#123; /*..*/ &#125;</span><br><span class="line">type FooType = ReturnType&lt;foo&gt;;  // string | number</span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">foo</span>(<span class="hljs-params">x: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span></span>): <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span> &#123; <span class="hljs-comment">/*..*/</span> &#125;<br><span class="hljs-keyword">type</span> <span class="hljs-title class_">FooType</span> = <span class="hljs-title class_">ReturnType</span>&lt;foo&gt;;  <span class="hljs-comment">// string | number</span><br></code></pre></td></tr></table></figure>
 
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6926794697553739784">TypeScript 高级用法</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6981728323051192357#heading-0">一篇够用的 TypeScript 总结</a><br>（3）<a target="_blank" rel="noopener" href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html">TypeScript 文档</a></p>
 
+                
+              </div>
             
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/" class="category-chain-item">前端技术体系</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unkown404.github.io/tags/TypeScript/">#TypeScript</a>
+      
+    </div>
+  
+</div>
 
 
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>TypeScript</div>
+      <div>https://unknown404.github.io/unkown404.github.io/2022/03/27/typescript/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
         </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-            <div class="post-footer-tags">
-                <span class="text-color-light text-small">标签</span><br/>
-                
-    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/TypeScript/" rel="tag">TypeScript</a>
+    <div class="license-icon iconfont"></div>
+  </div>
 
-            </div>
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/28/poster/"
-                    data-tooltip="小程序海报绘制"
-                    aria-label="上一篇: 小程序海报绘制"
-                >
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
+                      <a href="/unkown404.github.io/2022/03/28/poster/" title="小程序海报绘制">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">小程序海报绘制</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/14/esUseage/"
-                    data-tooltip="Elasticsearch查询语句使用"
-                    aria-label="下一篇: Elasticsearch查询语句使用"
-                >
+                  </article>
+                  <article class="post-next col-6">
                     
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Share this post"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2022 小白的文件整理箱. All Rights Reserved.
-    </span>
-</footer>
-
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/28/poster/"
-                    data-tooltip="小程序海报绘制"
-                    aria-label="上一篇: 小程序海报绘制"
-                >
+                      <a href="/unkown404.github.io/2022/03/14/esUseage/" title="Elasticsearch查询语句使用">
+                        <span class="hidden-mobile">Elasticsearch查询语句使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/14/esUseage/"
-                    data-tooltip="Elasticsearch查询语句使用"
-                    aria-label="下一篇: Elasticsearch查询语句使用"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Share this post"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
+                  </article>
                 </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
+              
+            </div>
+
             
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                        aria-label="分享到 Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                        aria-label="分享到 Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/27/typescript/"
-                        aria-label="分享到 Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
-
-            
-        </div>
-        
-
-
-    
-        
-    
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
-        </div>
-        
-            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-            <h4 id="about-card-name">小白的文件整理箱</h4>
-        
-            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>菜鸟级摸鱼工程师</p>
 
-            </div>
-        
-        
-            <div id="about-card-location">
-                <i class="fa fa-map-marker-alt"></i>
-                <br/>
-                Shadow Border
-            </div>
-        
+
+
+  </aside>
+
+
     </div>
+  </div>
 </div>
 
-        
-        
-<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
 
-<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
 
-<!--SCRIPTS END-->
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
 
 
     
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unkown404.github.io/js/events.js" ></script>
+<script  src="/unkown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
-    </body>
+
+  
+    <script  src="/unkown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unkown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unkown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
 </html>
