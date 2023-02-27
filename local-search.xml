@@ -4,6 +4,81 @@
   
   
   <entry>
+    <title>微信小程序基础知识</title>
+    <link href="/unkown404.github.io/2023/02/27/applet/"/>
+    <url>/unkown404.github.io/2023/02/27/applet/</url>
+    
+    <content type="html"><![CDATA[<p>小程序基础知识汇总。</p><span id="more"></span><h2 id="微信小程序结构"><a href="#微信小程序结构" class="headerlink" title="微信小程序结构"></a>微信小程序结构</h2><p>小程序的运行环境分成渲染层和逻辑层，其中 WXML 模板和 WXSS 样式工作在渲染层，JS 脚本工作在逻辑层。视图层和逻辑层通过 Native 层进行进行通信，并且通过 Native 层获得原生能力。<br>逻辑层和视图层之间的工作方式为：数据变更通过 setData 驱动视图更新；视图层交互触发事件，然后触发逻辑层的事件响应函数，函数中修改数据再次触发视图更新。</p><h2 id="小程序框架"><a href="#小程序框架" class="headerlink" title="小程序框架"></a>小程序框架</h2><p>常见框架：mpvue、taro、uni-app<br>实现流程：</p><ul><li>编译阶段：将其他 DSL（domain-specific language） 转换为符合小程序语法的 WXML、WXSS、JS、JSON；</li><li>运行阶段：数据、事件、生命周期等部分的处理和对接；</li></ul><h3 id="mpvue"><a href="#mpvue" class="headerlink" title="mpvue"></a>mpvue</h3><p>特点：将 Vue 实例和小程序页面实例简单粗暴地做了关联，以达到使用 Vue 开发小程序的目的。</p><h3 id="taro"><a href="#taro" class="headerlink" title="taro"></a>taro</h3><p>特点：</p><ul><li>无 DSL 限制：无论是你们团队是 React 还是 Vue 技术栈，都能够使用 Taro 开发。</li><li>新特性无缝支持：由于 Taro Next 本质上是将 React&#x2F;Vue 运行在小程序上，因此，各种新特性也就无缝支持了。</li></ul><h3 id="uni-app"><a href="#uni-app" class="headerlink" title="uni-app"></a>uni-app</h3><p>特点：</p><ul><li>支持组件局部更新：mpvue 时小程序不支持自定义组件，所以组件编进 Page，更新也是 Page 级</li><li>setData 优化：将数据进行 diff，然后通过 setData 进行路径级别的更新</li></ul><h2 id="微信小程序生命周期"><a href="#微信小程序生命周期" class="headerlink" title="微信小程序生命周期"></a>微信小程序生命周期</h2><p>全局文件 app.js 中定义了一些声明周期的方法</p><p>onLaunch() 监听小程序初始化 当小程序初始化完成时，会触发 onLaunch（全局只触发一次）<br>onShow() 监听小程序显示 当小程序启动，或从后台进入前台显示，会触发 onShow<br>onHide() 监听小程序隐藏 当小程序从前台进入后台，会触发 onHide</p><p>这是每个 page 页面的周期函数</p><p>onLoad() 页面加载时触发，全局只会调用一次，在该周期内可获取当前页面路径的参数<br>onShow() 页面显示时触发或者切入前台时触发，也就是在该周期内可以获取请求数据<br>onReady() 页面初次渲染完成时触发，只会调用一次，代表页面已经可以和视图层进行交互<br>onHide() 页面隐藏或者切入后台时触发，如底部 tab 切换到其他页面或小程序切入后台时触发。<br>onUnload() 页面卸载时触发</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>前端基础</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>小程序</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>英语笔记</title>
+    <link href="/unkown404.github.io/2023/02/26/EnglishNotes/"/>
+    <url>/unkown404.github.io/2023/02/26/EnglishNotes/</url>
+    
+    <content type="html"><![CDATA[<p>虽然自己现在不需要考证了，不过遇到有意思的演讲、文章还是记录一下自己不熟的词汇之类的，以防水平退步。</p><span id="more"></span><p>adrift adj. 漂流的，随波逐流的；松动的；<br>The survivors were adrift in a lifeboat for six days. 幸存者在救生艇上漂流了六天。<br>young people adrift in the big city 在大城市漂泊的年轻人</p><p>conceivable adj. 可想象的；可信的（possible）<br>It is conceivable that I’ll see her tomorrow. 我可能明天会见到她。</p><p>objective<br>n. 目标；目的<br>meet&#x2F;achieve your objectives 达到 ╱ 实现你的目标<br>adj. 客观的；(objectively adv.)</p><p>gnaw v.咬；啃；啮<br>She gnawed at her fingernails. 她咬手指甲。<br>Self-doubt began to gnaw away at her confidence. 对自己的怀疑渐渐吞噬了她的自信心。</p><p>resilient adj. 可迅速恢复的；有适应力的</p><p>renowned adj.~ (as&#x2F;for sth)有名的；闻名的；受尊敬的<br>It is renowned as one of the region’s best restaurants. 这是本地区最好的饭店之一。<br>She is renowned for her patience. 她的耐心是出了名的。</p><p>flounder<br>v.不知所措;艰苦挣扎<br>She was floundering around in the deep end of the swimming pool. 她在游泳池深水区挣扎着。<br>At that time the industry was floundering. 那时这个行业举步维艰。</p><p>transcendent adj. 卓越的；超常的；出类拔萃的<br>…the idea of a transcendent God who stood apart from mankind. …超越于人类之上的上帝的观点。</p><p>redeem v.补救，掩饰……之不足；挽回（声誉）;偿清；遵守（诺言）<br>The only redeeming feature of the job (&#x3D; good thing about it) is the salary. 这份工作唯一的可取之处就是它的工资。<br>redeem a loan&#x2F;mortgage 清偿贷款╱按揭贷款<br>redeem a pledge&#x2F;promise 遵守诺言</p><p>redemption n.拯救；救赎<br>BEYOND&#x2F;PAST REDEMPTION(too bad to be saved or improved) 无法挽救；不可救药</p><p>smug adj.沾沾自喜的；自鸣得意的</p><p>gist n. ~ (of sth)要点；主旨；大意<br>get (&#x3D; understand) the gist of an argument 理解辩论的主旨</p><p>banal adj.  平庸的；</p><p>cliché n.   陈词滥调；<br>She trotted out the old cliché that ‘a trouble shared is a trouble halved.’ 她又重复了“与人说愁愁减半”的陈词滥调。</p><p>malfunction n. 运转失常；失灵；出现故障</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>英语学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>词汇</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>node.js</title>
+    <link href="/unkown404.github.io/2023/02/26/nodeJs/"/>
+    <url>/unkown404.github.io/2023/02/26/nodeJs/</url>
+    
+    <content type="html"><![CDATA[<p>node 基础知识记录</p><span id="more"></span><h2 id="node-模块机制"><a href="#node-模块机制" class="headerlink" title="node 模块机制"></a>node 模块机制</h2><h3 id="require-的模块加载机制"><a href="#require-的模块加载机制" class="headerlink" title="require 的模块加载机制"></a>require 的模块加载机制</h3><ol><li>先计算模块路径</li><li>如果模块在缓存里面，取出缓存</li><li>加载模块</li><li>输出模块的 exports 属性即可</li></ol><h3 id="module-exports-vs-exports"><a href="#module-exports-vs-exports" class="headerlink" title="module.exports vs exports"></a>module.exports vs exports</h3><ul><li>exports 其实就是 module.exports，引用相同（module.exports 默认提供了空对象）</li><li>module.exports 可以直接赋值，exports 不可以，只能以增加健值的方式（模块加载时返回的是 module.exports 的内容）</li><li>如果要输出一个函数或数组，必须直接对 module.exports 对象赋值</li></ul><h3 id="npm-run-XXX-的流程"><a href="#npm-run-XXX-的流程" class="headerlink" title="npm run XXX 的流程"></a>npm run XXX 的流程</h3><ul><li>运行 npm run xxx 的时候，npm 会先在当前目录的 node_modules&#x2F;.bin 查找要执行的程序，如果找到则运行；</li><li>没有找到则从全局的 node_modules&#x2F;.bin 中查找，npm i -g xxx 就是安装到到全局目录；</li><li>如果全局目录还是没找到，那么就从 path 环境变量中查找有没有其他同名的可执行程序。</li></ul><h2 id="node-进程和线程"><a href="#node-进程和线程" class="headerlink" title="node 进程和线程"></a>node 进程和线程</h2><h3 id="进程和线程辨析"><a href="#进程和线程辨析" class="headerlink" title="进程和线程辨析"></a>进程和线程辨析</h3><p>进程：资源分配的最小单位，进程是线程的容器。<br>线程：操作系统能够进行运算调度的最小单位。线程是隶属于进程的，被包含于进程之中。一个线程只能隶属于一个进程，但是一个进程是可以拥有多个线程的。</p><h3 id="node-多进程架构"><a href="#node-多进程架构" class="headerlink" title="node 多进程架构"></a>node 多进程架构</h3><p>使用 child_process 开启多个进程实现多进程单线程模式，使 CPU 的利用率提升。子进程独立于父进程</p><h3 id="创建子进程方法"><a href="#创建子进程方法" class="headerlink" title="创建子进程方法"></a>创建子进程方法</h3><p>模块 child_process 具有以下方法：</p><ul><li>spawn()： 启动一个子进程来执行命令</li><li>exec(): 启动一个子进程来执行命令，与 spawn()不同的是其接口不同，它有一个回调函数获知子进程的状况</li><li>execFlie(): 启动一个子进程来执行可执行文件</li><li>fork(): 与 spawn()类似，不同在于它创建 Node 子进程需要执行 js 文件</li></ul><h2 id="express-vs-koa"><a href="#express-vs-koa" class="headerlink" title="express vs koa"></a>express vs koa</h2><h3 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h3><p>Express 中间件实现是基于 Callback 回调函数同步的，它不会去等待异步（Promise）完成<br>Koa 的中间件机制中使用 Async&#x2F;Await（背后全是 Promise）以同步的方式来管理异步代码</p><h3 id="洋葱模型实现"><a href="#洋葱模型实现" class="headerlink" title="洋葱模型实现"></a>洋葱模型实现</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 中间件组合函数，可以参考 https://github.com/koajs/compose/blob/master/index.js</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> Array </span>&#125; middlewares </span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">compose</span>(<span class="hljs-params">ctx, middlewares</span>) &#123;<br>  <span class="hljs-comment">// &#123;1&#125;</span><br>  <span class="hljs-keyword">if</span> (!<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(middlewares)) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TypeError</span>(<span class="hljs-string">&#x27;Middlewares stack must be an array!&#x27;</span>)<br>  <br>  <span class="hljs-comment">// &#123;2&#125;</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> fn <span class="hljs-keyword">of</span> middlewares) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> fn !== <span class="hljs-string">&#x27;function&#x27;</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TypeError</span>(<span class="hljs-string">&#x27;Middleware must be composed of functions!&#x27;</span>)<br>  &#125;<br>  <br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> len = middlewares.<span class="hljs-property">length</span>; <span class="hljs-comment">// &#123;3&#125; 获取数组长度</span><br>    <span class="hljs-keyword">const</span> dispatch = <span class="hljs-keyword">function</span>(<span class="hljs-params">i</span>) &#123; <span class="hljs-comment">// &#123;4&#125; 这里是我们实现的关键</span><br>      <span class="hljs-keyword">if</span> (len === i) &#123; <span class="hljs-comment">// &#123;5&#125; 中间件执行完毕</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>();<br>      &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">const</span> fn = middlewares[i]; <span class="hljs-comment">// &#123;6&#125;</span><br>        <br>        <span class="hljs-keyword">try</span> &#123;<br>          <span class="hljs-comment">// &#123;7&#125; 这里一定要 bind 下，不要立即执行</span><br>          <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-title function_">fn</span>(ctx, dispatch.<span class="hljs-title function_">bind</span>(<span class="hljs-literal">null</span>, (i + <span class="hljs-number">1</span>))));<br>        &#125; <span class="hljs-keyword">catch</span> (err) &#123;<br>          <span class="hljs-comment">// &#123;8&#125; 返回错误</span><br>          <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">reject</span>(err);<br>        &#125;<br>      &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">dispatch</span>(<span class="hljs-number">0</span>);<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">const</span> fn = <span class="hljs-title function_">compose</span>(ctx, middlewares);<br><br><span class="hljs-title function_">fn</span>();<br><br></code></pre></td></tr></table></figure><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>(1)<a href="https://juejin.cn/post/6844903951742025736">NodeJS 有难度的面试题，你能答对几个？</a><br>(2)<a href="https://juejin.cn/post/6844904071501971469">挑战一轮大厂后的面试总结 (含六个方向) - nodejs 篇</a><br>(3)<a href="https://juejin.cn/post/7078924628525056007">三面面试官：运行 npm run xxx 的时候发生了什么？</a><br>(4)<a href="https://juejin.cn/post/6844904099767386126">多维度分析 Express、Koa 之间的区别</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>前端基础</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>node.js</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>webpack</title>
     <link href="/unkown404.github.io/2023/02/19/webpack/"/>
     <url>/unkown404.github.io/2023/02/19/webpack/</url>
@@ -95,9 +170,9 @@
     
     <tags>
       
-      <tag>Shell</tag>
-      
       <tag>node.js</tag>
+      
+      <tag>Shell</tag>
       
     </tags>
     
