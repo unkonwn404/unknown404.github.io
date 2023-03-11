@@ -11,7 +11,6 @@ tags:
 
 <!-- more -->
 
-
 ## 浏览器存储
 
 |            |          cookie          | localStorage | sessionStorage | indexDB  |
@@ -66,8 +65,9 @@ tags:
 
 #### 协商缓存
 
-1. Last-Modified/If-Modified-Since
-2. ETag/If-None-Matched：适用文件周期查看、内容没变的情况
+1. Last-Modified/If-Modified-Since：Last-Modified 表示本地文件最后修改日期，If-Modified-Since 会将 Last-Modified 的值发送给服务器，询问服务器在该日期后资源是否有更新，有更新的话就会将新的资源发送回来。但是如果本地文件被打开，会导致 Last-Modified 被修改
+
+2. ETag/If-None-Matched：ETag 类似于文件指纹，If-None-Match 会将当前 ETag 发送给服务器，询问该资源 ETag 是否变动，有变动的话就将新的资源发送回来。并且 ETag 优先级比 Last-Modified 高。适用文件周期查看、内容没变的情况
 
 #### 刷新操作对缓存内容影响
 
@@ -155,3 +155,74 @@ function jsonp(url,callback,success){
 event.preventDefault()：阻止默认事件
 event.stopPropagation()：阻止冒泡
 event.stopImmediatePropagation()：阻止该节点其他注册事件及冒泡
+
+## 性能优化
+
+### 页面渲染优化
+
+- 避免 js、css 阻塞：css 影响 renderTree 的构建，会阻塞页面的渲染，因此应该尽早加载；js 可以修改 CSSOM 和 DOM，因此 js 会阻塞页面的解析和渲染，需要放到底部
+- 减少重绘和回流
+
+### JS 优化
+
+- 使用防抖和节流
+  {% note info %}
+
+  **防抖（debounce）**
+  不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n 秒后再执行。
+  _应用场景_
+
+1. 窗口大小变化，调整样式
+2. 搜索框，输入后 1000 毫秒搜索
+3. 表单验证，输入 1000 毫秒后验证
+
+```JavaScript
+  function debounce(event, time) {
+    let timer = null;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        event.apply(this, args);
+      }, time);
+    };
+  }
+
+```
+
+**节流（throttle）**
+不管事件触发频率多高，只在单位时间内执行一次。
+
+```JavaScript
+// 第一次必触发，最后一次不会触发
+function throttle(event, time) {
+  let pre = 0;
+  return function (...args) {
+    if (Date.now() - pre > time) {
+      pre = Date.now();
+      event.apply(this, args);
+    }
+  }
+}
+// 第一次事件不会触发，最后一次一定触发
+function throttle(event, time) {
+  let timer = null;
+  return function (...args) {
+    if (!timer) {
+      timer = setTimeout(() => {
+        timer = null;
+        event.apply(this, args);
+      }, time);
+    }
+  }
+}
+```
+
+{% endnote %}
+
+- 使用 css 动画代替 js 动画
+- 使用事件委托
+
+### css 优化
+
+- 雪碧图
+- 懒加载

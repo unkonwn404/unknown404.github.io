@@ -53,24 +53,32 @@ node 基础知识记录
 - fork(): 与 spawn()类似，不同在于它创建 Node 子进程需要执行 js 文件
 
 ## express vs koa
+
 ### 中间件
+
 Express 中间件实现是基于 Callback 回调函数同步的，它不会去等待异步（Promise）完成
 Koa 的中间件机制中使用 Async/Await（背后全是 Promise）以同步的方式来管理异步代码
+
+#### 中间件原理
+
+内部维护一个函数数组，这个函数数组表示在发出响应之前要执行的所有函数，也就是中间件数组使用 app.use(fn)后，传进来的 fn 就会被扔到这个数组里，执行完毕后调用 next()方法执行函数数组里的下一个函数，如果没有调用 next()的话，就不会调用下一个函数了，也就是说调用就会被终止
+
 ### 洋葱模型实现
+
 ```JavaScript
 /**
  * 中间件组合函数，可以参考 https://github.com/koajs/compose/blob/master/index.js
- * @param { Array } middlewares 
+ * @param { Array } middlewares
  */
 function compose(ctx, middlewares) {
   // {1}
   if (!Array.isArray(middlewares)) throw new TypeError('Middlewares stack must be an array!')
-  
+
   // {2}
   for (const fn of middlewares) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
-  
+
   return function() {
     const len = middlewares.length; // {3} 获取数组长度
     const dispatch = function(i) { // {4} 这里是我们实现的关键
@@ -78,7 +86,7 @@ function compose(ctx, middlewares) {
         return Promise.resolve();
       } else {
         const fn = middlewares[i]; // {6}
-        
+
         try {
           // {7} 这里一定要 bind 下，不要立即执行
           return Promise.resolve(fn(ctx, dispatch.bind(null, (i + 1))));
@@ -98,6 +106,36 @@ const fn = compose(ctx, middlewares);
 fn();
 
 ```
+
+## 数据库比较：mysql vs mongodb
+
+### 特点
+
+**MySQL**
+
+- 关系型数据库，存储结构化数据
+- 可以通过外键，主键将不同表中的属性关联起来
+- 读取数据可以使用 sql
+- 需通过新增服务器配置来支持规模扩张
+
+**MongoDB**
+
+- 非关系型数据库，可以在不首先定义结构的情况下创建记录
+- 不支持表关联
+- 不能用 sql 查询
+- 可通过新增服务器实现扩展，解决大量查询问题
+
+### 术语对比
+
+|    MySQL    |   MongoDB   |                               说明                               |
+| :---------: | :---------: | :--------------------------------------------------------------: |
+|  database   |  database   |                              数据库                              |
+|    table    | collection  |                             表/集合                              |
+|     row     |  document   |                             行/文档                              |
+|   column    |    field    |                             字段/域                              |
+|    index    |    index    |                               索引                               |
+|    join     |  嵌入文档   | 表关联/MongoDB 不支持 join，MongoDB 通过嵌入式文档来替代多表连接 |
+| primary key | primary key |              主键/MongoDB 自动将\_id 字段设置为主键              |
 
 ## 参考文献
 

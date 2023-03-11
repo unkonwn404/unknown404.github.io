@@ -1,7 +1,15 @@
 ---
-title: jsFunction
+title: 面向面试的算法题
+date: 2023-03-08 09:55:56
 tags:
+  - JavaScript
+  - 算法
+  - 面试
+excerpt: 这一部分想不出来怎么描述了，就纯纯面向面试的算法题
+categories:
+  - 前端基础
 ---
+
 数组展平
 ```
 const flat = (array) => {

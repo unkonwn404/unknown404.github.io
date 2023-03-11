@@ -7,9 +7,10 @@ tags:
   - HTML
   - CSS
 ---
-前端HTML/CSS方面知识整理。
-<!-- more -->
 
+前端 HTML/CSS 方面知识整理。
+
+<!-- more -->
 
 # HTML
 
@@ -94,7 +95,9 @@ sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relati
 - justify-content：主轴对齐方式
 - align-items：交叉轴对齐方式
 - align-content：多轴对齐方式
-  **item 属性**
+
+**item 属性**
+
 - order：项目的排列顺序。数值越小，排列越靠前，默认为 0。
 - flex-grow：项目的放大比例，默认为 0，即如果存在剩余空间，也不放大。属性都为 1，则它们将等分剩余空间（如果有的话）
 - flex-shrink：属性定义了项目的缩小比例，默认为 1，即如果空间不足，该项目将缩小。为 0 时即使空间不足也不缩小
@@ -168,6 +171,34 @@ sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relati
 5. link 支持 js 控制 dom 改样式，@import 不支持
 
 ## css 场景应用
+
+### 样式文件内部 px 转 vw
+
+- sass 文件：定义函数，接收参数并且返回计算值
+  eg.将 375px 宽度的设计稿转换成适应屏幕宽度的样式
+
+```scss
+@function pxToVW($px) {
+  @return ($px/375) + vw;
+}
+// 使用示例
+.box {
+  width: pxToVW(36);
+}
+```
+
+- less 文件：
+
+```less
+@windowWidth: 100vw;
+.rpxToVW(@name,@rpx) {
+  //传入不带单位的rpx数值，将rpx转为vw
+  @{name}: unit(@rpx / 750 * @windowWidth, vw);
+}
+.box {
+  .rpxToVW(margin,20);
+}
+```
 
 ### 画一个三角形/扇形
 

@@ -8,8 +8,6 @@ categories:
 date: 2022-06-18 20:58:57
 ---
 
-
-
 ## js 简介
 
 "解释型语言"，是通过解释器来实现的。运行过程：JS 代码->解析成 AST (期间伴随词法分析、语法分析)->生成字节码（V8）->生成机器码（编译器）
@@ -90,6 +88,7 @@ Array、Function 类型作为 Object 实例重写了 toString 方法
 |   true    |      'true'       |
 |  number   |    `${number}`    |
 |  [ 1,2 ]  |       '1,2'       |
+|    [ ]    |        ''         |
 | 非空对象  | [ object Object ] |
 
 ### ==强制转换规则
@@ -109,6 +108,35 @@ Array、Function 类型作为 Object 实例重写了 toString 方法
 1. 调用 valueOf，如果转换为基础类型，则返回
 2. 调用 toString，如果转换为基础类型，则返回
 3. 报错
+
+#### 应用示例：让 a == 1 && a == 2 && a == 3 成立
+
+**解析**：获取一次 a 的同时，让它自增 1。
+
+```
+const a = {
+  _a: 0,
+  valueOf: function() {
+    return ++a._a
+  }
+}
+```
+
+**延伸**：让 a === 1 && a === 2 && a === 3 成立
+
+```
+Object.defineProperties(window, {
+  _a: {
+    value: 0,
+    writable: true
+  },
+  a: {
+    get: function() {
+      return  ++_a
+    }
+  }
+})
+```
 
 #### ==与 Object.is 的区别
 
@@ -377,6 +405,10 @@ function curry(fn){
 
 ### JavaScript 异步编程
 
+#### 什么是异步？
+
+一个异步过程调用发出后，调用者不会立刻得到结果。而是在"调用"发出后，"被调用者"通过状态、通知来通知调用者，或通过回调函数处理这个调用。JavaScript 是单线程的。同步代码意味着什么呢？意味着有可能会阻塞，当我们有一个任务需要时间较长时，如果使用同步方式，那么就会阻塞之后的代码执行。
+
 #### 异步编程的实现方式
 
 - **callback**：多个回调函数嵌套的时候会造成回调函数地狱
@@ -448,7 +480,7 @@ nodejs 的事件循环主要分为 6 个阶段：
 - check：执行 setImmediate() 的回调
 - close callbacks：执行 socket 的 close 事件回调
 
-![](/img/eventLoop.png)
+![](/img/eventLoop.jpeg)
 
 ## 参考文献
 
