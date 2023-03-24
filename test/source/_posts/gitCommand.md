@@ -16,8 +16,6 @@ tags:
 2）[Version Controlling with Git in Visual Studio Code and Azure DevOps](https://almvm.devopshub.cn/labs/azuredevops/git/)
 虽说界面化是挺好的，但万一哪天需要书写或修改部署文件时会比较头疼，所以还是要记录一点
 
-
-
 ## 背景
 
 git 是一个分布式版本控制软件。其工作流程如下图所示：
@@ -123,6 +121,14 @@ xclip -sel clip < ~/.ssh/id_rsa.pub
 #### 添加 SSH Key
 
 打开 gitlab，在左侧栏找到 profile setting，点击 SSH Keys，将复制的 SSH Key 内容粘贴在 keys 一栏，点击`add key`完成。
+
+#### 问题总结
+
+情景：使用 vscode 图形化界面克隆仓库时报错：没有权限。使用指令克隆代码时出现提示语`The authenticity of host 'code.xxx.com (xxx.xxx.xxx.xxx)' can't be established.`
+原因：这是因为我从来没有连接过这个服务器
+解决方法：根据指令窗的提示`Are you sure you want to continue connecting (yes/no/[fingerprint])? `选择 yes，会自动帮你把服务器域名加入 known_host 文件中
+或者使用指令`ssh-keyscan -H $IP >> ~/.ssh/known_hosts`手动加服务器域名到 known_host。可以先用指令`ssh -T git@<hostname>`检查域名是否建立连接，正常会返回`Welcome to Gitlab,xxx`。
+添加完成后可以使用指令`ssh-keygen -R <hostname>`确认
 
 ### 查看 git 配置
 
@@ -322,8 +328,7 @@ git revert <commit-id>
 commit-id 为某次提交的 hash 值。该指令会创建一个新的提交来去除指定的某次 commit 的内容。
 
 当新需求中某一项功能因为种种原因不能上线时可以使用该指令。这样既可以留下记录又不会导致其他人分支不同步。
-revert的时候会进入编辑器模式，如果没有指定编辑器，通常会默认使用系统的编辑器，即`vi`。界面提示"Please enter a commit message for your changes"。在该行之前输入`i`进入插入阶段，输入想要的内容后单击esc退出插入模式，输入`:wq`回车即可保存退出。
-
+revert 的时候会进入编辑器模式，如果没有指定编辑器，通常会默认使用系统的编辑器，即`vi`。界面提示"Please enter a commit message for your changes"。在该行之前输入`i`进入插入阶段，输入想要的内容后单击 esc 退出插入模式，输入`:wq`回车即可保存退出。
 
 ### 仓库、分支迁移
 

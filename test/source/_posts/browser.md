@@ -127,9 +127,10 @@ function jsonp(url,callback,success){
 
 1. 使用 get、post、head 请求
 2. content-type 仅限于 text/plain,multipart/form-data,application/x-www-form-urlencoded
-3. xmlHttpRequestUpload 没注册任何事件监听且可使用 xmlHttpRequest.upload 访问
-   复杂请求：
-   会使用 option 发预检请求、Access-Control—Request-Method 告知服务器实际使用的方法，Access-Control-Request-Header 告知服务器实际请求所携带自定义首部字段；预检请求完成后发送实际请求
+3. header中只能包含以下请求头字段Accept、Accept-Language、Content-Language、Content-Type
+
+复杂请求：
+会使用 option 发预检请求、Access-Control—Request-Method 告知服务器实际使用的方法，Access-Control-Request-Header 告知服务器实际请求所携带自定义首部字段；预检请求完成后发送实际请求
 
 3）**document.domain**：只适用于二级域名相同的情况（备注：Chrome 101 版本开始，document.domain 将变为可读属性。即无法通过将两个页面的 document.domain 都设置为二级域名的方法绕过同源策略）
 4）**location.hash**：通过中间页，不同域之间 iframe 用 location.hash 传值，相同域通过 js 访问

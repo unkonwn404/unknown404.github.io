@@ -443,6 +443,27 @@ componentDidMount(){
 
 ```JSX
 
+// 创建应用
+const app = dva();
+app.use(createLoading()) // 使用插件
+// 注册 Model
+app.model({
+  namespace: 'count',
+  state: 0,
+  reducers: {
+    add(state) { return state + 1 },
+  },
+  effects: {
+    *addAfter1Second(action, { call, put }) {
+      yield call(delay, 1000);
+      yield put({ type: 'add' });
+    },
+  },
+});
+// 注册视图
+app.router(() => <ConnectedApp />);
+// 启动应用
+app.start('#root');
 ```
 
 ## 参考文献
@@ -455,3 +476,4 @@ componentDidMount(){
 （6）[深入理解 React Diff 算法](https://juejin.cn/post/6919302952486174733)
 （7）[React](https://alexjjwu.fun/web/docs/alexwjj/fe-study/)
 （8）[一文彻底搞懂 DvaJS 原理](https://juejin.cn/post/6963466553601835044)
+（9）[React Hooks 的原理，有的简单有的不简单](https://juejin.cn/post/7075701341997236261)
