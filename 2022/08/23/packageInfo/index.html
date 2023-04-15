@@ -7,8 +7,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unkown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unkown404.github.io/img/avatar.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -19,11 +19,11 @@
     <meta name="description" content="前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="依赖包管理工具比较">
-<meta property="og:url" content="https://unkonwn404.github.io/unkown404.github.io/2022/08/23/packageInfo/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/08/23/packageInfo/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://unkonwn404.github.io/unkown404.github.io/img/pnpm.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/pnpm.png">
 <meta property="article:published_time" content="2022-08-23T14:06:42.000Z">
 <meta property="article:modified_time" content="2023-02-19T03:19:04.428Z">
 <meta property="article:author" content="小白的文件整理箱">
@@ -32,7 +32,7 @@
 <meta property="article:tag" content="yarn">
 <meta property="article:tag" content="pnpm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://unkonwn404.github.io/unkown404.github.io/img/pnpm.png">
+<meta name="twitter:image" content="https://unkonwn404.github.io/unknown404.github.io/img/pnpm.png">
   
   
   
@@ -60,12 +60,12 @@
 <link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
 
-<link  rel="stylesheet" href="/unkown404.github.io/css/main.css" />
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
 
 
-  <link id="highlight-css" rel="stylesheet" href="/unkown404.github.io/css/highlight.css" />
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
   
-    <link id="highlight-css-dark" rel="stylesheet" href="/unkown404.github.io/css/highlight-dark.css" />
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
   
 
 
@@ -74,20 +74,20 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unkown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unkown404.github.io/local-search.xml"};
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
       Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
     }
   </script>
-  <script  src="/unkown404.github.io/js/utils.js" ></script>
-  <script  src="/unkown404.github.io/js/color-schema.js" ></script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
   
 
 
   
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unkown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
 
@@ -100,7 +100,7 @@
 <div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
-    <a class="navbar-brand" href="/unkown404.github.io/">
+    <a class="navbar-brand" href="/unknown404.github.io/">
       <strong>小白的文件整理箱</strong>
     </a>
 
@@ -119,7 +119,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/">
+              <a class="nav-link" href="/unknown404.github.io/">
                 <i class="iconfont icon-home-fill"></i>
                 <span>首页</span>
               </a>
@@ -131,7 +131,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/archives/">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
               </a>
@@ -143,7 +143,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/categories/">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
@@ -155,7 +155,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/tags/">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
               </a>
@@ -167,7 +167,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/about/">
+              <a class="nav-link" href="/unknown404.github.io/about/">
                 <i class="iconfont icon-user-fill"></i>
                 <span>关于</span>
               </a>
@@ -197,7 +197,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/unkown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -348,7 +348,7 @@
 <p>Yarn 仅以 flatten 格式 描述各个包之间的依赖关系，并依赖于其当前实现来创建目录结构。这意味着如果其内部算法发生变化，结构也会发生变化。</p>
 <h3 id="依赖关系-1"><a href="#依赖关系-1" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>同 npm 基本一样，其共有的问题是：如果你有 100 个项目使用了某个依赖（dependency），就会有 100 份该依赖的副本保存在硬盘上</p>
 <h2 id="pnpm"><a href="#pnpm" class="headerlink" title="pnpm"></a>pnpm</h2><p>同 npm 和 Yarn，都属于 Javascript 包管理安装工具，它较 npm 和 Yarn 在性能上得到很大提升，被称为快速的，节省磁盘空间的包管理工具。</p>
-<h3 id="依赖关系-2"><a href="#依赖关系-2" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>为了解决 npm、yarn 安装时依赖可能复制多次、占用磁盘空间的问题，pnpm 采用了全局仓库保存依赖、项目通过 link 的方式访问内容。<br><img src="/unkown404.github.io/img/pnpm.png" srcset="/unkown404.github.io/img/loading.gif" lazyload></p>
+<h3 id="依赖关系-2"><a href="#依赖关系-2" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>为了解决 npm、yarn 安装时依赖可能复制多次、占用磁盘空间的问题，pnpm 采用了全局仓库保存依赖、项目通过 link 的方式访问内容。<br><img src="/unknown404.github.io/img/pnpm.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <p>当执行 pnpm install 时，项目的 node_modules 文件夹下除了安装的包名 bar、其依赖保持原有的树状、不进行提升，还会有.pnpm 目录，目录下是以展平结构管理每个版本包的源码内容，以硬链接方式指向 pnpm-store 中的文件地址。pnpm-store 是全局的 store，存储所有 npm 包，同一版本的包仅存储一份内容，甚至不同版本的包也仅存储 diff 内容。<br>如上图所示一个包的寻找需要经过三层结构：<code>node_modules/bar</code> &gt; 软链接 <code>node_modules/.pnpm/bar@1.0.0/node_modules/bar</code> &gt; 硬链接 <code>~/.pnpm-store/v3/files/00/xxxxxx</code>。</p>
 <h4 id="备注：软链接和硬链接"><a href="#备注：软链接和硬链接" class="headerlink" title="备注：软链接和硬链接"></a>备注：软链接和硬链接</h4><p>在 Linux 系统中，内核为每一个新创建的文件分配一个 Inode(索引结点)，每个文件都有一个惟一的 inode 号。文件属性保存在索引结点里，在访问文件时，索引结点被复制到内存在，从而实现文件的快速访问。<br>Linux 中包括两种链接：硬链接(Hard Link)和软链接(Soft Link)，软链接又称为符号链接（Symbolic link）。<br>硬链接说白了是一个指针，指向文件索引节点，系统并不为它重新分配 inode，他将与源文件共用一个 inode。<br>软链接相当于 windows 的快捷方式，软链接文件会将 inode 指向源文件的 block，原文件＆链接文件拥有不同的 inode 号</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6932046455733485575">关于现代包管理器的深度思考——为什么现在我更推荐 pnpm 而不是 npm&#x2F;yarn?</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904022718038024">yarn or npm 版本固化如何选择</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7127295203177676837">pnpm 是凭什么对 npm 和 yarn 降维打击的</a><br>（4）<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/bZ7AVSjBcZrZ3I387_esmg">该用 pnpm 了，“快、准、狠”。</a></p>
@@ -370,7 +370,7 @@
     
       <span class="category-chain">
         
-  <a href="/unkown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
   
   
 
@@ -385,13 +385,13 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/unkown404.github.io/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/">#前端依赖包管理</a>
+        <a href="/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/">#前端依赖包管理</a>
       
-        <a href="/unkown404.github.io/tags/npm/">#npm</a>
+        <a href="/unknown404.github.io/tags/npm/">#npm</a>
       
-        <a href="/unkown404.github.io/tags/yarn/">#yarn</a>
+        <a href="/unknown404.github.io/tags/yarn/">#yarn</a>
       
-        <a href="/unkown404.github.io/tags/pnpm/">#pnpm</a>
+        <a href="/unknown404.github.io/tags/pnpm/">#pnpm</a>
       
     </div>
   
@@ -404,7 +404,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>依赖包管理工具比较</div>
-      <div>https://unkonwn404.github.io/unkown404.github.io/2022/08/23/packageInfo/</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/08/23/packageInfo/</div>
     </div>
     <div class="license-meta">
       
@@ -448,7 +448,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/unkown404.github.io/2022/08/29/es6/" title="ES6语法">
+                      <a href="/unknown404.github.io/2022/08/29/es6/" title="ES6语法">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">ES6语法</span>
                         <span class="visible-mobile">上一篇</span>
@@ -458,7 +458,7 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/unkown404.github.io/2022/08/18/koroHeader/" title="koroFileHeader使用技巧">
+                      <a href="/unknown404.github.io/2022/08/18/koroHeader/" title="koroFileHeader使用技巧">
                         <span class="hidden-mobile">koroFileHeader使用技巧</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
@@ -588,8 +588,8 @@
 
 <script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
 <script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unkown404.github.io/js/events.js" ></script>
-<script  src="/unkown404.github.io/js/plugins.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
 
 
   <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
@@ -611,7 +611,7 @@
 
 
   
-    <script  src="/unkown404.github.io/js/img-lazyload.js" ></script>
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
   
 
 
@@ -710,7 +710,7 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
-  <script  src="/unkown404.github.io/js/local-search.js" ></script>
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
 
 
 
@@ -718,7 +718,7 @@
 
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unkown404.github.io/js/boot.js" ></script>
+<script  src="/unknown404.github.io/js/boot.js" ></script>
 
 
   

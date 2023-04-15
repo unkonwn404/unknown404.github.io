@@ -7,8 +7,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unkown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unkown404.github.io/img/avatar.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -19,19 +19,19 @@
     <meta name="description" content="前端面试常考内容之JavaScript。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Javascript基础">
-<meta property="og:url" content="https://unkonwn404.github.io/unkown404.github.io/2022/06/18/javascript/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/06/18/javascript/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="前端面试常考内容之JavaScript。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://unkonwn404.github.io/unkown404.github.io/img/type-change.jpeg">
-<meta property="og:image" content="https://unkonwn404.github.io/unkown404.github.io/img/proto-pic.jpg">
-<meta property="og:image" content="https://unkonwn404.github.io/unkown404.github.io/img/eventLoop.jpeg">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/type-change.jpeg">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/proto-pic.jpg">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/eventLoop.jpeg">
 <meta property="article:published_time" content="2022-06-18T12:58:57.000Z">
 <meta property="article:modified_time" content="2023-03-07T10:59:00.938Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="JavaScript">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://unkonwn404.github.io/unkown404.github.io/img/type-change.jpeg">
+<meta name="twitter:image" content="https://unkonwn404.github.io/unknown404.github.io/img/type-change.jpeg">
   
   
   
@@ -59,12 +59,12 @@
 <link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
 
-<link  rel="stylesheet" href="/unkown404.github.io/css/main.css" />
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
 
 
-  <link id="highlight-css" rel="stylesheet" href="/unkown404.github.io/css/highlight.css" />
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
   
-    <link id="highlight-css-dark" rel="stylesheet" href="/unkown404.github.io/css/highlight-dark.css" />
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
   
 
 
@@ -73,20 +73,20 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unkown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unkown404.github.io/local-search.xml"};
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
       Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
     }
   </script>
-  <script  src="/unkown404.github.io/js/utils.js" ></script>
-  <script  src="/unkown404.github.io/js/color-schema.js" ></script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
   
 
 
   
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unkown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
 
@@ -99,7 +99,7 @@
 <div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
-    <a class="navbar-brand" href="/unkown404.github.io/">
+    <a class="navbar-brand" href="/unknown404.github.io/">
       <strong>小白的文件整理箱</strong>
     </a>
 
@@ -118,7 +118,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/">
+              <a class="nav-link" href="/unknown404.github.io/">
                 <i class="iconfont icon-home-fill"></i>
                 <span>首页</span>
               </a>
@@ -130,7 +130,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/archives/">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
               </a>
@@ -142,7 +142,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/categories/">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
@@ -154,7 +154,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/tags/">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
               </a>
@@ -166,7 +166,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/about/">
+              <a class="nav-link" href="/unknown404.github.io/about/">
                 <i class="iconfont icon-user-fill"></i>
                 <span>关于</span>
               </a>
@@ -196,7 +196,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/unkown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -392,7 +392,7 @@
 <td align="center">[ object Object ]</td>
 </tr>
 </tbody></table>
-<h3 id="x3D-x3D-强制转换规则"><a href="#x3D-x3D-强制转换规则" class="headerlink" title="&#x3D;&#x3D;强制转换规则"></a>&#x3D;&#x3D;强制转换规则</h3><p><img src="/unkown404.github.io/img/type-change.jpeg" srcset="/unkown404.github.io/img/loading.gif" lazyload><br>如图所示，主要有以下几个步骤：</p>
+<h3 id="x3D-x3D-强制转换规则"><a href="#x3D-x3D-强制转换规则" class="headerlink" title="&#x3D;&#x3D;强制转换规则"></a>&#x3D;&#x3D;强制转换规则</h3><p><img src="/unknown404.github.io/img/type-change.jpeg" srcset="/unknown404.github.io/img/loading.gif" lazyload><br>如图所示，主要有以下几个步骤：</p>
 <ol>
 <li>类型是否相同</li>
 <li>是否 null&#x3D;&#x3D;undefined</li>
@@ -427,7 +427,7 @@
 </ol>
 <figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-keyword">function</span> deep<span class="hljs-constructor">CloneObj(<span class="hljs-params">obj</span>)</span>&#123;<br>  var newObj=<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Array</span>.</span></span>is<span class="hljs-constructor">Array(<span class="hljs-params">obj</span>)</span>?<span class="hljs-literal">[]</span>:&#123;&#125;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj)&#123;<br>    <span class="hljs-keyword">if</span>(obj.has<span class="hljs-constructor">OwnProperty(<span class="hljs-params">key</span>)</span>)&#123;<br>      newObj<span class="hljs-literal">[<span class="hljs-identifier">key</span>]</span>=typeof obj<span class="hljs-literal">[<span class="hljs-identifier">key</span>]</span>==&#x27;<span class="hljs-keyword">object</span>&#x27;?deep<span class="hljs-constructor">CloneObj(<span class="hljs-params">obj</span>[<span class="hljs-params">key</span>])</span>:obj<span class="hljs-literal">[<span class="hljs-identifier">key</span>]</span><br>    &#125;<br>  &#125;<br>  return newObj<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h2 id="原型和原型链"><a href="#原型和原型链" class="headerlink" title="原型和原型链"></a>原型和原型链</h2><p><strong>原型</strong>：<em>proto</em>指向的对象<br><strong>原型链</strong>：当对象某一属性在当前对象找不到时会沿<em>proto</em>属性向上一个对象查找，如果没有就沿着<em>proto</em>属性继续向上查找，这个查找依据的规则就是原型链<br><img src="/unkown404.github.io/img/proto-pic.jpg" srcset="/unkown404.github.io/img/loading.gif" lazyload></p>
+<h2 id="原型和原型链"><a href="#原型和原型链" class="headerlink" title="原型和原型链"></a>原型和原型链</h2><p><strong>原型</strong>：<em>proto</em>指向的对象<br><strong>原型链</strong>：当对象某一属性在当前对象找不到时会沿<em>proto</em>属性向上一个对象查找，如果没有就沿着<em>proto</em>属性继续向上查找，这个查找依据的规则就是原型链<br><img src="/unknown404.github.io/img/proto-pic.jpg" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><h3 id="原型链继承"><a href="#原型链继承" class="headerlink" title="原型链继承"></a>原型链继承</h3><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elm"><span class="hljs-type">Child</span>.proto<span class="hljs-keyword">type</span>=new <span class="hljs-type">Parent</span>()<br></code></pre></td></tr></table></figure>
 
 <p>基本思路：利用原型让一个引用类型继承另一个引用类型的属性和方法<br>特点：引用类型被共享，不可向父实例传参</p>
@@ -532,7 +532,7 @@
 <li>check：执行 setImmediate() 的回调</li>
 <li>close callbacks：执行 socket 的 close 事件回调</li>
 </ul>
-<p><img src="/unkown404.github.io/img/eventLoop.jpeg" srcset="/unkown404.github.io/img/loading.gif" lazyload></p>
+<p><img src="/unknown404.github.io/img/eventLoop.jpeg" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6941194115392634888">「2021」高频前端面试题汇总之 JavaScript 篇（下）</a></p>
 
                 
@@ -552,7 +552,7 @@
     
       <span class="category-chain">
         
-  <a href="/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" class="category-chain-item">前端基础</a>
+  <a href="/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" class="category-chain-item">前端基础</a>
   
   
 
@@ -567,7 +567,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/unkown404.github.io/tags/JavaScript/">#JavaScript</a>
+        <a href="/unknown404.github.io/tags/JavaScript/">#JavaScript</a>
       
     </div>
   
@@ -580,7 +580,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>Javascript基础</div>
-      <div>https://unkonwn404.github.io/unkown404.github.io/2022/06/18/javascript/</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/06/18/javascript/</div>
     </div>
     <div class="license-meta">
       
@@ -624,7 +624,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/unkown404.github.io/2022/08/08/rollup/" title="rollup打包工具使用">
+                      <a href="/unknown404.github.io/2022/08/08/rollup/" title="rollup打包工具使用">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">rollup打包工具使用</span>
                         <span class="visible-mobile">上一篇</span>
@@ -634,7 +634,7 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/unkown404.github.io/2022/06/18/mobileBrowser/" title="移动端开发的踩坑经历">
+                      <a href="/unknown404.github.io/2022/06/18/mobileBrowser/" title="移动端开发的踩坑经历">
                         <span class="hidden-mobile">移动端开发的踩坑经历</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
@@ -764,8 +764,8 @@
 
 <script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
 <script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unkown404.github.io/js/events.js" ></script>
-<script  src="/unkown404.github.io/js/plugins.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
 
 
   <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
@@ -787,7 +787,7 @@
 
 
   
-    <script  src="/unkown404.github.io/js/img-lazyload.js" ></script>
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
   
 
 
@@ -886,7 +886,7 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
-  <script  src="/unkown404.github.io/js/local-search.js" ></script>
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
 
 
 
@@ -894,7 +894,7 @@
 
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unkown404.github.io/js/boot.js" ></script>
+<script  src="/unknown404.github.io/js/boot.js" ></script>
 
 
   

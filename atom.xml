@@ -3,11 +3,11 @@
   <title>小白的文件整理箱</title>
   
   
-  <link href="https://unkonwn404.github.io/unkown404.github.io/atom.xml" rel="self"/>
+  <link href="https://unkonwn404.github.io/unknown404.github.io/atom.xml" rel="self"/>
   
-  <link href="https://unkonwn404.github.io/unkown404.github.io/"/>
-  <updated>2023-04-15T03:42:17.986Z</updated>
-  <id>https://unkonwn404.github.io/unkown404.github.io/</id>
+  <link href="https://unkonwn404.github.io/unknown404.github.io/"/>
+  <updated>2023-04-15T04:34:00.279Z</updated>
+  <id>https://unkonwn404.github.io/unknown404.github.io/</id>
   
   <author>
     <name>小白的文件整理箱</name>
@@ -17,22 +17,30 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>appletCDN</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/04/15/appletCDN/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/04/15/appletCDN/</id>
+    <title>小程序踩坑经历--CDN域名替换</title>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/04/15/appletCDN/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/04/15/appletCDN/</id>
     <published>2023-04-15T03:42:17.000Z</published>
-    <updated>2023-04-15T03:42:17.986Z</updated>
+    <updated>2023-04-15T04:34:00.279Z</updated>
+    
+    <content type="html"><![CDATA[<p>记录项目迁移时碰到的问题。</p><span id="more"></span><h2 id="问题-1-关于-CDN-域名替换"><a href="#问题-1-关于-CDN-域名替换" class="headerlink" title="问题 1:关于 CDN 域名替换"></a>问题 1:关于 CDN 域名替换</h2><h3 id="场景描述"><a href="#场景描述" class="headerlink" title="场景描述"></a>场景描述</h3><p>替换了静态资源使用的域名后，是否需要在开发者平台上修改 request 合法域名或 downloadFile 合法域名？</p><h3 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h3><p>需要根据代码情况来看：</p><ol><li>如果直接在 scss 文件引入 url 链接的情况，不需要进行配置。</li><li>使用 wx.downloadFile 相关 API 时需要配置 downloadFile 合法域名列表。需要注意的是使用 wx.getImageInfo 和 wx.loadFontFace 等 API 实际上也会向对应的域名发起请求，如果该域名不在小程序开发者平台的 downloadFile 合法域名列表中，就会出现跨域问题，从而导致请求失败。</li></ol><h2 id="问题-2-使用的特殊字体文件在-ios-和开发者工具上显示正常，安卓上无法显示"><a href="#问题-2-使用的特殊字体文件在-ios-和开发者工具上显示正常，安卓上无法显示" class="headerlink" title="问题 2:使用的特殊字体文件在 ios 和开发者工具上显示正常，安卓上无法显示"></a>问题 2:使用的特殊字体文件在 ios 和开发者工具上显示正常，安卓上无法显示</h2><h3 id="场景描述-1"><a href="#场景描述-1" class="headerlink" title="场景描述"></a>场景描述</h3><p>使用了如下代码来调用 icon 字体文件，域名链接可以正常访问，但会出现上述问题；且远程调试和真机调试平台都没有任何报错信息。</p><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scss"><span class="hljs-keyword">@font-face</span> &#123;<br>    <span class="hljs-attribute">font-family</span>: <span class="hljs-string">&quot;icon2018&quot;</span>;<br>    <span class="hljs-attribute">src</span>: url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.ttf?t=1539342297740&quot;</span>),<br>        <span class="hljs-comment">/* chrome, firefox, opera, Safari, Android, iOS 4.2+*/</span><br>            url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.svg?t=1539342297740#icon2018&quot;</span>)<br>            format(<span class="hljs-string">&quot;svg&quot;</span>); <span class="hljs-comment">/* iOS 4.1- */</span><br>&#125;<br></code></pre></td></tr></table></figure><h3 id="解决方式-1"><a href="#解决方式-1" class="headerlink" title="解决方式"></a>解决方式</h3><p>CDN 的 nginx 配置需要进行跨域处理</p><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a href="https://leiem.cn/2022/01/21/46155/">小程序引用网络字体在安卓无效</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;记录项目迁移时碰到的问题。&lt;/p&gt;</summary>
     
     
     
+    <category term="踩坑经历" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
     
+    
+    <category term="小程序" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/"/>
     
   </entry>
   
   <entry>
     <title>docker基础知识</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/03/24/docker/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/03/24/docker/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/03/24/docker/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/03/24/docker/</id>
     <published>2023-03-24T09:36:32.000Z</published>
     <updated>2023-04-15T03:41:47.114Z</updated>
     
@@ -43,17 +51,17 @@
     
     
     
-    <category term="前端扩展" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E6%89%A9%E5%B1%95/"/>
+    <category term="前端扩展" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E6%89%A9%E5%B1%95/"/>
     
     
-    <category term="docker" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/docker/"/>
+    <category term="docker" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/docker/"/>
     
   </entry>
   
   <entry>
     <title>飞书机器人验证实现</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/03/15/feishuEncode/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/03/15/feishuEncode/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/03/15/feishuEncode/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/03/15/feishuEncode/</id>
     <published>2023-03-15T09:46:58.000Z</published>
     <updated>2023-03-15T10:27:34.921Z</updated>
     
@@ -64,17 +72,17 @@
     
     
     
-    <category term="工作技巧" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
+    <category term="工作技巧" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
     
     
-    <category term="node.js" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/node-js/"/>
+    <category term="node.js" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/node-js/"/>
     
   </entry>
   
   <entry>
     <title>面向面试的算法题</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/03/08/jsFunction/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/03/08/jsFunction/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/03/08/jsFunction/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/03/08/jsFunction/</id>
     <published>2023-03-08T01:55:56.000Z</published>
     <updated>2023-03-08T01:59:36.688Z</updated>
     
@@ -85,21 +93,21 @@
     
     
     
-    <category term="前端基础" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
+    <category term="前端基础" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
     
     
-    <category term="算法" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E7%AE%97%E6%B3%95/"/>
+    <category term="算法" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E7%AE%97%E6%B3%95/"/>
     
-    <category term="JavaScript" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/JavaScript/"/>
+    <category term="JavaScript" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/JavaScript/"/>
     
-    <category term="面试" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E9%9D%A2%E8%AF%95/"/>
+    <category term="面试" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E9%9D%A2%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title>算法与数据结构</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/03/02/algorithm/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/03/02/algorithm/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/03/02/algorithm/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/03/02/algorithm/</id>
     <published>2023-03-02T09:38:44.000Z</published>
     <updated>2023-03-24T06:00:41.071Z</updated>
     
@@ -113,17 +121,17 @@
     
     
     
-    <category term="前端基础" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
+    <category term="前端基础" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
     
     
-    <category term="算法" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E7%AE%97%E6%B3%95/"/>
+    <category term="算法" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
   <entry>
     <title>前端监控平台搭建</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/03/02/errorMonitor/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/03/02/errorMonitor/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/03/02/errorMonitor/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/03/02/errorMonitor/</id>
     <published>2023-03-02T05:20:45.000Z</published>
     <updated>2023-03-02T09:28:56.011Z</updated>
     
@@ -134,19 +142,19 @@
     
     
     
-    <category term="技术分享" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/"/>
+    <category term="技术分享" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/"/>
     
     
-    <category term="前端监控" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E5%89%8D%E7%AB%AF%E7%9B%91%E6%8E%A7/"/>
+    <category term="前端监控" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E7%9B%91%E6%8E%A7/"/>
     
-    <category term="分享记录" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E5%88%86%E4%BA%AB%E8%AE%B0%E5%BD%95/"/>
+    <category term="分享记录" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E5%88%86%E4%BA%AB%E8%AE%B0%E5%BD%95/"/>
     
   </entry>
   
   <entry>
     <title>微信小程序基础知识</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/02/27/applet/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/02/27/applet/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/02/27/applet/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/02/27/applet/</id>
     <published>2023-02-27T13:42:19.000Z</published>
     <updated>2023-02-27T14:57:28.959Z</updated>
     
@@ -157,17 +165,17 @@
     
     
     
-    <category term="前端基础" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
+    <category term="前端基础" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
     
     
-    <category term="小程序" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/"/>
+    <category term="小程序" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/"/>
     
   </entry>
   
   <entry>
     <title>英语笔记</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/02/26/EnglishNotes/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/02/26/EnglishNotes/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/02/26/EnglishNotes/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/02/26/EnglishNotes/</id>
     <published>2023-02-26T09:53:37.000Z</published>
     <updated>2023-02-27T01:50:52.561Z</updated>
     
@@ -178,17 +186,17 @@
     
     
     
-    <category term="英语学习" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0/"/>
+    <category term="英语学习" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0/"/>
     
     
-    <category term="词汇" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E8%AF%8D%E6%B1%87/"/>
+    <category term="词汇" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E8%AF%8D%E6%B1%87/"/>
     
   </entry>
   
   <entry>
     <title>node.js</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/02/26/nodeJs/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/02/26/nodeJs/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/02/26/nodeJs/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/02/26/nodeJs/</id>
     <published>2023-02-26T08:50:00.000Z</published>
     <updated>2023-03-02T12:52:04.464Z</updated>
     
@@ -199,17 +207,17 @@
     
     
     
-    <category term="前端基础" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
+    <category term="前端基础" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
     
     
-    <category term="node.js" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/node-js/"/>
+    <category term="node.js" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/node-js/"/>
     
   </entry>
   
   <entry>
     <title>webpack</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/02/19/webpack/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/02/19/webpack/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/02/19/webpack/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/02/19/webpack/</id>
     <published>2023-02-19T06:44:52.000Z</published>
     <updated>2023-02-19T07:14:09.022Z</updated>
     
@@ -220,17 +228,17 @@
     
     
     
-    <category term="前端基础" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
+    <category term="前端基础" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/"/>
     
     
-    <category term="webpack" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/webpack/"/>
+    <category term="webpack" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/webpack/"/>
     
   </entry>
   
   <entry>
     <title>vscode调试Node代码</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/02/17/vscodeRunNode/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/02/17/vscodeRunNode/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/02/17/vscodeRunNode/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/02/17/vscodeRunNode/</id>
     <published>2023-02-17T01:46:55.000Z</published>
     <updated>2023-02-19T05:12:04.553Z</updated>
     
@@ -245,17 +253,17 @@
     
     
     
-    <category term="工作技巧" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
+    <category term="工作技巧" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
     
     
-    <category term="node.js" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/node-js/"/>
+    <category term="node.js" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/node-js/"/>
     
   </entry>
   
   <entry>
     <title>面试技巧</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/02/15/interviewSkill/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/02/15/interviewSkill/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/02/15/interviewSkill/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/02/15/interviewSkill/</id>
     <published>2023-02-15T14:15:30.000Z</published>
     <updated>2023-02-19T03:40:53.749Z</updated>
     
@@ -266,17 +274,17 @@
     
     
     
-    <category term="工作技巧" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
+    <category term="工作技巧" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
     
     
-    <category term="面试" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E9%9D%A2%E8%AF%95/"/>
+    <category term="面试" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E9%9D%A2%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title>前端使用shell指令</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2023/01/16/shelljs/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2023/01/16/shelljs/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2023/01/16/shelljs/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2023/01/16/shelljs/</id>
     <published>2023-01-16T02:10:25.000Z</published>
     <updated>2023-02-02T10:21:28.903Z</updated>
     
@@ -290,19 +298,19 @@
     
     
     
-    <category term="工作技巧" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
+    <category term="工作技巧" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
     
     
-    <category term="node.js" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/node-js/"/>
+    <category term="node.js" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/node-js/"/>
     
-    <category term="Shell" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/Shell/"/>
+    <category term="Shell" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/Shell/"/>
     
   </entry>
   
   <entry>
     <title>hash路由使用锚点解决方案</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2022/12/16/hashAnchor/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2022/12/16/hashAnchor/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2022/12/16/hashAnchor/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2022/12/16/hashAnchor/</id>
     <published>2022-12-16T02:57:34.000Z</published>
     <updated>2023-02-19T03:30:41.641Z</updated>
     
@@ -313,17 +321,17 @@
     
     
     
-    <category term="踩坑经历" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
+    <category term="踩坑经历" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
     
     
-    <category term="前端路由" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1/"/>
+    <category term="前端路由" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1/"/>
     
   </entry>
   
   <entry>
     <title>代码样式调整</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2022/12/15/codeFormat/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2022/12/15/codeFormat/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2022/12/15/codeFormat/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2022/12/15/codeFormat/</id>
     <published>2022-12-15T14:25:36.000Z</published>
     <updated>2023-02-19T03:19:04.422Z</updated>
     
@@ -334,17 +342,17 @@
     
     
     
-    <category term="工作技巧" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
+    <category term="工作技巧" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
     
     
-    <category term="代码规范" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/"/>
+    <category term="代码规范" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/"/>
     
   </entry>
   
   <entry>
     <title>package.json分析</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2022/12/15/packageJson/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2022/12/15/packageJson/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2022/12/15/packageJson/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2022/12/15/packageJson/</id>
     <published>2022-12-15T02:41:29.000Z</published>
     <updated>2023-02-19T03:19:04.429Z</updated>
     
@@ -355,17 +363,17 @@
     
     
     
-    <category term="技术学习" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/"/>
+    <category term="技术学习" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/"/>
     
     
-    <category term="前端依赖包管理" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/"/>
+    <category term="前端依赖包管理" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/"/>
     
   </entry>
   
   <entry>
     <title>react中获取ref相关的函数总结</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2022/12/09/reactRef/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2022/12/09/reactRef/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2022/12/09/reactRef/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2022/12/09/reactRef/</id>
     <published>2022-12-09T06:15:58.000Z</published>
     <updated>2023-02-19T03:19:04.431Z</updated>
     
@@ -376,17 +384,17 @@
     
     
     
-    <category term="前端技术体系" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/"/>
+    <category term="前端技术体系" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/"/>
     
     
-    <category term="React" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/React/"/>
+    <category term="React" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/React/"/>
     
   </entry>
   
   <entry>
     <title>页面置灰的实现方式</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2022/12/02/cssUsage/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2022/12/02/cssUsage/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2022/12/02/cssUsage/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2022/12/02/cssUsage/</id>
     <published>2022-12-02T01:46:33.000Z</published>
     <updated>2022-12-13T08:57:22.748Z</updated>
     
@@ -397,17 +405,17 @@
     
     
     
-    <category term="踩坑经历" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
+    <category term="踩坑经历" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
     
     
-    <category term="CSS" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/CSS/"/>
+    <category term="CSS" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/CSS/"/>
     
   </entry>
   
   <entry>
     <title>js实现从utf-8到base64编码</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2022/11/29/encodeBase64/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2022/11/29/encodeBase64/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2022/11/29/encodeBase64/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2022/11/29/encodeBase64/</id>
     <published>2022-11-29T13:42:55.000Z</published>
     <updated>2022-12-13T08:57:22.748Z</updated>
     
@@ -418,31 +426,31 @@
     
     
     
-    <category term="工作技巧" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
+    <category term="工作技巧" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/"/>
     
     
-    <category term="WEB API" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/WEB-API/"/>
+    <category term="WEB API" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/WEB-API/"/>
     
   </entry>
   
   <entry>
     <title>依赖失踪之谜 —— 记一次失败的问题查找</title>
-    <link href="https://unkonwn404.github.io/unkown404.github.io/2022/11/29/nvmProblemSearch/"/>
-    <id>https://unkonwn404.github.io/unkown404.github.io/2022/11/29/nvmProblemSearch/</id>
+    <link href="https://unkonwn404.github.io/unknown404.github.io/2022/11/29/nvmProblemSearch/"/>
+    <id>https://unkonwn404.github.io/unknown404.github.io/2022/11/29/nvmProblemSearch/</id>
     <published>2022-11-29T10:08:22.000Z</published>
     <updated>2023-02-19T03:19:04.428Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>全局安装的依赖包突然找不到了，调用指令返回 <code>zsh: command not found:xxx</code> 的报错。</p><h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>对于上述报错问题，网上的回复基本统一是缺少环境变量配置。MAC 电脑的环境变量文件加载顺序为：</p><ul><li>&#x2F;etc&#x2F;profile，系统级文件，系统启动即加载</li><li>&#x2F;etc&#x2F;path，系统级文件，系统启动即加载</li><li>&#x2F;.bash_profile，用户级的环境变量配置文件，当该文件存在时忽略<del>&#x2F;.bash_login 、</del>&#x2F;.profile 、~&#x2F;.bashrc 文件的配置</li></ul><p>解决环境变量问题步骤：</p><ol><li>打开 zsh 控制台，输入指令：<code>open .zshrc</code></li><li>查看环境变量 PATH。PATH 的通常写法为</li></ol><figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">export <span class="hljs-built_in">PATH</span> = &lt;<span class="hljs-built_in">path</span> <span class="hljs-number">1</span>&gt; : &lt;<span class="hljs-built_in">path</span> <span class="hljs-number">2</span>&gt; ... : &lt;<span class="hljs-built_in">path</span> n&gt; : $<span class="hljs-built_in">PATH</span><br></code></pre></td></tr></table></figure><p>涉及多个环境变量时用分号隔开。</p><p>当前电脑配置的 zshrc 内容为：</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">NVM_DIR</span>=<span class="hljs-string">&quot;/Users/danhuipeng/.nvm&quot;</span><br>[ -s <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span> ] &amp;&amp; \. <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span>  # This loads nvm<br><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/.yarn/bin:<span class="hljs-variable">$HOME</span>/.config/yarn/global/node_modules/.bin:<span class="hljs-variable">$PATH</span>&quot;</span><br><br>source ~/.bash_profile<br></code></pre></td></tr></table></figure><p>虽然有 yarn 的路径在环境变量中，但因为全局依赖包没有使用 yarn，所以现在的设置并不能解决问题。推测可能是因为当前的 path 内容并没有指向全局 npm 的依赖包目录下 。</p><ol start="3"><li>添加环境变量。使用指令<code>npm config get prefix</code>获取全局安装包时使用的 node，使用指令<code>npm root -g</code>来寻找全局仓库路径。得到的结果分别为：</li></ol><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">～<span class="hljs-regexp">/.nvm/</span>versions<span class="hljs-regexp">/node/</span>v15.<span class="hljs-number">14.0</span><br>～<span class="hljs-regexp">/.nvm/</span>versions<span class="hljs-regexp">/node/</span>v15.<span class="hljs-number">14.0</span><span class="hljs-regexp">/lib/</span>node_modules<br></code></pre></td></tr></table></figure><p>根目录已省略。尝试将这两个变量添加到 path 后，执行指令发<code>source .zshrc</code>现并没有解决问题。为了明确为什么找不到依赖包执行了指令<code>cd ~/.nvm/versions/node/v15.14.0/lib/node_modules</code>到全局依赖目录下，尝试查看内容列表，然而执行指令<code>ls</code>后什么也没发生，即该目录下的内容已空！！为什么会空了呢？完全不知道原因，和其他版本的依赖目录比较发现连 npm 都没有了？？<br><img src="/unkown404.github.io/img/log.png"></p><p>问题排查到这里已经进行不下去了，只能进行依赖重装。</p><p>考虑到本人使用 node 15 的时候比较少，大多数项目使用的都是 14，所以采用指令<code>nvm alias default v14</code>调整 node 的默认版本。因为 node 15 现在连 npm 都没有了，所以使用<code>nvm uninstall v15</code>指令卸载 node15。使用指令<code>nvm ls</code>检查发现现在已经开始使用 node v14 了</p><figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs xl">       v10.<span class="hljs-number">24.1</span><br>       v12.<span class="hljs-number">16.3</span><br>       v12.<span class="hljs-number">22.1</span><br>-&gt;     v14.<span class="hljs-number">19.3</span><br><span class="hljs-function"><span class="hljs-title">default</span> -&gt;</span> <span class="hljs-function"><span class="hljs-title">v14</span> (-&gt;</span> v14.<span class="hljs-number">19.3</span>)<br><span class="hljs-function"><span class="hljs-title">iojs</span> -&gt;</span> N/A (default)<br><span class="hljs-function"><span class="hljs-title">unstable</span> -&gt;</span> N/A (default)<br><span class="hljs-function"><span class="hljs-title">node</span> -&gt;</span> <span class="hljs-function"><span class="hljs-title">stable</span> (-&gt;</span> v14.<span class="hljs-number">19.3</span>) (default)<br><span class="hljs-function"><span class="hljs-title">stable</span> -&gt;</span> <span class="hljs-number">14.19</span> (-&gt; v14.<span class="hljs-number">19.3</span>) (default)<br><span class="hljs-function"><span class="hljs-title">lts</span>/* -&gt;</span> <span class="hljs-function"><span class="hljs-title">lts</span>/hydrogen (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/argon -&gt;</span> <span class="hljs-function"><span class="hljs-title">v4</span>.9.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/boron -&gt;</span> <span class="hljs-function"><span class="hljs-title">v6</span>.17.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/carbon -&gt;</span> <span class="hljs-function"><span class="hljs-title">v8</span>.17.0 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/dubnium -&gt;</span> v10.<span class="hljs-number">24.1</span><br><span class="hljs-function"><span class="hljs-title">lts</span>/erbium -&gt;</span> <span class="hljs-function"><span class="hljs-title">v12</span>.22.12 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/fermium -&gt;</span> <span class="hljs-function"><span class="hljs-title">v14</span>.21.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/gallium -&gt;</span> <span class="hljs-function"><span class="hljs-title">v16</span>.18.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/hydrogen -&gt;</span> <span class="hljs-function"><span class="hljs-title">v18</span>.12.1 (-&gt;</span> N/A)<br></code></pre></td></tr></table></figure><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>(1)<a href="https://wenku.baidu.com/view/2cb4a1ffae51f01dc281e53a580216fc700a53a9.html?_wkts_=1669702352151&bdQuery=zsh%E6%80%8E%E4%B9%88%E9%85%8D%E5%A4%9A%E4%B8%AA%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F">Mac 在 bash 和 zsh 配置环境变量 path 的几种方法</a><br>(2)<a href="https://blog.csdn.net/Wildpiglolo/article/details/123828019">npm 全局安装后，对应的环境变量目录下找不到文件</a></p>]]></content>
+    <content type="html"><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>全局安装的依赖包突然找不到了，调用指令返回 <code>zsh: command not found:xxx</code> 的报错。</p><h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>对于上述报错问题，网上的回复基本统一是缺少环境变量配置。MAC 电脑的环境变量文件加载顺序为：</p><ul><li>&#x2F;etc&#x2F;profile，系统级文件，系统启动即加载</li><li>&#x2F;etc&#x2F;path，系统级文件，系统启动即加载</li><li>&#x2F;.bash_profile，用户级的环境变量配置文件，当该文件存在时忽略<del>&#x2F;.bash_login 、</del>&#x2F;.profile 、~&#x2F;.bashrc 文件的配置</li></ul><p>解决环境变量问题步骤：</p><ol><li>打开 zsh 控制台，输入指令：<code>open .zshrc</code></li><li>查看环境变量 PATH。PATH 的通常写法为</li></ol><figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">export <span class="hljs-built_in">PATH</span> = &lt;<span class="hljs-built_in">path</span> <span class="hljs-number">1</span>&gt; : &lt;<span class="hljs-built_in">path</span> <span class="hljs-number">2</span>&gt; ... : &lt;<span class="hljs-built_in">path</span> n&gt; : $<span class="hljs-built_in">PATH</span><br></code></pre></td></tr></table></figure><p>涉及多个环境变量时用分号隔开。</p><p>当前电脑配置的 zshrc 内容为：</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">NVM_DIR</span>=<span class="hljs-string">&quot;/Users/danhuipeng/.nvm&quot;</span><br>[ -s <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span> ] &amp;&amp; \. <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span>  # This loads nvm<br><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/.yarn/bin:<span class="hljs-variable">$HOME</span>/.config/yarn/global/node_modules/.bin:<span class="hljs-variable">$PATH</span>&quot;</span><br><br>source ~/.bash_profile<br></code></pre></td></tr></table></figure><p>虽然有 yarn 的路径在环境变量中，但因为全局依赖包没有使用 yarn，所以现在的设置并不能解决问题。推测可能是因为当前的 path 内容并没有指向全局 npm 的依赖包目录下 。</p><ol start="3"><li>添加环境变量。使用指令<code>npm config get prefix</code>获取全局安装包时使用的 node，使用指令<code>npm root -g</code>来寻找全局仓库路径。得到的结果分别为：</li></ol><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">～<span class="hljs-regexp">/.nvm/</span>versions<span class="hljs-regexp">/node/</span>v15.<span class="hljs-number">14.0</span><br>～<span class="hljs-regexp">/.nvm/</span>versions<span class="hljs-regexp">/node/</span>v15.<span class="hljs-number">14.0</span><span class="hljs-regexp">/lib/</span>node_modules<br></code></pre></td></tr></table></figure><p>根目录已省略。尝试将这两个变量添加到 path 后，执行指令发<code>source .zshrc</code>现并没有解决问题。为了明确为什么找不到依赖包执行了指令<code>cd ~/.nvm/versions/node/v15.14.0/lib/node_modules</code>到全局依赖目录下，尝试查看内容列表，然而执行指令<code>ls</code>后什么也没发生，即该目录下的内容已空！！为什么会空了呢？完全不知道原因，和其他版本的依赖目录比较发现连 npm 都没有了？？<br><img src="/unknown404.github.io/img/log.png"></p><p>问题排查到这里已经进行不下去了，只能进行依赖重装。</p><p>考虑到本人使用 node 15 的时候比较少，大多数项目使用的都是 14，所以采用指令<code>nvm alias default v14</code>调整 node 的默认版本。因为 node 15 现在连 npm 都没有了，所以使用<code>nvm uninstall v15</code>指令卸载 node15。使用指令<code>nvm ls</code>检查发现现在已经开始使用 node v14 了</p><figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs xl">       v10.<span class="hljs-number">24.1</span><br>       v12.<span class="hljs-number">16.3</span><br>       v12.<span class="hljs-number">22.1</span><br>-&gt;     v14.<span class="hljs-number">19.3</span><br><span class="hljs-function"><span class="hljs-title">default</span> -&gt;</span> <span class="hljs-function"><span class="hljs-title">v14</span> (-&gt;</span> v14.<span class="hljs-number">19.3</span>)<br><span class="hljs-function"><span class="hljs-title">iojs</span> -&gt;</span> N/A (default)<br><span class="hljs-function"><span class="hljs-title">unstable</span> -&gt;</span> N/A (default)<br><span class="hljs-function"><span class="hljs-title">node</span> -&gt;</span> <span class="hljs-function"><span class="hljs-title">stable</span> (-&gt;</span> v14.<span class="hljs-number">19.3</span>) (default)<br><span class="hljs-function"><span class="hljs-title">stable</span> -&gt;</span> <span class="hljs-number">14.19</span> (-&gt; v14.<span class="hljs-number">19.3</span>) (default)<br><span class="hljs-function"><span class="hljs-title">lts</span>/* -&gt;</span> <span class="hljs-function"><span class="hljs-title">lts</span>/hydrogen (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/argon -&gt;</span> <span class="hljs-function"><span class="hljs-title">v4</span>.9.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/boron -&gt;</span> <span class="hljs-function"><span class="hljs-title">v6</span>.17.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/carbon -&gt;</span> <span class="hljs-function"><span class="hljs-title">v8</span>.17.0 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/dubnium -&gt;</span> v10.<span class="hljs-number">24.1</span><br><span class="hljs-function"><span class="hljs-title">lts</span>/erbium -&gt;</span> <span class="hljs-function"><span class="hljs-title">v12</span>.22.12 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/fermium -&gt;</span> <span class="hljs-function"><span class="hljs-title">v14</span>.21.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/gallium -&gt;</span> <span class="hljs-function"><span class="hljs-title">v16</span>.18.1 (-&gt;</span> N/A)<br><span class="hljs-function"><span class="hljs-title">lts</span>/hydrogen -&gt;</span> <span class="hljs-function"><span class="hljs-title">v18</span>.12.1 (-&gt;</span> N/A)<br></code></pre></td></tr></table></figure><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>(1)<a href="https://wenku.baidu.com/view/2cb4a1ffae51f01dc281e53a580216fc700a53a9.html?_wkts_=1669702352151&bdQuery=zsh%E6%80%8E%E4%B9%88%E9%85%8D%E5%A4%9A%E4%B8%AA%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F">Mac 在 bash 和 zsh 配置环境变量 path 的几种方法</a><br>(2)<a href="https://blog.csdn.net/Wildpiglolo/article/details/123828019">npm 全局安装后，对应的环境变量目录下找不到文件</a></p>]]></content>
     
     
     <summary type="html">&lt;p&gt;大无语事件。。。&lt;/p&gt;</summary>
     
     
     
-    <category term="踩坑经历" scheme="https://unkonwn404.github.io/unkown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
+    <category term="踩坑经历" scheme="https://unkonwn404.github.io/unknown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/"/>
     
     
-    <category term="依赖安装" scheme="https://unkonwn404.github.io/unkown404.github.io/tags/%E4%BE%9D%E8%B5%96%E5%AE%89%E8%A3%85/"/>
+    <category term="依赖安装" scheme="https://unkonwn404.github.io/unknown404.github.io/tags/%E4%BE%9D%E8%B5%96%E5%AE%89%E8%A3%85/"/>
     
   </entry>
   

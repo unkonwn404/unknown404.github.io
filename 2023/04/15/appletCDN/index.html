@@ -7,8 +7,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unkown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unkown404.github.io/img/avatar.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -16,21 +16,22 @@
   <meta name="author" content="小白的文件整理箱">
   <meta name="keywords" content="">
   
-    <meta name="description" content="gitee静态页面练手">
+    <meta name="description" content="记录项目迁移时碰到的问题。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="appletCDN">
-<meta property="og:url" content="https://unkonwn404.github.io/unkown404.github.io/2023/04/15/appletCDN/index.html">
+<meta property="og:title" content="小程序踩坑经历--CDN域名替换">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2023/04/15/appletCDN/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
-<meta property="og:description" content="gitee静态页面练手">
+<meta property="og:description" content="记录项目迁移时碰到的问题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-04-15T03:42:17.000Z">
-<meta property="article:modified_time" content="2023-04-15T03:42:17.986Z">
+<meta property="article:modified_time" content="2023-04-15T04:34:00.279Z">
 <meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="小程序">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>appletCDN - 小白的文件整理箱</title>
+  <title>小程序踩坑经历--CDN域名替换 - 小白的文件整理箱</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -54,12 +55,12 @@
 <link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
 
-<link  rel="stylesheet" href="/unkown404.github.io/css/main.css" />
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
 
 
-  <link id="highlight-css" rel="stylesheet" href="/unkown404.github.io/css/highlight.css" />
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
   
-    <link id="highlight-css-dark" rel="stylesheet" href="/unkown404.github.io/css/highlight-dark.css" />
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
   
 
 
@@ -68,20 +69,20 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unkown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unkown404.github.io/local-search.xml"};
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
       Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
     }
   </script>
-  <script  src="/unkown404.github.io/js/utils.js" ></script>
-  <script  src="/unkown404.github.io/js/color-schema.js" ></script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
   
 
 
   
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unkown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
 
@@ -94,7 +95,7 @@
 <div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
-    <a class="navbar-brand" href="/unkown404.github.io/">
+    <a class="navbar-brand" href="/unknown404.github.io/">
       <strong>小白的文件整理箱</strong>
     </a>
 
@@ -113,7 +114,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/">
+              <a class="nav-link" href="/unknown404.github.io/">
                 <i class="iconfont icon-home-fill"></i>
                 <span>首页</span>
               </a>
@@ -125,7 +126,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/archives/">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
               </a>
@@ -137,7 +138,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/categories/">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
@@ -149,7 +150,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/tags/">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
               </a>
@@ -161,7 +162,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/unkown404.github.io/about/">
+              <a class="nav-link" href="/unknown404.github.io/about/">
                 <i class="iconfont icon-user-fill"></i>
                 <span>关于</span>
               </a>
@@ -191,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/unkown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="appletCDN"></span>
+            <span id="subtitle" data-typed-text="小程序踩坑经历--CDN域名替换"></span>
           
         </div>
 
@@ -220,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          731 字
         
       </span>
     
@@ -231,7 +232,7 @@
         
         
         
-          1 分钟
+          7 分钟
         
       </span>
     
@@ -269,12 +270,26 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">appletCDN</h1>
+            <h1 style="display: none">小程序踩坑经历--CDN域名替换</h1>
             
             
               <div class="markdown-body">
                 
-                
+                <p>记录项目迁移时碰到的问题。</p>
+<span id="more"></span>
+
+<h2 id="问题-1-关于-CDN-域名替换"><a href="#问题-1-关于-CDN-域名替换" class="headerlink" title="问题 1:关于 CDN 域名替换"></a>问题 1:关于 CDN 域名替换</h2><h3 id="场景描述"><a href="#场景描述" class="headerlink" title="场景描述"></a>场景描述</h3><p>替换了静态资源使用的域名后，是否需要在开发者平台上修改 request 合法域名或 downloadFile 合法域名？</p>
+<h3 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h3><p>需要根据代码情况来看：</p>
+<ol>
+<li>如果直接在 scss 文件引入 url 链接的情况，不需要进行配置。</li>
+<li>使用 wx.downloadFile 相关 API 时需要配置 downloadFile 合法域名列表。需要注意的是使用 wx.getImageInfo 和 wx.loadFontFace 等 API 实际上也会向对应的域名发起请求，如果该域名不在小程序开发者平台的 downloadFile 合法域名列表中，就会出现跨域问题，从而导致请求失败。</li>
+</ol>
+<h2 id="问题-2-使用的特殊字体文件在-ios-和开发者工具上显示正常，安卓上无法显示"><a href="#问题-2-使用的特殊字体文件在-ios-和开发者工具上显示正常，安卓上无法显示" class="headerlink" title="问题 2:使用的特殊字体文件在 ios 和开发者工具上显示正常，安卓上无法显示"></a>问题 2:使用的特殊字体文件在 ios 和开发者工具上显示正常，安卓上无法显示</h2><h3 id="场景描述-1"><a href="#场景描述-1" class="headerlink" title="场景描述"></a>场景描述</h3><p>使用了如下代码来调用 icon 字体文件，域名链接可以正常访问，但会出现上述问题；且远程调试和真机调试平台都没有任何报错信息。</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scss"><span class="hljs-keyword">@font-face</span> &#123;<br>    <span class="hljs-attribute">font-family</span>: <span class="hljs-string">&quot;icon2018&quot;</span>;<br>    <span class="hljs-attribute">src</span>: url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.ttf?t=1539342297740&quot;</span>),<br>        <span class="hljs-comment">/* chrome, firefox, opera, Safari, Android, iOS 4.2+*/</span><br>            url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.svg?t=1539342297740#icon2018&quot;</span>)<br>            format(<span class="hljs-string">&quot;svg&quot;</span>); <span class="hljs-comment">/* iOS 4.1- */</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="解决方式-1"><a href="#解决方式-1" class="headerlink" title="解决方式"></a>解决方式</h3><p>CDN 的 nginx 配置需要进行跨域处理</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://leiem.cn/2022/01/21/46155/">小程序引用网络字体在安卓无效</a></p>
+
                 
               </div>
             
@@ -282,6 +297,34 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/" class="category-chain-item">踩坑经历</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/">#小程序</a>
+      
+    </div>
   
 </div>
 
@@ -291,8 +334,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>appletCDN</div>
-      <div>https://unkonwn404.github.io/unkown404.github.io/2023/04/15/appletCDN/</div>
+      <div>小程序踩坑经历--CDN域名替换</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2023/04/15/appletCDN/</div>
     </div>
     <div class="license-meta">
       
@@ -340,7 +383,7 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/unkown404.github.io/2023/03/24/docker/" title="docker基础知识">
+                      <a href="/unknown404.github.io/2023/03/24/docker/" title="docker基础知识">
                         <span class="hidden-mobile">docker基础知识</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
@@ -470,8 +513,8 @@
 
 <script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
 <script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unkown404.github.io/js/events.js" ></script>
-<script  src="/unkown404.github.io/js/plugins.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
 
 
   <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
@@ -493,7 +536,7 @@
 
 
   
-    <script  src="/unkown404.github.io/js/img-lazyload.js" ></script>
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
   
 
 
@@ -592,7 +635,7 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
-  <script  src="/unkown404.github.io/js/local-search.js" ></script>
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
 
 
 
@@ -600,7 +643,7 @@
 
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unkown404.github.io/js/boot.js" ></script>
+<script  src="/unknown404.github.io/js/boot.js" ></script>
 
 
   
