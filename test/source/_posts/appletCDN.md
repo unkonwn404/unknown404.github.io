@@ -32,16 +32,73 @@ tags:
 
 ```scss
 @font-face {
-    font-family: "icon2018";
-    src: url("https://statics.xxx.com/iconfont.ttf?t=1539342297740"),
-        /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-            url("https://statics.xxx.com/iconfont.svg?t=1539342297740#icon2018")
-            format("svg"); /* iOS 4.1- */
+  font-family: "icon2018";
+  src: url("https://statics.xxx.com/iconfont.ttf?t=1539342297740"),
+    /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+      url("https://statics.xxx.com/iconfont.svg?t=1539342297740#icon2018")
+      format("svg"); /* iOS 4.1- */
 }
 ```
 
 ### 解决方式
 
 CDN 的 nginx 配置需要进行跨域处理
+
+## 问题 3:同路径页面跳转时，页面 data 没更新
+
+### 场景描述
+
+页面切换大概是这样一个过程 pageA -> pageB?id=1 -> pageB?id=2
+当跳 pageB?id=2 时，data 中的一个对象数据还保持为 pageB?id=1 的数据
+
+### 解决方式
+
+目前无法分析具体原因，有可能是 mpvue 的框架问题，但这个问题不是稳定触发的，当跳转事件绑定的是@click.stop 的时候才发生。
+当前保守的解决方式是在 onHide 或 onUnload 周期对 data 数据进行重置
+
+## 问题 4:小程序全局变量
+
+### 场景描述
+
+不同小程序框架，全局变量设置的方式有细微的差别
+
+### 解决方式
+
+1. uni-app、mpvue
+
+在 App.vue 中定义 globalData 的相关配置
+
+```
+<script>
+    export default {
+        globalData: {
+            text: 'text'
+        }
+    }
+</script>
+```
+
+js 中操作 globalData 的方式如下： getApp().globalData.text = 'test'
+
+在应用 onLaunch 时，getApp 对象还未获取，暂时可以使用 this.globalData 获取 globalData。
+
+2. taro
+
+虽然官方文档给出了[react 语法](https://docs.taro.zone/docs/come-from-miniapp#react)的定义方法，然而设置的 taroGlobalData 只能维持初始化的值，而无法被改动。
+想要解决这个问题，可以自己维护一个 globalData 对象，定义获取和修改该对象的方法。
+
+```
+const globalData = {}
+export function setGlobalData (key, val) {
+  globalData[key] = val
+}
+export function getGlobalData (key) {
+  return globalData[key]
+}
+```
+
 ## 参考文献
+
 （1）[小程序引用网络字体在安卓无效](https://leiem.cn/2022/01/21/46155/)
+（2）[同一路由切换时，上一次的页面数据会保留](https://github.com/meituan-dianping/mpvue/issues/140)
+（3）[Taro -- 定义全局变量](https://www.cnblogs.com/juewuzhe/p/11097146.html)

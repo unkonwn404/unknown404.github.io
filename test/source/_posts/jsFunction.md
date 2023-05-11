@@ -40,7 +40,7 @@ function compose(...funcs) {
 
 
 限制并发请求数
-```
+```JavaScript
 function multiRequest(urls = [], maxNum) {
   // 请求总数量
   const len = urls.length;
