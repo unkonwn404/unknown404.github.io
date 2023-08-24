@@ -10,7 +10,10 @@ categories:
   - 前端基础
 ---
 
-数组展平
+## 常见面试题
+
+### 1.数组展平
+
 ```
 const flat = (array) => {
   return array.reduce(
@@ -22,24 +25,24 @@ const array = [1, [2, [3, [4, [5]]]]];
 const flatArray = flat(array); // [1, 2, 3, 4, 5]
 ```
 
-compose函数实现
+### 2.compose 函数实现
+
 ```
 function compose(...funcs) {
     if (funcs.length === 0) {
         return arg => arg
     }
- 
+
     if (funcs.length === 1) {
         return funcs[0]
     }
- 
+
     return funcs.reduce((a, b) => (...args) => a(b(...args)))
-} 
+}
 ```
 
+### 3.限制并发请求数
 
-
-限制并发请求数
 ```JavaScript
 function multiRequest(urls = [], maxNum) {
   // 请求总数量
@@ -86,5 +89,48 @@ function multiRequest(urls = [], maxNum) {
   });
 }
 ```
+
+### 4.树结构转换
+
+非递归方法： 1.先构建 map 结构，以各个子项 id 为 key 2.再循环目标数组，判断上面构建的 map 中，是否存在当前遍历的 pid 3.存在就可以进行 children 的插入 4.不存在就是顶级节点，直接 push 即可
+
+```js
+let arr = [
+  {
+    id: 1,
+    pid: 0,
+    name: "body",
+  },
+  {
+    id: 2,
+    pid: 1,
+    name: "title",
+  },
+  {
+    id: 3,
+    pid: 2,
+    name: "div",
+  },
+];
+function toTree(arr) {
+  let res = [],
+    map = {};
+  arr.forEach((item) => (map[item.id] = item));
+  arr.forEach((item) => {
+    let parent = map[item.pid];
+    if (parent) {
+      if (!parent.children) {
+        parent.children = [];
+      }
+      parent.children.push(item);
+    } else {
+      res.push(item);
+    }
+  });
+  return res;
+}
+```
+
 ## 参考资料
-[字节跳动面试之如何用JS实现Ajax并发请求控制](https://www.jb51.net/article/211898.htm)
+
+[字节跳动面试之如何用 JS 实现 Ajax 并发请求控制](https://www.jb51.net/article/211898.htm)

@@ -175,6 +175,13 @@ git add xxx
 git add .
 ```
 
+**提交时可能出现的问题**
+
+- **问题**：报错：error: \'\<filename\>\' does not have a commit checked out
+  fatal: adding files failed
+
+- **原因**：报错的那个文件夹中包含.git 文件，可以在文件夹所在位置执行指令 rm -rf .git 将 git 文件删除、重新进入 vscode 即可
+
 2）使用指令`git commit`将代码提交到本地仓库。
 
 ```
