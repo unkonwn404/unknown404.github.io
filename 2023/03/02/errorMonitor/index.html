@@ -23,12 +23,20 @@
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="2020技术分享的文档备份">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/web-monitor.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/mono-repo.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/mito.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/monitor-sdk.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/elk.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/alarm.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/robot.png">
 <meta property="article:published_time" content="2023-03-02T05:20:45.000Z">
-<meta property="article:modified_time" content="2023-03-02T09:28:56.011Z">
+<meta property="article:modified_time" content="2023-08-24T15:16:00.623Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="前端监控">
 <meta property="article:tag" content="分享记录">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://unkonwn404.github.io/unknown404.github.io/img/web-monitor.png">
   
   
   
@@ -222,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.3k 字
+          6.4k 字
         
       </span>
     
@@ -233,7 +241,7 @@
         
         
         
-          53 分钟
+          54 分钟
         
       </span>
     
@@ -312,11 +320,17 @@
 </tr>
 </tbody></table>
 <p>使用三方监控的缺点：SDK 并非都是开源，扩展性差，难以覆盖到全端；报错数据不能完全保证私有；要管理公司内部的多个项目时 sentry 的收费会增加</p>
-<h3 id="1-2-监控平台构成"><a href="#1-2-监控平台构成" class="headerlink" title="1.2 监控平台构成"></a>1.2 监控平台构成</h3><p>SDK 模块：负责采集和上报功能，数据如何采集、采集哪些端，上报哪些信息<br>服务器：负责存储和管理功能，上报的数据结构应该是什么样，数据怎么分类<br>可视化平台：总结异常情况，发送给使用者</p>
-<h2 id="二、SDK-实现"><a href="#二、SDK-实现" class="headerlink" title="二、SDK 实现"></a>二、SDK 实现</h2><h3 id="2-1-SDK-架构"><a href="#2-1-SDK-架构" class="headerlink" title="2.1 SDK 架构"></a>2.1 SDK 架构</h3><p>monorepo<br>特点：一种管理代码的方式，即一个大的 Git 仓库，管理所有的代码。所有的代码处于同样的规则，同样的约束。</p>
-<p>优势： 1.分模块打包、分模块热更新、分包发布（提高开发体验） 2.抽离抽象类、工具类到某个包，代码结构清晰（降低耦合性，提高代码可读性）<br>包与包之间关系（mito 为例）</p>
+<h3 id="1-2-监控平台构成"><a href="#1-2-监控平台构成" class="headerlink" title="1.2 监控平台构成"></a>1.2 监控平台构成</h3><p><img src="/unknown404.github.io/img/web-monitor.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<p>SDK 模块：负责采集和上报功能，数据如何采集、采集哪些端，上报哪些信息<br>服务器：负责存储和管理功能，上报的数据结构应该是什么样，数据怎么分类<br>可视化平台：总结异常情况，发送给使用者</p>
+<h2 id="二、SDK-实现"><a href="#二、SDK-实现" class="headerlink" title="二、SDK 实现"></a>二、SDK 实现</h2><h3 id="2-1-SDK-架构"><a href="#2-1-SDK-架构" class="headerlink" title="2.1 SDK 架构"></a>2.1 SDK 架构</h3><p><strong>monorepo</strong></p>
+<p><img src="/unknown404.github.io/img/mono-repo.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<p>特点：一种管理代码的方式，即一个大的 Git 仓库，管理所有的代码。所有的代码处于同样的规则，同样的约束。</p>
+<p>优势： 1.分模块打包、分模块热更新、分包发布（提高开发体验） 2.抽离抽象类、工具类到某个包，代码结构清晰（降低耦合性，提高代码可读性）</p>
+<p><strong>包与包之间关系（mito 为例）</strong></p>
+<p><img src="/unknown404.github.io/img/mito.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <p>各端 SDK 依赖相同的公共包和核心包，core 将客户端的一些共通操作抽离成 baseClient 下的方法由客户端 SDK 继承和实现</p>
 <h3 id="2-2-SDK-原理"><a href="#2-2-SDK-原理" class="headerlink" title="2.2 SDK 原理"></a>2.2 SDK 原理</h3><h4 id="2-2-1-SDK-报错实现"><a href="#2-2-1-SDK-报错实现" class="headerlink" title="2.2.1 SDK 报错实现"></a>2.2.1 SDK 报错实现</h4><p>整体代码架构使用发布-订阅设计模式以便后续迭代功能，处理逻辑基本都在 HandleEvents 文件中</p>
+<p><img src="/unknown404.github.io/img/monitor-sdk.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <h5 id="2-2-1-1-监听-x2F-重写原生事件"><a href="#2-2-1-1-监听-x2F-重写原生事件" class="headerlink" title="2.2.1.1 监听&#x2F;重写原生事件"></a>2.2.1.1 监听&#x2F;重写原生事件</h5><p>SDK 采集的常见错误包括：</p>
 <ol>
 <li>JS 错误和资源错误<br>通过 window.addEventListener 来监听 window 的 error 事件，注意拦截操作放在捕获阶段，一方面因为资源加载错误不会冒泡到 window 上，另一方面防止业务代码的阻止冒泡捕获不到事件<br>判断是否是资源错误的要点：判断 e.target.localName 是否有值，有的话就是资源错误</li>
@@ -374,6 +388,30 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-comment">// 只采集 20%</span><br><span class="hljs-keyword">if</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>() &lt; <span class="hljs-number">0.2</span>) &#123;<br><span class="hljs-title function_">collect</span>(data) <span class="hljs-comment">// 记录错误信息</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h4 id="2-2-2-性能上报原理"><a href="#2-2-2-性能上报原理" class="headerlink" title="2.2.2 性能上报原理"></a>2.2.2 性能上报原理</h4><p>PerformanceTiming：会返回一个对象，从输入 url 到用户可以使用页面的全过程时间统计，单位均为毫秒</p>
+<table>
+<thead>
+<tr>
+<th align="center">目标指标</th>
+<th align="center">计算方式</th>
+<th align="center">定义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">DNS 解析时间</td>
+<td align="center">domainLookupEnd - domainLookupStart</td>
+<td align="center">从发起页面域名解析至完成</td>
+</tr>
+<tr>
+<td align="center">TCP 建立链接时间</td>
+<td align="center">connectEnd - connectStart</td>
+<td align="center">从发起 TCP 链接到三次握手完成</td>
+</tr>
+<tr>
+<td align="center">白屏时间</td>
+<td align="center">responseStart - navigationStart</td>
+<td align="center">从发起页面请求到服务器返回第一个字节</td>
+</tr>
+</tbody></table>
 <p>SDK 总结：<br>监听 &#x2F; 劫持 原始方法，获取需要上报的数据、调整数据结构，在错误发生时触发函数上报。</p>
 <h2 id="三、服务器"><a href="#三、服务器" class="headerlink" title="三、服务器"></a>三、服务器</h2><p>这个环节，输入是接口接收到的错误记录，输出是有效的数据入库。其核心功能包括对数据进行清洗和对数据进行入库。</p>
 <h3 id="3-1-数据收集"><a href="#3-1-数据收集" class="headerlink" title="3.1 数据收集"></a>3.1 数据收集</h3><p>主要工作： 提供无状态的 API 服务，逻辑较轻。功能包括为 SDK 提供上报接口，进行 cookie 的识别鉴权</p>
@@ -387,7 +425,7 @@
 </ul>
 </li>
 </ul>
-<p>日志数据在 ELK 系统流向</p>
+<p>日志数据在 ELK 系统流向<br><img src="/unknown404.github.io/img/elk.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <ul>
 <li><p>Hadoop&#x2F;Hive：Hadoop 是一个存储计算框架，其核心的设计就是：HDFS 和 MapReduce。HDFS 为海量的数据提供了存储，则 MapReduce 为海量的数据提供了计算。Hive 是基于 Hadoop 的一个数据仓库工具，可以将结构化的数据文件映射为一张数据库表并提供类 sql 查询功能，减小学习成本。</p>
 </li>
@@ -418,7 +456,23 @@
 </ul>
 <h2 id="四、可视化平台（dofin-为例）"><a href="#四、可视化平台（dofin-为例）" class="headerlink" title="四、可视化平台（dofin 为例）"></a>四、可视化平台（dofin 为例）</h2><p>涉及技术：umi+ant design pro</p>
 <h3 id="4-1-为什么不直接用-Kibana-作为展示的可视化平台？"><a href="#4-1-为什么不直接用-Kibana-作为展示的可视化平台？" class="headerlink" title="4.1 为什么不直接用 Kibana 作为展示的可视化平台？"></a>4.1 为什么不直接用 Kibana 作为展示的可视化平台？</h3><p>在测试 SDK 的时候会对 Kibana 打印的日志数据进行分析。但 Kibana 的日志查询、筛选需要对 Lucene 语法有一定的掌握，面向用户性并不是很好；另一方面 Kinbana 不便于前端做很灵活的扩展，例如用户的身份关联、未来的报警等功能实现；使用 Kibana 做如均值的运算并不利于前端人员做后续维护</p>
-<h3 id="4-2-页面基本需求"><a href="#4-2-页面基本需求" class="headerlink" title="4.2 页面基本需求"></a>4.2 页面基本需求</h3><h4 id="4-2-1-错误查看页面"><a href="#4-2-1-错误查看页面" class="headerlink" title="4.2.1 错误查看页面"></a>4.2.1 错误查看页面</h4><p>可视化平台的最终目的-&gt;how：怎么定位问题<br>实现目的所需要的信息-&gt;what：是什么错误<br>when：什么时候发生的<br>where：发生错误所处的环境、问题所在的页面<br>主要页面 基本需求<br>错误列表 支持多种类型条件搜索，通过筛选来观察错误情况的共通性；通过报错时间来观察同类错误报错频繁度<br>错误详情 能确认错误的特征信息；对同类错误可以提供趋势表，便于观察错误的波动情况</p>
+<h3 id="4-2-页面基本需求"><a href="#4-2-页面基本需求" class="headerlink" title="4.2 页面基本需求"></a>4.2 页面基本需求</h3><h4 id="4-2-1-错误查看页面"><a href="#4-2-1-错误查看页面" class="headerlink" title="4.2.1 错误查看页面"></a>4.2.1 错误查看页面</h4><p>可视化平台的最终目的-&gt;how：怎么定位问题<br>实现目的所需要的信息-&gt;what：是什么错误<br>when：什么时候发生的<br>where：发生错误所处的环境、问题所在的页面</p>
+<table>
+<thead>
+<tr>
+<th align="center">主要页面</th>
+<th align="center">基本需求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">错误列表</td>
+<td align="center">支持多种类型条件搜索，通过筛选来观察错误情况的共通性；通过报错时间来观察同类错误报错频繁度</td>
+</tr>
+<tr>
+<td align="center">错误详情</td>
+<td align="center">能确认错误的特征信息；对同类错误可以提供趋势表，便于观察错误的波动情况</td>
+</tr>
+</tbody></table>
 <h4 id="4-2-2-性能查看页面"><a href="#4-2-2-性能查看页面" class="headerlink" title="4.2.2 性能查看页面"></a>4.2.2 性能查看页面</h4><p>CDN 测距：监听的是 front-end 工程的一个图片加载的起始时间和结束时间<br>server 测距：监听的是目标工程域名下的请求</p>
 <h3 id="4-3-页面扩展需求"><a href="#4-3-页面扩展需求" class="headerlink" title="4.3 页面扩展需求"></a>4.3 页面扩展需求</h3><h4 id="4-3-1-权限管理"><a href="#4-3-1-权限管理" class="headerlink" title="4.3.1 权限管理"></a>4.3.1 权限管理</h4><p>通常一个项目的维护需要一个团队的协作，如果刚接手项目的成员不熟悉系统误操作了工程的删除会对后端维护造成一定的麻烦，因此参考了 gitlab 成员管理原则进行了权限限制</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-comment">//route.ts</span><br><span class="hljs-attr">routes</span>: [<br>&#123;<br><span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/&#x27;</span>,<br><span class="hljs-attr">component</span>: <span class="hljs-string">&#x27;../layouts/BasicLayout&#x27;</span>,<br><span class="hljs-attr">authority</span>: [<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;3&#x27;</span>],<br><span class="hljs-attr">routes</span>: [<br>&#123;<br><span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/admin&#x27;</span>,<br><span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;创建者管理页&#x27;</span>,<br><span class="hljs-attr">authority</span>: [<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;2&#x27;</span>],<span class="hljs-comment">//管理员以上可访问</span><br>],<br>&#125;,<br>......<br><span class="hljs-comment">//basicLayout</span><br><span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-title function_">setAuthorized</span>(<span class="hljs-title function_">getMatchMenu</span>(location.<span class="hljs-property">pathname</span> || <span class="hljs-string">&#x27;/&#x27;</span>, menu, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>).<span class="hljs-title function_">pop</span>() <span class="hljs-keyword">as</span> any || &#123;<br>        <span class="hljs-attr">authority</span>: <span class="hljs-string">&#x27;4&#x27;</span>,<br>    &#125;);<br>&#125;, [location.<span class="hljs-property">pathname</span>,menu.<span class="hljs-property">length</span>]);<br>......<br> &lt;<span class="hljs-title class_">Authorized</span> authority=&#123;authorized!.<span class="hljs-property">authority</span>&#125; noMatch=&#123;noMatch&#125;&gt;<br>    &#123;children&#125;<br>&lt;/<span class="hljs-title class_">Authorized</span>&gt;<br></code></pre></td></tr></table></figure>
@@ -428,8 +482,9 @@
 <ol>
 <li>前端针对业务需求设置某类错误的阈值、报警轮询间隔等规则，点击提交时请求与已有的报警规则数据比较，确定是新规则会传到后端</li>
 <li>后端根据规则创建定时任务，定时任务的回调函数判断报错数是否超过设定阈值；同时将报警规则传入数据库</li>
-<li>从日志服务器获取的每分钟错误数超过设定阈值时通过飞书 hook 报警到对应的群</li>
+<li>从日志服务器获取的每分钟错误数超过设定阈值时通过飞书 hook 报警到对应的群<br><img src="/unknown404.github.io/img/alarm.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></li>
 </ol>
+<p><img src="/unknown404.github.io/img/robot.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6987681953424080926#heading-17">https://juejin.cn/post/6987681953424080926#heading-17</a></li>
 <li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7016897995031445511#heading-14">https://juejin.cn/post/7016897995031445511#heading-14</a></li>

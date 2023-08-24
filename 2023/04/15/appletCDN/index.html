@@ -24,7 +24,7 @@
 <meta property="og:description" content="记录项目迁移时碰到的问题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-04-15T03:42:17.000Z">
-<meta property="article:modified_time" content="2023-04-15T04:34:00.279Z">
+<meta property="article:modified_time" content="2023-04-28T09:16:33.603Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="小程序">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          731 字
+          1.6k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          7 分钟
+          14 分钟
         
       </span>
     
@@ -285,10 +285,27 @@
 <li>使用 wx.downloadFile 相关 API 时需要配置 downloadFile 合法域名列表。需要注意的是使用 wx.getImageInfo 和 wx.loadFontFace 等 API 实际上也会向对应的域名发起请求，如果该域名不在小程序开发者平台的 downloadFile 合法域名列表中，就会出现跨域问题，从而导致请求失败。</li>
 </ol>
 <h2 id="问题-2-使用的特殊字体文件在-ios-和开发者工具上显示正常，安卓上无法显示"><a href="#问题-2-使用的特殊字体文件在-ios-和开发者工具上显示正常，安卓上无法显示" class="headerlink" title="问题 2:使用的特殊字体文件在 ios 和开发者工具上显示正常，安卓上无法显示"></a>问题 2:使用的特殊字体文件在 ios 和开发者工具上显示正常，安卓上无法显示</h2><h3 id="场景描述-1"><a href="#场景描述-1" class="headerlink" title="场景描述"></a>场景描述</h3><p>使用了如下代码来调用 icon 字体文件，域名链接可以正常访问，但会出现上述问题；且远程调试和真机调试平台都没有任何报错信息。</p>
-<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scss"><span class="hljs-keyword">@font-face</span> &#123;<br>    <span class="hljs-attribute">font-family</span>: <span class="hljs-string">&quot;icon2018&quot;</span>;<br>    <span class="hljs-attribute">src</span>: url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.ttf?t=1539342297740&quot;</span>),<br>        <span class="hljs-comment">/* chrome, firefox, opera, Safari, Android, iOS 4.2+*/</span><br>            url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.svg?t=1539342297740#icon2018&quot;</span>)<br>            format(<span class="hljs-string">&quot;svg&quot;</span>); <span class="hljs-comment">/* iOS 4.1- */</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scss"><span class="hljs-keyword">@font-face</span> &#123;<br>  <span class="hljs-attribute">font-family</span>: <span class="hljs-string">&quot;icon2018&quot;</span>;<br>  <span class="hljs-attribute">src</span>: url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.ttf?t=1539342297740&quot;</span>),<br>    <span class="hljs-comment">/* chrome, firefox, opera, Safari, Android, iOS 4.2+*/</span><br>      url(<span class="hljs-string">&quot;https://statics.xxx.com/iconfont.svg?t=1539342297740#icon2018&quot;</span>)<br>      format(<span class="hljs-string">&quot;svg&quot;</span>); <span class="hljs-comment">/* iOS 4.1- */</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="解决方式-1"><a href="#解决方式-1" class="headerlink" title="解决方式"></a>解决方式</h3><p>CDN 的 nginx 配置需要进行跨域处理</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://leiem.cn/2022/01/21/46155/">小程序引用网络字体在安卓无效</a></p>
+<h2 id="问题-3-同路径页面跳转时，页面-data-没更新"><a href="#问题-3-同路径页面跳转时，页面-data-没更新" class="headerlink" title="问题 3:同路径页面跳转时，页面 data 没更新"></a>问题 3:同路径页面跳转时，页面 data 没更新</h2><h3 id="场景描述-2"><a href="#场景描述-2" class="headerlink" title="场景描述"></a>场景描述</h3><p>页面切换大概是这样一个过程 pageA -&gt; pageB?id&#x3D;1 -&gt; pageB?id&#x3D;2<br>当跳 pageB?id&#x3D;2 时，data 中的一个对象数据还保持为 pageB?id&#x3D;1 的数据</p>
+<h3 id="解决方式-2"><a href="#解决方式-2" class="headerlink" title="解决方式"></a>解决方式</h3><p>目前无法分析具体原因，有可能是 mpvue 的框架问题，但这个问题不是稳定触发的，当跳转事件绑定的是@click.stop 的时候才发生。<br>当前保守的解决方式是在 onHide 或 onUnload 周期对 data 数据进行重置</p>
+<h2 id="问题-4-小程序全局变量"><a href="#问题-4-小程序全局变量" class="headerlink" title="问题 4:小程序全局变量"></a>问题 4:小程序全局变量</h2><h3 id="场景描述-3"><a href="#场景描述-3" class="headerlink" title="场景描述"></a>场景描述</h3><p>不同小程序框架，全局变量设置的方式有细微的差别</p>
+<h3 id="解决方式-3"><a href="#解决方式-3" class="headerlink" title="解决方式"></a>解决方式</h3><ol>
+<li>uni-app、mpvue</li>
+</ol>
+<p>在 App.vue 中定义 globalData 的相关配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">        <span class="hljs-attr">globalData</span>: &#123;</span><br><span class="language-javascript">            <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;text&#x27;</span></span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>js 中操作 globalData 的方式如下： getApp().globalData.text &#x3D; ‘test’</p>
+<p>在应用 onLaunch 时，getApp 对象还未获取，暂时可以使用 this.globalData 获取 globalData。</p>
+<ol start="2">
+<li>taro</li>
+</ol>
+<p>虽然官方文档给出了<a target="_blank" rel="noopener" href="https://docs.taro.zone/docs/come-from-miniapp#react">react 语法</a>的定义方法，然而设置的 taroGlobalData 只能维持初始化的值，而无法被改动。<br>想要解决这个问题，可以自己维护一个 globalData 对象，定义获取和修改该对象的方法。</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs qml"><span class="hljs-keyword">const</span> globalData = &#123;&#125;<br><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setGlobalData</span> (<span class="hljs-params">key, val</span>) </span>&#123;<br>  globalData[key] = val<br>&#125;<br><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getGlobalData</span> (<span class="hljs-params">key</span>) </span>&#123;<br>  <span class="hljs-keyword">return</span> globalData[key]<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://leiem.cn/2022/01/21/46155/">小程序引用网络字体在安卓无效</a><br>（2）<a target="_blank" rel="noopener" href="https://github.com/meituan-dianping/mpvue/issues/140">同一路由切换时，上一次的页面数据会保留</a><br>（3）<a target="_blank" rel="noopener" href="https://www.cnblogs.com/juewuzhe/p/11097146.html">Taro – 定义全局变量</a></p>
 
                 
               </div>
@@ -378,6 +395,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/unknown404.github.io/2023/04/25/eventTracking/" title="页面埋点基础概念">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">页面埋点基础概念</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
