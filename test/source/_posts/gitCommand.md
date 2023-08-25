@@ -19,7 +19,7 @@ tags:
 ## 背景
 
 git 是一个分布式版本控制软件。其工作流程如下图所示：
-![](/img/git.jpeg)
+![](/img/gitCommand/git.jpeg)
 
 涉及的基本工作区概念有：
 **Workspace**：工作区，平时开发时改动的地方
