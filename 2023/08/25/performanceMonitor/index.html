@@ -1,0 +1,780 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="2023技术分享的文档备份">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈WEB前端性能监控">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2023/08/25/performanceMonitor/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="2023技术分享的文档备份">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-25T01:45:27.000Z">
+<meta property="article:modified_time" content="2023-08-25T02:17:04.328Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="前端监控">
+<meta property="article:tag" content="分享记录">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>浅谈WEB前端性能监控 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="浅谈WEB前端性能监控"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-25 09:45" pubdate>
+          2023年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          99 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">浅谈WEB前端性能监控</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>前端页面性能对用户留存、用户直观体验有着重要影响。有调查显示，当页面加载时间超过 2 秒后，加载时间每增加一秒，就会有大量的用户流失，所以做好页面性能优化，无疑对网站来说是一个非常重要的步骤。</p>
+<h2 id="二、前端性能评判指标"><a href="#二、前端性能评判指标" class="headerlink" title="二、前端性能评判指标"></a>二、前端性能评判指标</h2><p>对于 Web 开发人员来说，如何衡量一个 Web 页面的性能一直是一个难题。在这一方面，谷歌团队一直致力于提供各种质量信号的统一指南。</p>
+<h3 id="2-1-核心-Web-指标"><a href="#2-1-核心-Web-指标" class="headerlink" title="2.1 核心 Web 指标"></a>2.1 核心 Web 指标</h3><p>核心 Web 指标旨在适用于所有网页，反映出以用户为中心的结果。该指标并不是固定不变的。2020 年谷歌团队从加载性能、交互性和视觉稳定性方面考虑提出了 3 个核心 Web 指标：最大内容绘制（LCP）、首次输入延迟（FID）、累积布局偏移（CLS）</p>
+<p>undefined</p>
+<p><strong>2.1.1 最大内容绘制（Largest Contentful Paint, LCP）</strong></p>
+<p>定义：页面首次开始加载时可视区域内可见的最大图像或文本块完成渲染的相对时间。</p>
+<p>LCP 考量的元素类型为：</p>
+<p><img>元素</p>
+<p>内嵌在<svg>元素内的<image>元素</p>
+<p><video>元素（使用封面图像）</p>
+<p>通过 url()函数（而非使用 CSS 渐变）加载的带有背景图像的元素</p>
+<p>包含文本节点或其他行内级文本元素子元素的块级元素。</p>
+<p><strong>2.1.2 首次输入延迟（First Input Delay, FID）</strong></p>
+<p>定义：用户第一次与页面交互（例如当他们单击链接、点按按钮或使用由 JavaScript 驱动的自定义控件）直到浏览器对交互作出响应、并实际开始处理事件处理程序所经过的时间。</p>
+<p>特点：</p>
+<p>需要在真实用户环境下测量</p>
+<p>实际数据与预期可能会有差距较大的情况。真实环境下会出现几种可能性：</p>
+<p>a）并非所有用户都会在每次访问您的网站时进行交互。用户发出的交互可能与 FID 无关（如滚动和缩放之类的交互）-&gt; FID 没有值</p>
+<p>b）一些用户的首次交互会处于不利的时间段内（当主线程长时间处于繁忙时）-&gt; FID 值较高</p>
+<p>c）一些用户的首次交互会处于有利的时间段内（当主线程完全空闲时）-&gt; FID 值较低</p>
+<p>由于 FID 值的预期差异，在查看 FID 上报数据时主要关注值的分布并注意较高的百分位数</p>
+<p><strong>2.1.3 累积布局偏移（Cumulative Layout Shift, CLS）</strong></p>
+<p>定义：整个页面生命周期内发生的所有单次布局偏移分数的总和。</p>
+<p>计算方式：</p>
+<p><em>布局偏移分数 &#x3D; 影响分数 * 距离分数</em></p>
+<p><em>布局偏移分数得分范围 0-1，0 表示没有偏移，1 表示最大偏移</em></p>
+<p>**影响分数 **</p>
+<p>影响分数测量 <em>不稳定元素</em> 对两帧之间的可视区域产生的影响。</p>
+<p>前一帧 <em>和</em> 当前帧的所有 <em>不稳定元素</em> 的可见区域集合（占总可视区域的部分）就是当前帧的 <em>影响分数</em> 。</p>
+<p>undefined</p>
+<p>在上图中，有一个元素在一帧中占据了一半的可视区域。接着，在下一帧中，元素下移了可视区域高度的 25%。红色虚线矩形框表示两帧中元素的可见区域集合，在本示例中，该集合占总可视区域的 75%，因此其 <em>影响分数</em> 为 0.75 。</p>
+<p>**距离分数 **</p>
+<p>布局偏移分数计算公式的另一部分测量不稳定元素相对于可视区域位移的距离。 <em>距离分数</em> 指的是任何 <em>不稳定元素</em> 在一帧中位移的最大距离（水平或垂直）除以可视区域的最大尺寸维度（宽度或高度，以较大者为准）。</p>
+<p>在刚才的示例中，最大的可视区域尺寸维度是高度，不稳定元素的位移距离为可视区域高度的 25%，因此 <em>距离分数</em> 为 0.25。</p>
+<p>所以，在这个示例中， <em>影响分数</em> 是 0.75 ， <em>距离分数</em> 是 0.25 ，所以 <em>布局偏移分数</em> 是 0.75 * 0.25 &#x3D; 0.1875</p>
+<p><strong>2.2 Web 指标</strong></p>
+<p>除了核心 Web 指标外，还有其他的指标也可用于加载、交互等性能评估</p>
+<p><strong>2.2.1 文档加载相关指标</strong></p>
+<p><strong>第一字节时间（Time to First Byte，TTFB）</strong></p>
+<p>浏览器从请求页面开始到接收第一字节的时间，这个时间段内包括 DNS 查找、TCP 连接和发出请求直到响应的第一个字节到达为止的时延</p>
+<p>。</p>
+<p>undefined</p>
+<p>undefined</p>
+<p><strong>DOM 解析完成时间（DOMContentLoaded，DCL）</strong></p>
+<p>DomContentLoaded 事件触发的时间。当 **HTML 文档被完全加载和解析完成之后，DOMContentLoaded ** 事件被触发，而无需等待样式表、图像和子框架加载完成。早期网络性能的测量参量</p>
+<p><strong>页面加载耗时（Load，L）</strong></p>
+<p>onLoad 事件触发的时间。页面所有资源都加载完毕后（比如图片，CSS），onLoad 事件才被触发。早期网络性能的测量参量</p>
+<p><strong>2.2.2 内容呈现相关指标</strong></p>
+<p><strong>首次绘制（ First Paint，FP）</strong></p>
+<p>从开始加载到浏览器 <strong>首次绘制像素</strong> 到屏幕上的时间，也就是页面在屏幕上首次发生视觉变化的时间。但此变化可能是简单的背景色更新或不引人注意的内容，它并不表示页面内容完整性，可能会报告没有任何可见的内容被绘制的时间。</p>
+<p><strong>首次内容绘制 （First Contentful Paint，FCP）</strong></p>
+<p>浏览器 <strong>首次绘制来自 DOM 的内容</strong> 的时间，内容必须是文本、图片（包含背景图）、非白色的 canvas 或 SVG，也包括带有正在加载中的 Web 字体的文本。</p>
+<p>这是用户第一次开始看到页面内容，但仅仅有内容，并不意味着它是有用的内容（例如 Header、导航栏等），也不意味着有用户要消费的内容。</p>
+<p><strong>辨析：FCP 和 LCP 区别</strong></p>
+<p>FCP：第一次看到的内容，不一定有用</p>
+<p>LCP：最大内容，在页面加载过程中对应的元素是会发生变化的</p>
+<p>undefined</p>
+<p><strong>2.2.3 交互响应性相关指标</strong></p>
+<p><strong>可交互时间（Time to Interactive，TTI）</strong></p>
+<p>表示网页第一次 <strong>完全达到可交互状态</strong> 的时间点，浏览器已经可以持续性的响应用户的输入。完全达到可交互状态的时间点是在最后一个长任务（Long Task）完成的时间, 并且在随后的 5 秒内网络和主线程是空闲的。</p>
+<p>undefined</p>
+<p><strong>三、性能监控模式</strong></p>
+<p>从技术方面来讲，前端性能监控主要分为两种方式，一种叫做合成监控（Synthetic Monitoring，SYN），另一种是真实用户监控（Real User Monitoring，RUM）。</p>
+<p>合成监控：在一个模拟场景里，去提交一个需要做性能审计的页面，通过一系列的工具、规则去运行你的页面，提取一些性能指标，得出一个审计报告。</p>
+<p>真实用户监控：在用户结束页面访问的时候，把此次访问产生的性能指标上传到日志服务器、进行数据的提取清洗加工，最后在监控平台上进行展示。</p>
+<p>||||合成监控||真实用户监控||</p>
+<p>||实现难度及成本||较低||较高||</p>
+<p>||采集数据丰富度||丰富||基础||</p>
+<p>||数据样本量||较小||较大||</p>
+<p>||是否有侵入性||否||是||</p>
+<p><strong>3.1 合成监控</strong></p>
+<p>常见工具： <strong>Lighthouse、PageSpeed、 WebPageTest</strong></p>
+<p>** 自研合成监控方案**</p>
+<p>目前常见的合成监控的实现方案为在服务端通过 Puppeteer 访问检测页面，调用 Lighthouse 获取相应指标，计算目标得分并将结果保存在数据库，同时提供给前台页面进行可视化展示。</p>
+<p>**Puppeteer **</p>
+<p>一个 Node 库，它提供了一个高级 API 来通过 DevTools 协议控制 Chrome。利用 Puppeteer 可以生成一个 Browser 对象，Browser 可以拥有多个页面对象。</p>
+<p><strong>Lighthouse</strong></p>
+<p>Lighthouse 是 Google 开源的自动化工具，用于改进网络应用的质量。它可以作为一个 Chrome 扩展程序运行，或从命令行运行。只需要为 Lighthouse 提供一个要审查的网址，它将针对此页面运行一连串的测试，然后生成一个有关页面性能的报告，从中看看可以采取哪些措施来改进应用。</p>
+<p>undefined</p>
+<p>Lighthouse 由这几部分组成</p>
+<p>Driver（驱动）—— 通过 Chrome Debugging Protocol 和 Chrome 进行交互。</p>
+<p>Gatherer（采集器）—— 决定在页面加载过程中采集哪些信息，将采集的信息输出为 Artifact。可自定义。</p>
+<p>Audit（审查器）—— 将 Gatherer 采集的 Artifact 作为输入，审查器会对其测试，然后得出相应的测评结果。可自定义。</p>
+<p>Report（报告）—— 将审查的结果通过指定的方式报告出来。</p>
+<p>合成监控的大致流程为：建立连接-&gt; 收集数据-&gt; 评估结果-&gt; 生成报告-&gt; 数据存储</p>
+<p><strong>建立连接</strong></p>
+<p>利用 Puppeteer 启动一个无头浏览器，打开一个空白页面。利用 Page 对象的 goto 方法打开目标 URL。然后将 Puppeteer 移交给 Lighthouse，实现方式就是确保 Puppeteer 和 lighthouse 启动时使用同一个端口号</p>
+<p>||Plaintext const browser &#x3D; await puppeteer.launch(); &#x2F;&#x2F;生成 browser 实例 const page &#x3D; await browser.newPage(); &#x2F;&#x2F;解析一个新的页面。await page.goto(url); &#x2F;&#x2F;跳转到 目标 urlconst options &#x3D; {logLevel: “info”,output: “html”,port: (new URL(browser.wsEndpoint())).port,};const runnerResult &#x3D;await lighthouse(url, options);||</p>
+<p>移交之后 Lighthouse 通过 Chrome DevTools Protocol 定义的主动指令与事件通知，就实现了操控 Chrome 浏览器，和感知页面加载过程中的各个事件。</p>
+<p><strong>收集数据</strong></p>
+<p>lighthouse 默认会调用 css-usage、js-usage、viewport-dimensions 等采集器获取数据，同时我们也可以自己设置采集器。所有的采集器继承同一父类 Gatherer，其内部结构为</p>
+<p>||JavaScriptclass Gatherer {&#x2F;<strong>_ @return {keyof LH.GathererArtifacts}_&#x2F;get name() {&#x2F;&#x2F; @ts-expect-error - assume that class name has been added to LH.GathererArtifacts.return this.constructor.name;}&#x2F;*</strong> 在页面导航前触发* @param {LH.Gatherer.PassContext} passContext* @return {LH.Gatherer.PhaseResult}*&#x2F;beforePass(passContext) { }&#x2F;<strong>_ 在页面加载完后_ @param {LH.Gatherer.PassContext} passContext* @return {LH.Gatherer.PhaseResult}*&#x2F;pass(passContext) { }&#x2F;*</strong> 在页面加载完毕，且 gatherer 全部执行完成* @param {LH.Gatherer.PassContext} passContext* @param {LH.Gatherer.LoadData} loadData* @return {LH.Gatherer.PhaseResult}*&#x2F;afterPass(passContext, loadData) { }}||</p>
+<p>其中只需要重点关注 3 个钩子方法：beforePass、pass、afterPass，Artifact 取最后一次 Hook 输出的结果，e.g.当 afterPass 未吐出，则采用 pass 结果，以此类推。</p>
+<p>以收集器 viewport-dimensions 为例</p>
+<p>||JavaScriptclass ViewportDimensions extends Gatherer {async afterPass(passContext) {const driver &#x3D; passContext.driver;const dimensions &#x3D; await driver.executionContext.evaluate(() &#x3D;&gt; {return {innerWidth: window.innerWidth,innerHeight: window.innerHeight,outerWidth: window.outerWidth,outerHeight: window.outerHeight,devicePixelRatio: window.devicePixelRatio,};}, {args: [],useIsolation: true,});const allNumeric &#x3D; Object.values(dimensions).every(Number.isFinite);if (!allNumeric) {const results &#x3D; JSON.stringify(dimensions);throw new Error(<code>ViewportDimensions results were not numeric: $&#123;results&#125;</code>);}return dimensions;}}||</p>
+<p>所有 gatherers 运行完后，就会生成一个中间产物 artifacts，此后 Lighthouse 就可以断开与浏览器的连接，只使用 artifacts 进行后续的分析。</p>
+<p><strong>评估结果</strong></p>
+<p>审查器将 gather 传来的 artifacts 作为输入进行分数评估操作。和采集器一样，lighthouse 提供标准的审查器，我们可以在继承标准审查器的基础上写自己的审查器，在自己的审查器里，我们通常会用到两个方法：一个是 meta，一个是 audit。meta 方法返回一个对象，该对象包含了该审查器的信息，特别注意的是 requiredArtifacts 字段和 id 字段，requiredArtifacts 字段的值对应着相对应的采集器，id 对应着 config 文件中对应的 audits 数组的内容。audit 方法返回一个对象，内容为这次审查的最终结果，包括 score、details 等字段。</p>
+<p>以利用收集器 viewport-dimensions 数据的审查器 content-width 为例</p>
+<p>||JavaScriptclass ContentWidth extends Audit {&#x2F;<em><em>_ @return {LH.Audit.Meta}_&#x2F;static get meta() {return {id: ‘content-width’,&#x2F;&#x2F; 审查通过时的标题 title: str</em>(UIStrings.title),&#x2F;&#x2F; 审查失败时的标题 failureTitle: str</em>(UIStrings.failureTitle),&#x2F;&#x2F;标题下关于该指标的描述 description: str_(UIStrings.description),requiredArtifacts: [‘ViewportDimensions’],};}&#x2F;*** @param {LH.Artifacts} artifacts* @param {LH.Audit.Context} context* @return {LH.Audit.Product}*&#x2F;static audit(artifacts, context) {const viewportWidth &#x3D; artifacts.ViewportDimensions.innerWidth;const windowWidth &#x3D; artifacts.ViewportDimensions.outerWidth;const widthsMatch &#x3D; viewportWidth &#x3D;&#x3D;&#x3D; windowWidth;if (context.settings.formFactor &#x3D;&#x3D;&#x3D; ‘desktop’) {return {score: 1,notApplicable: true,};}let explanation;if (!widthsMatch) {explanation &#x3D; str_(UIStrings.explanation,{innerWidth: artifacts.ViewportDimensions.innerWidth,outerWidth: artifacts.ViewportDimensions.outerWidth});}return {score: Number(widthsMatch),explanation,};}}||</p>
+<p><strong>生成报告</strong></p>
+<p>审查器的分数结果并不是最终出现在报告的结果，报告是以测试类别 category 为统计结果，配置文件会定义每个测试类别所需的审计项及其分数所占的权重。以 performance 为例，其权重设置为：</p>
+<p>||JavaScript{‘performance’: {title: str_(UIStrings.performanceCategoryTitle),auditRefs: [{id: ‘first-contentful-paint’, weight: 10, group: ‘metrics’},{id: ‘interactive’, weight: 10, group: ‘metrics’},{id: ‘speed-index’, weight: 10, group: ‘metrics’},{id: ‘total-blocking-time’, weight: 30, group: ‘metrics’},{id: ‘largest-contentful-paint’, weight: 25, group: ‘metrics’},{id: ‘cumulative-layout-shift’, weight: 15, group: ‘metrics’},&#x2F;&#x2F; 省略]},}||</p>
+<p>content-width 审查结果在报告中的展示：</p>
+<p>undefined</p>
+<p><strong>3.2 真实用户监控</strong></p>
+<p>** 数据收集**</p>
+<p>数据的收集主要利用浏览器提供的 API，performance 提供了多种 API，不同的 API 之间可能会有重叠的部分。</p>
+<p><strong>PerformanceTiming 数据收集</strong></p>
+<p>performance.getEntriesByType(“navigation”)：可返回从输入 url 到用户可以使用页面的全过程时间统计，单位均为毫秒。（该数据也可通过 new PerformanceObserver.observe(‘navigation’, entryHandler)获取）</p>
+<p>undefined</p>
+<p>TTFB：responseStart - requestStart</p>
+<p>DCL：domContentLoadedEventEnd - fetchStart</p>
+<p>L：loadEventStart - fetchStart</p>
+<p>performance.getEntriesByType(‘paint’)：可返回 FP 和 FCP 两个时间点的值（该数据也可通过 new PerformanceObserver.observe(‘paint’, entryHandler)获取）</p>
+<p>undefined</p>
+<p><strong>PerformanceObserver API 相关的数据收集</strong></p>
+<p><strong>LCP</strong></p>
+<p>利用 PerformanceObserver API 可获取 LCP 相关的信息。由于页面转移到后台后，PerformanceObserver API 仍会继续分发 largest-contentful-paint 条目，所以这部分的数据不能做考虑。如果发生页面隐藏、输入事件(用户的交互行为可能会导致页面元素的可见性变化)则停止 PerformanceObserver 的性能监听，计算 LCP；由于最大内容可能随加载变化，所以选取最后一个作为本次页面加载的 lcp 的值。</p>
+<p>||JavaScriptconst getLCP &#x3D; (lcp) &#x3D;&gt; {if (!isPerformanceObserverSupported()) {console.warn(‘browser do not support performanceObserver’)return}const firstHiddenTime &#x3D; getFirstHiddenTime()const entryHandler &#x3D; (entry) &#x3D;&gt; {if (entry.startTime &lt; firstHiddenTime.timeStamp) {lcp.value &#x3D; entry}}return observe(‘largest-contentful-paint’, entryHandler)}export const initLCP &#x3D; (store, report, immediately &#x3D; true) &#x3D;&gt; {const lcp &#x3D; { value: {} ,entries:[] }const po &#x3D; getLCP(lcp)const stopListening &#x3D; () &#x3D;&gt; {if (po) {if (po.takeRecords) {po.takeRecords().forEach((entry) &#x3D;&gt; {const firstHiddenTime &#x3D; getFirstHiddenTime()if (entry.startTime &lt; firstHiddenTime.timeStamp) {lcp.value &#x3D; entrylcp.entries.push(entry)}})}po.disconnect()if (!store.has(metricsName.LCP)) {const value &#x3D; lcp.valueconst metrics &#x3D; {name: metricsName.LCP,value: roundByFour(value.startTime, 2),entries:value} if (immediately) {report(metrics)}store.set(metricsName.LCP, metrics)}}}onHidden(stopListening, true);[‘click’, ‘keydown’].forEach((event) &#x3D;&gt; {addEventListener(event, stopListening, { once: true, capture: true })})}||</p>
+<p><strong>FID</strong></p>
+<p>和 LCP 的计算类似，需要忽视页面转移到后台后 PerformanceObserver API 继续分发的 first-input 条目。first-input 条目的延迟值是通过获取条目的 startTime 和 processingStart 时间戳之间的差值来测量的。</p>
+<p>||JavaScriptconst getFID &#x3D; () &#x3D;&gt; {if (!isPerformanceObserverSupported()) {console.warn(‘browser do not support performanceObserver’)return}const firstHiddenTime &#x3D; getFirstHiddenTime()return new Promise((resolve) &#x3D;&gt; {const eventHandler &#x3D; (entry) &#x3D;&gt; {if (entry.startTime &lt; firstHiddenTime.timeStamp) {if (po) {po.disconnect()}resolve(entry)}}const po &#x3D; observe(‘first-input’, eventHandler)if (po) {onHidden(() &#x3D;&gt; {if (po?.takeRecords) {po.takeRecords().map(eventHandler)}po.disconnect()}, true)}})}export const initFID &#x3D; (store, report, immediately &#x3D; true) &#x3D;&gt; {getFID().then((entry) &#x3D;&gt; {const metrics &#x3D; {name: metricsName.FID,value: roundByFour(entry.processingStart - entry.startTime, 2)}if (immediately) {report(metrics)}store.set(metricsName.FID, metrics)})}||</p>
+<p><strong>CLS</strong></p>
+<p>计算 CLS 时需注意布局偏移并不总是坏事，对用户交互（单击链接、点选按钮、在搜索框中键入信息等）进行响应的布局偏移是可以被使用者所接受的。PerformanceObserver 对用户输入 500 毫秒内发生的布局偏移会带有标志，方便在计算中排除这些偏移。</p>
+<p>在 CLS 中，有一个叫 <strong>会话窗口</strong> 的术语：一个或多个快速连续发生的单次布局偏移，每次偏移相隔的时间少于 1 秒，且整个窗口的最大持续时长为 5 秒。计算会话窗口时取所有会话窗口中的最大值作为 CLS 的值</p>
+<p>||JavaScriptconst getCLS &#x3D; (cls) &#x3D;&gt; {if (!isPerformanceObserverSupported()) {console.warn(‘browser do not support performanceObserver’)return}const entryHandler &#x3D; (entry) &#x3D;&gt; {if (!entry.hadRecentInput) {cls.value +&#x3D; entry.value}}return observe(‘layout-shift’, entryHandler)}export const initCLS &#x3D; (store, report, immediately &#x3D; true) &#x3D;&gt; {let sessionValue &#x3D; 0;let sessionEntries &#x3D; [];const cls &#x3D; { value: 0 ,entries:[]}const po &#x3D; getCLS(cls)const stopListening &#x3D; () &#x3D;&gt; {if (po?.takeRecords) {po.takeRecords().map((entry) &#x3D;&gt; {if (!entry.hadRecentInput) {const firstSessionEntry &#x3D; sessionEntries[0];const lastSessionEntry &#x3D; sessionEntries[sessionEntries.length - 1];if (sessionValue &amp;&amp;entry.startTime - lastSessionEntry.startTime &lt; 1000 &amp;&amp;entry.startTime - firstSessionEntry.startTime &lt; 5000) {sessionValue +&#x3D; entry.value;sessionEntries.push(entry);} else {sessionValue &#x3D; entry.value;sessionEntries &#x3D; [entry];}if (sessionValue &gt; metric.value) {cls.value &#x3D; sessionValue;cls.entries &#x3D; sessionEntries;}}})}po?.disconnect()const metrics &#x3D; {name: metricsName.CLS,value: roundByFour(cls.value),entries:cls.entries} if (immediately) {report(metrics)}store.set(metricsName.CLS, metrics)}onHidden(stopListening, true)}||</p>
+<p><strong>数据上报</strong></p>
+<p>上报时机：可以选择拿到数据后立即上报，也可以等用户页面操作结束、关闭隐藏页面时上报</p>
+<p>||JavaScript[beforeUnload, unload, onHidden].forEach((fn) &#x3D;&gt; {fn(() &#x3D;&gt; {const metrics &#x3D; this.getCurrentMetrics()if (Object.keys(metrics).length &gt; 0 &amp;&amp; !immediately) {reporter(metrics)}})})||</p>
+<p>上报方式</p>
+<p>undefined</p>
+<p>丢点：页面卸载时正在上报的请求丢失</p>
+<p><strong>参考资料</strong></p>
+<p><a target="_blank" rel="noopener" href="https://web.dev/vitals/">https://web.dev/vitals/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/GoogleChrome/lighthouse">https://github.com/GoogleChrome/lighthouse</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/" class="category-chain-item">技术分享</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E7%9B%91%E6%8E%A7/">#前端监控</a>
+      
+        <a href="/unknown404.github.io/tags/%E5%88%86%E4%BA%AB%E8%AE%B0%E5%BD%95/">#分享记录</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>浅谈WEB前端性能监控</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2023/08/25/performanceMonitor/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2023/07/24/jsconfig/" title="jsconfig的简要说明">
+                        <span class="hidden-mobile">jsconfig的简要说明</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
