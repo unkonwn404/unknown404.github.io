@@ -121,7 +121,7 @@ sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relati
 
 ### 弹性布局
 
-以 rem 为单位（rem 相对于根元素 font-size，em 相对于父元素 font-size）
+以 rem 为单位（rem 相对于根元素`html` font-size，em 相对于父元素 font-size）
 
 ### vw 布局
 
