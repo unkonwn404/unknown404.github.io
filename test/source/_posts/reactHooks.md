@@ -11,7 +11,6 @@ date: 2022-04-08 14:47:53
 
 <!-- more -->
 
-
 ## React Hook 规则
 
 （1）只在最顶层使用 Hook：不要在循环，条件或嵌套函数中调用 Hook
@@ -53,6 +52,67 @@ function DelayedCount() {
 ```
 
 以上代码点击多次时不能正确记录点击次数。解决方法是使用 setCount(count => count + 1)，这样不依赖外部变量、确保将最新状态值作为参数提供给更新状态函数，过时闭包的问题解决了。
+
+### 备注：React 闭包
+
+react hook 的存储结构为链表结构，react 组件的 hooks 会按照顺序存储在下面的链表结构中。
+
+```ts
+export type Hook = {
+  memoizedState: any;
+  baseState: any;
+  baseQueue: Update<any, any> | null;
+  queue: any;
+  next: Hook | null;
+};
+```
+
+在下面这段代码中，尽管渲染出的 count 值在变化，但是控制台打印出来的却没有。组件的工作流程大致是：useEffect 函数在第一次渲染完成后触发内部函数，创建计时器、react 组件状态改变发生重渲染、计时器持续工作改变 count 的内容、渲染内容不断更新。
+
+```js
+import React, { useState, useEffect } from "react";
+
+export default () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((count) => count + 1);
+      console.log(count, "count");
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <>
+      <p>count: {count}</p>
+    </>
+  );
+};
+```
+
+然而在更新过程中，对于 useEffect 来说，因为它的依赖是空数组，只在组件初始化时执行，可以理解为 useEffect 对应的 hook 节点不需要更新，直接复用旧的 useEffect 对应的 hook 节点；在旧节点中 setInterval 里的回调函数对于 count 变量的使用也还是保持原样，所以形成了闭包。而 setCount 传入的是更新函数，可以自动获取 preState、没有使用闭包的变量 count，所以不影响渲染。
+
+#### 闭包的解决方法
+
+1. useEffect 添加依赖，保证每次更新时替换 hook 缓存的函数，读取到的是最新的 state.
+
+2. 使用 useRef 存储最新的 count。useRef 返回的始终是同一个 ref 对象，在组件的整个生命周期中是不变的，也就是地址是没变的；既然地址没变，通过 ref 对象的 current 属性存储最新的 state，就可以保证每次通过 ref.current 拿到的值就是最新的
+
+组件库 ahook 的 useLatest 就是利用 useRef 这一特性。其源码为：
+
+```js
+import { useRef } from "react";
+
+// 通过 useRef，保持每次获取到的都是最新的值
+function useLatest<T>(value: T) {
+  const ref = useRef(value);
+  ref.current = value;
+  return ref;
+}
+
+export default useLatest;
+```
 
 ## useEffect
 
@@ -186,6 +246,7 @@ const fn=useCallback(()=>{
 useCallback(fn, deps) 相当于 useMemo(() => fn, deps)。类似生命周期 shouldComponentUpdate
 适用场景：
 （1）父组件将某个函数传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，由于函数重新创建等原因子组件同样也会重新渲染。
+（2）useEffect 中可能会有依赖函数的场景，需要使用 useCallback 缓存函数，避免 useEffect 的无限调用
 
 ## useRef
 
@@ -199,9 +260,14 @@ const refContainer = useRef(initialValue);
 useRef() 和自建一个 {current: ...} 对象的唯一区别是，useRef 会在每次渲染时返回同一个 ref 对象。
 适用场景：
 （1）引用如 input 等有参数频繁变动更新的 dom 元素。
+（2）解决闭包问题，见 react 闭包的内容介绍
+（3）自定义组件时提供了传入函数的入参、为防止自定义组件依赖入参函数的情况使用useRef包裹
+
 
 ## 参考文献
 
 （1）[useEffect 你真的会用吗？](https://juejin.cn/post/6952509261519781918#heading-0)
 （2）[React Hooks 及其性能优化之 React.memo,useCallBack,useMemo](https://juejin.cn/post/7053695602370019335)
 （3）[解读 useMemo, useCallback 和 React.memo，不再盲目做优化](https://juejin.cn/post/7090820276547485709)
+（4）[React系列- 图解：React Hook闭包问题](https://juejin.cn/post/7239584269894189115?searchId=20230907171414B7126D9CD38D0536A22D)
+（5）[useEffect 你真的会用吗？](https://juejin.cn/post/6952509261519781918#heading-0)
