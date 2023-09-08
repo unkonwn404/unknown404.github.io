@@ -91,7 +91,29 @@ export default () => {
 };
 ```
 
-然而在更新过程中，对于 useEffect 来说，因为它的依赖是空数组，只在组件初始化时执行，可以理解为 useEffect 对应的 hook 节点不需要更新，直接复用旧的 useEffect 对应的 hook 节点；在旧节点中 setInterval 里的回调函数对于 count 变量的使用也还是保持原样，所以形成了闭包。而 setCount 传入的是更新函数，可以自动获取 preState、没有使用闭包的变量 count，所以不影响渲染。
+然而在更新过程中，对于 useEffect 来说，因为它的依赖是空数组，只在组件初始化时执行，可以理解为 useEffect 对应的 hook 节点不需要更新，直接复用旧的 useEffect 对应的 hook 节点；在旧节点中 setInterval 里的回调函数对于 count 变量的使用也还是保持原样，所以形成了闭包。而 setCount 传入的是更新函数，可以自动获取 preState、没有使用闭包的变量 count，所以不影响渲染。这是因为 react 在 render 阶段会遍历 hook 上的 hook.queue 链表上保存的 update，调用 reducer 方法计算 newState
+
+```js
+let newState = current.baseState;//取上一次更新的state
+do {
+    ...//省略细节
+    const action = update.action;
+    newState = reducer(newState, action);
+    update = update.next;
+} while (update !== null && update !== first);
+//计算完成后更新memoizedState并返回
+hook.memoizedState = newState;
+hook.baseState = newBaseState;
+return [hook.memoizedState, dispatch];
+```
+
+reducer 的计算逻辑如下所示，当传入的 action 是函数时，每次调用 reducer(newState, action)都会传入上一次计算得到的新的 newState 进去调用 action(state)返回新的结果;而如果传值的话则 newState 的结果只会是最后一个 update 对象的 action 的值。所以如果 setInterval 内部使用 setCount(count + 1)的话读取到的 count 都是本次 render 的值 0
+
+```js
+function basicStateReducer(state, action) {
+  return typeof action === "function" ? action(state) : action;
+}
+```
 
 #### 闭包的解决方法
 
@@ -261,13 +283,12 @@ useRef() 和自建一个 {current: ...} 对象的唯一区别是，useRef 会在
 适用场景：
 （1）引用如 input 等有参数频繁变动更新的 dom 元素。
 （2）解决闭包问题，见 react 闭包的内容介绍
-（3）自定义组件时提供了传入函数的入参、为防止自定义组件依赖入参函数的情况使用useRef包裹
-
+（3）自定义组件时提供了传入函数的入参、为防止自定义组件依赖入参函数的情况使用 useRef 包裹
 
 ## 参考文献
 
 （1）[useEffect 你真的会用吗？](https://juejin.cn/post/6952509261519781918#heading-0)
 （2）[React Hooks 及其性能优化之 React.memo,useCallBack,useMemo](https://juejin.cn/post/7053695602370019335)
 （3）[解读 useMemo, useCallback 和 React.memo，不再盲目做优化](https://juejin.cn/post/7090820276547485709)
-（4）[React系列- 图解：React Hook闭包问题](https://juejin.cn/post/7239584269894189115?searchId=20230907171414B7126D9CD38D0536A22D)
+（4）[React 系列- 图解：React Hook 闭包问题](https://juejin.cn/post/7239584269894189115?searchId=20230907171414B7126D9CD38D0536A22D)
 （5）[useEffect 你真的会用吗？](https://juejin.cn/post/6952509261519781918#heading-0)
