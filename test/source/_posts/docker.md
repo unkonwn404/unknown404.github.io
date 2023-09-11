@@ -90,7 +90,7 @@ docker history [images_name]
 docker rmi [images_name]
 
 # 运行镜像
-## 
+##
 docker run [OPTIONS] [images_name] [COMMAND] [ARG...]
 ```
 
@@ -128,8 +128,74 @@ docker run -p 8080:8080 -p 50000:50000 --restart=on-failure -v jenkins_home:/var
 执行完后可以用指令 docker ps 查看容器运行情况。运行完成就可以在本地打开网址 http://localhost:8080 即可访问。
 正常运行时应该可以看到一个登录界面，需要输入管理员密码才可正常进入，该密码在命令行中可以看到。但有时可能会遇到"Please wait while Jenkins is getting ready to work"，需要重启 container 才能完成，原因不明。
 
+## 前端部署说明
+
+目前来说，前端部署的流程可以认为是将静态文件 html、css 和 js 上传到服务器的目录下，用户通过域名+路径进行访问；如果配置了 nginx，则增加了静态文件放在 nginx 文件夹下（例如/usr/share/nginx/html/）、Nginx 启动做简单配置的操作。因为 docker 隔离性、安全性的特点，所以整个部署资源一般放在 docker 内。
+实现步骤大致如下：
+
+1. 连接服务器
+   使用指令 `ssh root@[IP]`来连接远程服务器，通常需要输入用户名和密码
+2. 安装 docker、拉取 nginx 的 docker 镜像
+3. 增加配置文件
+
+- 1）增加 Dockerfile：在前端项目的根目录下创建 Dockerfile，添加如下内容
+
+```
+FROM nginx  //该镜像是基于 nginx:latest 镜像而构建的
+COPY dist/ /usr/share/nginx/html/  //将项目根目录下 dist 文件夹下的所有文件复制到镜像中 /usr/share/nginx/html/ 目录下
+COPY default.conf /etc/nginx/conf.d/default.conf  //将 项目根目录下 default.conf 复制到 etc/nginx/conf.d/default.conf，用本地的 default.conf 配置来替换 Nginx 镜像里的默认配置
+```
+
+**备注：Dockerfile 常用指令**
+
+- FROM：指定基础镜像，后续的指令将在该镜像上执行。
+- RUN：在镜像上执行 Linux 命令，并形成一个新的层。
+- CMD：指定启动镜像容器时的默认行为，一个 Dockerfile 中只能有一个 CMD 指令。
+- ENTRYPOINT：指定容器启动后执行的命令，可以覆盖 CMD 指令中的命令。
+- ENV：设置环境变量。
+- COPY：将文件系统中的文件复制到镜像中。
+- WORKDIR：设置工作目录。
+- EXPOSE：设置向外暴露的端口。
+- VOLUME：设置容器与外界映射的目录。
+
+- 2）增加 nginx 的配置替换文件 default.conf。示例如下
+
+```
+server {
+    listen       80;
+    server_name  localhost; # 此处可修改为docker服务宿主机的ip/域名
+
+    #charset koi8-r;
+    access_log  /var/log/nginx/host.access.log  main;
+    error_log  /var/log/nginx/error.log  error;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}
+```
+
+4. 使用指令`docker build -t vue-init .`构建镜像
+5. 使用指令`docker run -d -p 8136:80 --name vue-init-container vue-init`创建容器、运行。此时打开浏览器输入 服务器 ip/域名 端口号:8136，就能看到前端页面了
+
+### 部署优化说明
+
+以上只是部署的一个大致流程，实际公司项目的部署应该会考虑很多优化点，例如：
+
+- 为了提升页面首屏性能，对 html 走协商缓存，css、js 走强缓存；同时采用 name-hash 的打包方式防止上线过程中资源请求错乱
+- 为了减轻服务器压力，不选择将文件存储在 Nginx Web 服务器内某目录下，而是将静态资源部署到 CDN 上，再将 Nginx 上的流量转发到 CDN 上
+- 。。。等等
+
 ## 参考文献
 
 （1）[Win10 安装 Docker 以及 Jenkins(超级详细篇)](https://juejin.cn/post/7209900557712212026)
 （2）[Docker 安装 Jenkins，Nginx，实现前端项目自动化构建](https://juejin.cn/post/7187326853336530981)
 （3）[Docker Image Jenkins](https://github.com/jenkinsci/docker/blob/master/README.md#connecting-agents)
+（4）[【前端 Docker 部署实战】Docker 镜像+Nginx 配置部署 Vue 项目](https://juejin.cn/post/6992848354753380389?searchId=202309061616378C8D0FA3A38070899341)
+（5）[2021 年当我们聊前端部署时，我们在聊什么](https://juejin.cn/post/7017710911443959839)
