@@ -8,6 +8,14 @@ tags:
 excerpt: docker知识笔记
 ---
 
+## 为什么选择 docker 进行部署
+
+个人理解有以下几点：
+
+1. docker 能提供一致性的运行环境。让程序在一致性的环境中运行：不管是开发环境、测试环境、还是生产环境；不管是开发时、构建时、还是运行时。
+2. Kubernetes（又称 k8s）的容器集群管理系统因具有完备的集群管理能力（容器的高可用、负载均衡和故障恢复等）而广泛应用，为 docker 提供了自动化管理和编排的能力，让 docker 部署更容易被接受
+3. 标准化的服务程序封装技术-镜像，包含了程序以及程序对运行环境的依赖
+
 ## 基本概念
 
 - Client：客户端
@@ -199,3 +207,4 @@ server {
 （3）[Docker Image Jenkins](https://github.com/jenkinsci/docker/blob/master/README.md#connecting-agents)
 （4）[【前端 Docker 部署实战】Docker 镜像+Nginx 配置部署 Vue 项目](https://juejin.cn/post/6992848354753380389?searchId=202309061616378C8D0FA3A38070899341)
 （5）[2021 年当我们聊前端部署时，我们在聊什么](https://juejin.cn/post/7017710911443959839)
+（6）[使用 Docker 实现前端应用的标准化构建、部署和运行](https://juejin.cn/post/7269668219488354361)
