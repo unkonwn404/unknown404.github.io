@@ -143,6 +143,30 @@ module.exports = {
   },
 };
 ```
+
+备注： webpack 5 版本 postcss 配置书写方式有差别，从对象形式变为函数形式，如下所示：
+
+```js
+module.exports = {
+  plugins: [
+    require("postcss-px-to-viewport")({
+      unitToConvert: "px", // 要转化的单位
+      viewportWidth: 375, // UI设计稿的宽度
+      unitPrecision: 6, // 转换后的精度，即小数点位数
+      propList: ["*"], // 指定转换的css属性的单位，*代表全部css属性的单位都进行转换
+      viewportUnit: "vw", // 指定需要转换成的视窗单位，默认vw
+      fontViewportUnit: "vw", // 指定字体需要转换成的视窗单位，默认vw
+      minPixelValue: 1, // 默认值1，小于或等于1px则不进行转换
+      mediaQuery: true, // 是否在媒体查询的css代码中也进行转换，默认false
+      replace: true, // 是否转换后直接更换属性值
+      exclude: [/node_modules/, /src\/views/, /src\/components/, /src\/App/], // 设置忽略文件，用正则做目录名匹配
+    }),
+    require("autoprefixer")(),
+  ],
+};
+```
+
 ## 参考文献
-1. [Vue项目自动转换 px 为 rem，高保真还原设计图](https://juejin.cn/post/6844903557930418189?searchId=202308281046059EA791D01FCE5880F623)  
-2. [移动端适配解决方案(二)](https://juejin.cn/post/7061866685166256142?searchId=2023082811284766FD14F856BCD7817236)  
+
+1. [Vue 项目自动转换 px 为 rem，高保真还原设计图](https://juejin.cn/post/6844903557930418189?searchId=202308281046059EA791D01FCE5880F623)
+2. [移动端适配解决方案(二)](https://juejin.cn/post/7061866685166256142?searchId=2023082811284766FD14F856BCD7817236)

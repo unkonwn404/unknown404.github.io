@@ -11,7 +11,6 @@ tags:
 
 <!-- more -->
 
-
 ## 文件配置
 
 描述配置在这里略过不计，除非自己要写包，不然感觉记忆没什么用
@@ -55,6 +54,10 @@ workspaces 主要用于 monorepo 仓库管理模式、解决如何在一个顶�
 运行依赖，也就是项目生产环境下需要用到的依赖。比如 react，vue，状态管理库以及组件库等。
 
 使用 npm install xxx 或则 npm install xxx --save 时，会被自动插入到该字段中。
+
+#### 备注：别名安装依赖
+
+以 node-sass 为例，该安装包可以在 Node.js 中原生地编译.scss 文件为 css，但是它已经被废弃，因此可以使用 dart-sass 代替，执行指令`npm install node-sass@npm:dart-sass@1.25.0`即可实现无缝地从 node-sass 切换到 dart-sass，而不影响项目的正常运行，同时也可以让项目 package.json 自动生成"node-sass": "npm:dart-sass@1.25.0"这个依赖项，方便项目管理和维护
 
 ### devDependencies
 

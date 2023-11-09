@@ -131,6 +131,46 @@ function toTree(arr) {
 }
 ```
 
+### 5.数组相等判断
+
+判断思路：1.数组长度是否相等；2.元素可重复的情况需要进行计数，最好用 Map 数据结构保存，以防数组中有 1 和‘1’两种元素、计数时会被混淆；3.边界问题考虑（NaN 等）
+
+```js
+function areArraysContentEqual(arr1, arr2) {
+  // 数组长度是否相等
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  // 创建计数对象，用于记录每个元素在数组中的出现次数
+  const countMap1 = count(arr1);
+  const countMap2 = count(arr2);
+
+  // 统计数组中的元素出现次数
+  function count(arr = []) {
+    const resMap = new Map();
+    for (const item of arr) {
+      resMap.set(item, (resMap.get(item) || 0) + 1);
+    }
+    return resMap;
+  }
+  // 检查计数对象是否相等
+  for (const [key, count] of countMap1) {
+    if (countMap2.get(key) !== count) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const array1 = ["apple", "banana", "cherry", "banana", 1, "1", "11", 11];
+const array2 = ["banana", "apple", "banana", "cherry", "1", 1, "11", 11];
+
+areArraysContentEqual(array1, array2); // true
+```
+
 ## 参考资料
 
-[字节跳动面试之如何用 JS 实现 Ajax 并发请求控制](https://www.jb51.net/article/211898.htm)
+（1）[字节跳动面试之如何用 JS 实现 Ajax 并发请求控制](https://www.jb51.net/article/211898.htm)
+（2）[面试官：如何判断两个数组的内容是否相等](https://juejin.cn/post/7290786959441117243)

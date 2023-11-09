@@ -60,3 +60,9 @@ cliché n.   陈词滥调；
 She trotted out the old cliché that ‘a trouble shared is a trouble halved.’ 她又重复了“与人说愁愁减半”的陈词滥调。
 
 malfunction n. 运转失常；失灵；出现故障
+
+submissive adj.顺从的
+
+uphold v.维持
+
+instantiation n.实例化
