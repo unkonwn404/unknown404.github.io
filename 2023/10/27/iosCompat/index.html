@@ -16,22 +16,23 @@
   <meta name="author" content="小白的文件整理箱">
   <meta name="keywords" content="">
   
-    <meta name="description" content="虽然管理维护前端项目时经常需要跟该文件打交道，但在安装代码规范相关工具时，发现自己对其中的配置并不十分了解，所以想记录一下。">
+    <meta name="description" content="吐槽一下移动端开发时碰到的各种意想不到的兼容性问题。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="package.json分析">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/12/15/packageJson/index.html">
+<meta property="og:title" content="移动端开发时的系统兼容性问题">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2023/10/27/iosCompat/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
-<meta property="og:description" content="虽然管理维护前端项目时经常需要跟该文件打交道，但在安装代码规范相关工具时，发现自己对其中的配置并不十分了解，所以想记录一下。">
+<meta property="og:description" content="吐槽一下移动端开发时碰到的各种意想不到的兼容性问题。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-12-15T02:41:29.000Z">
-<meta property="article:modified_time" content="2023-11-08T03:26:46.744Z">
+<meta property="article:published_time" content="2023-10-27T13:10:36.000Z">
+<meta property="article:modified_time" content="2023-11-03T06:26:29.591Z">
 <meta property="article:author" content="小白的文件整理箱">
-<meta property="article:tag" content="前端依赖包管理">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>package.json分析 - 小白的文件整理箱</title>
+  <title>移动端开发时的系统兼容性问题 - 小白的文件整理箱</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -198,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="package.json分析"></span>
+            <span id="subtitle" data-typed-text="移动端开发时的系统兼容性问题"></span>
           
         </div>
 
@@ -209,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-12-15 10:41" pubdate>
-          2022年12月15日 上午
+        <time datetime="2023-10-27 21:10" pubdate>
+          2023年10月27日 晚上
         </time>
       </span>
     
@@ -221,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          2k 字
         
       </span>
     
@@ -232,7 +233,7 @@
         
         
         
-          15 分钟
+          18 分钟
         
       </span>
     
@@ -270,34 +271,26 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">package.json分析</h1>
+            <h1 style="display: none">移动端开发时的系统兼容性问题</h1>
             
             
               <div class="markdown-body">
                 
-                <p>虽然管理维护前端项目时经常需要跟该文件打交道，但在安装代码规范相关工具时，发现自己对其中的配置并不十分了解，所以想记录一下。</p>
+                <p>吐槽一下移动端开发时碰到的各种意想不到的兼容性问题。</p>
 <span id="more"></span>
 
-<h2 id="文件配置"><a href="#文件配置" class="headerlink" title="文件配置"></a>文件配置</h2><p>描述配置在这里略过不计，除非自己要写包，不然感觉记忆没什么用</p>
-<h3 id="workspaces"><a href="#workspaces" class="headerlink" title="workspaces"></a>workspaces</h3><p>workspaces 主要用于 monorepo 仓库管理模式、解决如何在一个顶层 root package 下管理多个子 packages 的问题，在 workspaces 声明目录下的 package 会软链到最上层 root package 的 node_modules 中，不用手动执行 npm link 操作。</p>
-<p>通常子项目都会平铺管理在 packages 目录下，所以根目录下 workspaces 通常配置为：</p>
-<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs prolog"><span class="hljs-string">&quot;workspaces&quot;</span>: [<br>  <span class="hljs-string">&quot;packages/*&quot;</span><br>]<br></code></pre></td></tr></table></figure>
+<h2 id="问题-1-ios-系统输入框-disabled-状态样式过浅"><a href="#问题-1-ios-系统输入框-disabled-状态样式过浅" class="headerlink" title="问题 1: ios 系统输入框 disabled 状态样式过浅"></a>问题 1: ios 系统输入框 disabled 状态样式过浅</h2><p>解决方法：增加 -webkit-text-fill-color 属性配置以及要调整 opacity。如下示例：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">textarea</span><span class="hljs-selector-pseudo">:disabled</span> &#123;<br>  <span class="hljs-attribute">color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">1</span>);<br>  <span class="hljs-attribute">opacity</span>: <span class="hljs-number">1</span>;<br>  -webkit-text-fill-<span class="hljs-attribute">color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">1</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h2 id="脚本配置"><a href="#脚本配置" class="headerlink" title="脚本配置"></a>脚本配置</h2><h3 id="scripts"><a href="#scripts" class="headerlink" title="scripts"></a>scripts</h3><p>指定项目的一些内置脚本命令，这些命令可以通过 npm run 来执行。npm run 的时候，就会自动创建一个 shell 脚本，将本地目录的 node_modules&#x2F;.bin 子目录加入 PATH 变量。这意味着，当前目录的 node_modules&#x2F;.bin 子目录里面的所有脚本，都可以直接用脚本名调用，而不必加上路径。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-string">&quot;scripts&quot;</span>: &#123;<br>  <span class="hljs-string">&quot;build&quot;</span>: <span class="hljs-string">&quot;webpack&quot;</span>,<br>  <span class="hljs-string">&quot;prebuild&quot;</span>: <span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-regexp">//</span> build 执行之前的钩子<br>  <span class="hljs-string">&quot;postbuild&quot;</span>: <span class="hljs-string">&quot;xxx&quot;</span> <span class="hljs-regexp">//</span> build 执行之后的钩子<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="问题-2-安卓移动端软键盘弹出时底部-fixed-定位被顶上去"><a href="#问题-2-安卓移动端软键盘弹出时底部-fixed-定位被顶上去" class="headerlink" title="问题 2:安卓移动端软键盘弹出时底部 fixed 定位被顶上去"></a>问题 2:安卓移动端软键盘弹出时底部 fixed 定位被顶上去</h2><p>原因是安卓系统和 ios 系统加载键盘的方式不同<br>解决方法：window.onresize 监听页面高度的变化，手动来控制吸底组件的显示和隐藏</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>  &lt;div class=&quot;footer&quot; v-show=&quot;hideshow&quot;&gt;&lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>export default &#123;<br>  data() &#123;<br>    return &#123;<br>      docmHeight: &quot;&quot;, //第一次获取高度<br>      nowHeight: &quot;&quot;,<br>      hideshow: true,<br>      isResize: false,<br>    &#125;;<br>  &#125;,<br>  watch: &#123;<br>    // 如果 clientHeight 发生改变，这个函数就会运行<br>    nowHeight: function () &#123;<br>      if (this.docmHeight != this.nowHeight) &#123;<br>        this.hideshow = false;<br>      &#125; else &#123;<br>        this.hideshow = true;<br>      &#125;<br>    &#125;,<br>  &#125;,<br>  mounted() &#123;<br>    // 获取浏览器可视区域高度<br>    this.docmHeight = document.documentElement.clientHeight; // document.body.clientWidth;<br>    window.onresize = () =&gt; &#123;<br>      // 在窗口或框架被调整大小时触发<br>      return (() =&gt; &#123;<br>        this.nowHeight = document.documentElement.clientHeight;<br>        console.log(&quot;当前高度&quot;, this.nowHeight);<br>      &#125;)();<br>    &#125;;<br>  &#125;,<br>  methods: &#123;&#125;,<br>&#125;;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+<p><em>个人碎碎念：其实我觉得这个方法并不好，有的手机支持横屏，横屏时页面肯定会触发resize事件，然后底部组件消失了？毕竟mounted生命周期不会再次触发。之前自己想的是键盘弹起事件和input组件聚焦强关联，把隐藏底部组件的触发时机放在聚焦上。但此时遇到较真的产品就会认为页面滚动时应该让input失焦，但浏览器并不会实现这个效果，逻辑的实现又十分复杂。所以最好的解决方案就是换个设计吧。。。</em></p>
+<h2 id="问题3-针对整个屏幕竖直居中的图片在ios的Safari和Chrome浏览器不居中"><a href="#问题3-针对整个屏幕竖直居中的图片在ios的Safari和Chrome浏览器不居中" class="headerlink" title="问题3: 针对整个屏幕竖直居中的图片在ios的Safari和Chrome浏览器不居中"></a>问题3: 针对整个屏幕竖直居中的图片在ios的Safari和Chrome浏览器不居中</h2><p>原因：书写样式时父元素的高度设置为100vh，也就是屏幕高度，而Safari和Chrome都有工具栏，在工具栏显示的情况下看起来就不怎么竖直居中了。<br>解决方法：外层父元素高度设置为100%，因为position的设置该元素已经脱离了原本文本流、基准变为视口，高度设置为100%也不会出现撑不起高度的情况，会依照视口高度定值；虽然document.documentElement.clientHeight和window.innerHeight可获取可视高度，但Safari的工具栏是下滑时可隐藏的，所以需要反复监听高度进行调整也比较麻烦</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-class">.modal-container</span> &#123;<br>    <span class="hljs-attribute">position</span>: fixed;<br>    <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;<br>    <span class="hljs-attribute">height</span>: <span class="hljs-number">100%</span>;<br>    <span class="hljs-attribute">left</span>: <span class="hljs-number">0</span>;<br>    <span class="hljs-attribute">top</span>: <span class="hljs-number">0</span>;<br>    <span class="hljs-attribute">background</span>: <span class="hljs-number">#000</span>;<br>    <span class="hljs-attribute">z-index</span>: <span class="hljs-number">2000</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>如果存在前缀指令<code>pre-*</code>、<code>post-*</code>的话，执行指令 npm run build 时会按照<code>prebuild - build - postbuild</code>执行顺序执行，这种语法现在并不推崇，需谨慎使用。</p>
-<h3 id="config"><a href="#config" class="headerlink" title="config"></a>config</h3><p>用于设置 scripts 里的脚本在运行时的参数。</p>
-<h2 id="依赖配置"><a href="#依赖配置" class="headerlink" title="依赖配置"></a>依赖配置</h2><h3 id="dependencies"><a href="#dependencies" class="headerlink" title="dependencies"></a>dependencies</h3><p>运行依赖，也就是项目生产环境下需要用到的依赖。比如 react，vue，状态管理库以及组件库等。</p>
-<p>使用 npm install xxx 或则 npm install xxx –save 时，会被自动插入到该字段中。</p>
-<h4 id="备注：别名安装依赖"><a href="#备注：别名安装依赖" class="headerlink" title="备注：别名安装依赖"></a>备注：别名安装依赖</h4><p>以 node-sass 为例，该安装包可以在 Node.js 中原生地编译.scss 文件为 css，但是它已经被废弃，因此可以使用 dart-sass 代替，执行指令<code>npm install node-sass@npm:dart-sass@1.25.0</code>即可实现无缝地从 node-sass 切换到 dart-sass，而不影响项目的正常运行，同时也可以让项目 package.json 自动生成”node-sass”: “npm:<a href="mailto:&#100;&#97;&#114;&#x74;&#45;&#x73;&#97;&#115;&#115;&#64;&#x31;&#46;&#50;&#x35;&#46;&#48;">&#100;&#97;&#114;&#x74;&#45;&#x73;&#97;&#115;&#115;&#64;&#x31;&#46;&#50;&#x35;&#46;&#48;</a>“这个依赖项，方便项目管理和维护</p>
-<h3 id="devDependencies"><a href="#devDependencies" class="headerlink" title="devDependencies"></a>devDependencies</h3><p>开发依赖，项目开发环境需要用到而运行时不需要的依赖，用于辅助开发，通常包括项目工程化工具比如 webpack，vite，eslint 等。<br>使用 npm install xxx -D 或者 npm install xxx –save-dev 时，会被自动插入到该字段中。</p>
-<h2 id="三方配置"><a href="#三方配置" class="headerlink" title="三方配置"></a>三方配置</h2><p>package.json 中也存在很多三方属性，比如 tsc 中使用的 types、构建工具中使用的 sideEffects,git 中使用的 husky，eslint 使用的 eslintIgnore。这里只列举部分属性。</p>
-<h3 id="lint-staged"><a href="#lint-staged" class="headerlink" title="lint-staged"></a>lint-staged</h3><p>lint-staged 是一个在 Git 暂存文件上运行 linters 的工具，配置后每次修改一个文件即可给所有文件执行一次 lint 检查，通常配合 gitHooks 一起使用。</p>
-<h3 id="browserslist"><a href="#browserslist" class="headerlink" title="browserslist"></a>browserslist</h3><p>browserslist 字段用来告知支持哪些浏览器及版本。也可以使用 .browserslistrc 单文件配置。</p>
-<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs prolog"><span class="hljs-string">&quot;browserslist&quot;</span>: [<br>  <span class="hljs-string">&quot;&gt; 1%&quot;</span>,<br>  <span class="hljs-string">&quot;last 2 versions&quot;</span><br>]<br></code></pre></td></tr></table></figure>
-
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7099041402771734559">深入浅出 package.json</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7023539063424548872">关于前端大管家 package.json，你知道多少？</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7161392772665540644">package.json 配置完全解读</a></p>
+<h2 id="问题4-小米浏览器夜间模式白色图片发黑"><a href="#问题4-小米浏览器夜间模式白色图片发黑" class="headerlink" title="问题4:小米浏览器夜间模式白色图片发黑"></a>问题4:小米浏览器夜间模式白色图片发黑</h2><p>原因：好像是特定的浏览器版本，会在夜间模式对白色图片进行反色<br>反色原理接近<code>filter: invert(110%) hue-rotate(180deg)</code>，但实际操作时按这个方法反色回去发现透明部分也被反色了，所以可能filter的方法还缺少参数<br>解决方法：一个可能性比较高的解决方法是：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-keyword">@media</span> (<span class="hljs-attribute">prefers-color-scheme</span>: dark) &#123;<br>    <br>    <span class="hljs-selector-tag">img</span> &#123;<br>        <span class="hljs-attribute">filter</span>: none<span class="hljs-meta">!important</span>;<br>       <br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这样可以去除夜间模式的过滤器效果</p>
 
                 
               </div>
@@ -316,7 +309,7 @@
     
       <span class="category-chain">
         
-  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  <a href="/unknown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/" class="category-chain-item">踩坑经历</a>
   
   
 
@@ -331,7 +324,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/">#前端依赖包管理</a>
+        <a href="/unknown404.github.io/tags/iOS/">#iOS</a>
+      
+        <a href="/unknown404.github.io/tags/Android/">#Android</a>
       
     </div>
   
@@ -343,8 +338,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>package.json分析</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/12/15/packageJson/</div>
+      <div>移动端开发时的系统兼容性问题</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2023/10/27/iosCompat/</div>
     </div>
     <div class="license-meta">
       
@@ -356,7 +351,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年12月15日</div>
+          <div>2023年10月27日</div>
         </div>
       
       
@@ -388,9 +383,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/unknown404.github.io/2022/12/15/codeFormat/" title="代码样式调整">
+                      <a href="/unknown404.github.io/2023/11/09/thumbSwipe/" title="带缩略图的图片切换展示实现">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">代码样式调整</span>
+                        <span class="hidden-mobile">带缩略图的图片切换展示实现</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -398,8 +393,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/unknown404.github.io/2022/12/09/reactRef/" title="react中获取ref相关的函数总结">
-                        <span class="hidden-mobile">react中获取ref相关的函数总结</span>
+                      <a href="/unknown404.github.io/2023/10/07/cover-view/" title="cover-view在webview上显示">
+                        <span class="hidden-mobile">cover-view在webview上显示</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
