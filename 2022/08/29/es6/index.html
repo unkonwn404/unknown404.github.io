@@ -24,7 +24,7 @@
 <meta property="og:description" content="面试时常问的 ES6 特性">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-29T09:01:20.000Z">
-<meta property="article:modified_time" content="2023-03-07T10:21:09.924Z">
+<meta property="article:modified_time" content="2023-11-28T02:05:42.892Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="ES6">
 <meta property="article:tag" content="JavaScript">
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.7k 字
+          2.8k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          23 分钟
+          24 分钟
         
       </span>
     
@@ -279,7 +279,6 @@
                 <p>面试时常问的 ES6 特性</p>
 <span id="more"></span>
 
-
 <h2 id="let-const"><a href="#let-const" class="headerlink" title="let,const"></a>let,const</h2><p>创建块级作用域，若调用发生在声明前会暂时性死区<br>const 指向地址不能改变，但可以增加内部属性</p>
 <h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>特点：没有 this 和 arguments；不能作为构造函数；没有函数提升</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> obj = &#123;<br> <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Tyler&#x27;</span>,<br> <span class="hljs-attr">a</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> name = <span class="hljs-string">&#x27;Anderson&#x27;</span><br>  <span class="hljs-keyword">let</span> <span class="hljs-title function_">test</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>   <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>)<br>  &#125;<br>  <span class="hljs-title function_">test</span>()<br> &#125;,<br>&#125;<br>obj.<span class="hljs-title function_">a</span>()<br><br><span class="hljs-comment">// Tyler</span><br><span class="hljs-comment">// 找到最近的非箭头函数a，所以箭头函数的this 就是a 的this。</span><br><span class="hljs-comment">// a目前是由obj调用的，因此此时箭头函数的this 为obj</span><br></code></pre></td></tr></table></figure>
@@ -308,7 +307,7 @@
 <li>Object.defineProperty 也不能对 es6 新产生的 Map,Set 这些数据结构做出监听。</li>
 <li>Object.defineProperty 也不能监听新增和删除操作，通过 Vue.set()和 Vue.delete 来实现响应式的。</li>
 </ul>
-<h2 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h2><p>导入导出方式：import、export</p>
+<h2 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h2><p>导入导出方式：<br>commonJs：require、module.exports、exports<br>es6：import、export、export default</p>
 <h3 id="commonJs-vs-ES6"><a href="#commonJs-vs-ES6" class="headerlink" title="commonJs vs ES6"></a>commonJs vs ES6</h3><ol>
 <li>commonJs 输出是值的拷贝，es6 输出值的引用</li>
 <li>commonJs 模块运行时加载（先加载全部模块再导入方法），es6 模块是编译时加载（指定加载某输出值）</li>

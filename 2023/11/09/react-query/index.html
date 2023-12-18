@@ -1,0 +1,725 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="起因是在阅读某 react 项目时看到作者提出的项目状态管理的规则，觉得很有意思；对于平常使用 redux 一把梭的人来说，他说的这个技术方案太过陌生，所以想随手记一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="react-query状态管理">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2023/11/09/react-query/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="起因是在阅读某 react 项目时看到作者提出的项目状态管理的规则，觉得很有意思；对于平常使用 redux 一把梭的人来说，他说的这个技术方案太过陌生，所以想随手记一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-09T07:31:00.000Z">
+<meta property="article:modified_time" content="2023-11-14T01:35:23.032Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="React">
+<meta property="article:tag" content="状态管理">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>react-query状态管理 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="react-query状态管理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-09 15:31" pubdate>
+          2023年11月9日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          45 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">react-query状态管理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>起因是在阅读<a target="_blank" rel="noopener" href="https://github.com/alan2207/bulletproof-react">某 react 项目</a>时看到作者提出的项目状态管理的规则，觉得很有意思；对于平常使用 redux 一把梭的人来说，他说的这个技术方案太过陌生，所以想随手记一下。</p>
+<span id="more"></span>
+
+<h2 id="状态管理方针"><a href="#状态管理方针" class="headerlink" title="状态管理方针"></a>状态管理方针</h2><p>以下是项目作者提出的状态管理的简要概述</p>
+<h3 id="组件状态"><a href="#组件状态" class="headerlink" title="组件状态"></a>组件状态</h3><p>对于只有当前组件才用的状态可以直接用 react 的钩子函数</p>
+<ul>
+<li>useState</li>
+<li>useReducer</li>
+</ul>
+<h3 id="应用状态"><a href="#应用状态" class="headerlink" title="应用状态"></a>应用状态</h3><p>应用状态指在交互时发生值的改变、以控制应用的状态的这种变量，例如弹出弹窗、提示语、夜间模式等。可以使用以下方式管理</p>
+<ul>
+<li>context</li>
+<li>redux<br>以及其他看起来功能很类似的库</li>
+</ul>
+<h3 id="表格状态"><a href="#表格状态" class="headerlink" title="表格状态"></a>表格状态</h3><p>填写表单时的数据管理，有专门的解决方案</p>
+<ul>
+<li>React Hook Form</li>
+<li>Formik</li>
+<li>React Final Form</li>
+</ul>
+<h3 id="服务端数据管理"><a href="#服务端数据管理" class="headerlink" title="服务端数据管理"></a>服务端数据管理</h3><p>从服务器请求得到的数据，有时需要存储起来方便后续修改等操作。可以使用以下方案</p>
+<ul>
+<li>react-query</li>
+<li>swr</li>
+<li>apollo client</li>
+<li>urql</li>
+</ul>
+<p>本文这次只记录 react-query 的使用方法</p>
+<h2 id="react-query"><a href="#react-query" class="headerlink" title="react-query"></a>react-query</h2><h3 id="使用场景举例"><a href="#使用场景举例" class="headerlink" title="使用场景举例"></a>使用场景举例</h3><p>一般来说，如果一个页面要展示请求内容，需要以下代码来实现</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [data, updateData] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">null</span>);<br>  <span class="hljs-keyword">const</span> [isError, setError] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">false</span>);<br>  <span class="hljs-keyword">const</span> [isLoading, setLoading] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">false</span>);<br><br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-keyword">async</span> () =&gt; &#123;<br>    <span class="hljs-title function_">setError</span>(<span class="hljs-literal">false</span>);<br>    <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">true</span>);<br>    <span class="hljs-keyword">try</span> &#123;<br>      <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> axios.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/api/user&#x27;</span>);<br>      <span class="hljs-title function_">updateData</span>(data);<br>    &#125; <span class="hljs-keyword">catch</span>(e) &#123;<br>      <span class="hljs-title function_">setError</span>(<span class="hljs-literal">true</span>);<br>    &#125;<br>    <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);<br>  &#125;, [])<br><br>  <span class="hljs-comment">// 处理data</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到至少需要 3 个 state，存储数据的 data、请求加载态的 isLoading 和请求失败的 isError。如果页面涉及多个请求，这样的 state 设置还要重复好多次。<br>如果使用 react-query 实现，则代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><br><span class="hljs-keyword">import</span> &#123; useQuery &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-query&#x27;</span><br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> &#123;data, isLoading, isError&#125; = <span class="hljs-title function_">useQuery</span>(<span class="hljs-string">&#x27;userData&#x27;</span>, <span class="hljs-function">() =&gt;</span> axios.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/api/user&#x27;</span>));<br><br>  <span class="hljs-keyword">if</span> (isLoading) &#123;<br>    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>loading<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span></span><br><span class="language-xml">      &#123;data.map(user =&gt; <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;user.id&#125;</span>&gt;</span>&#123;user.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>)&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span><br>  )<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到可以省去中间态的 state 设置，除此之外 react-query 还可以实现这些功能：</p>
+<ul>
+<li>多个组件请求同一个 query 时只发出一个请求</li>
+<li>缓存数据失效&#x2F;更新策略（判断缓存合适失效，失效后自动请求数据）</li>
+<li>对失效数据垃圾清理</li>
+</ul>
+<p>如何实现将在接下来的使用介绍里展开</p>
+<h3 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h3><p>根据 react-query v4 的说明文档，可以在 App.tsx 文件做如下配置</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs tsx"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">QueryClientProvider</span>, <span class="hljs-title class_">ReactQueryProviderConfig</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-query&#x27;</span>;<br><br><span class="hljs-keyword">const</span> <span class="hljs-attr">queryConfig</span>: <span class="hljs-title class_">ReactQueryProviderConfig</span> = &#123;<br>  <span class="hljs-comment">/**</span><br><span class="hljs-comment">   * refetchOnWindowFocus 窗口获得焦点时重新获取数据</span><br><span class="hljs-comment">   * staleTime 过多久重新获取服务端数据</span><br><span class="hljs-comment">   * cacheTime 数据缓存时间 默认是 5 * 60 * 1000 5分钟</span><br><span class="hljs-comment">   */</span><br>  <span class="hljs-attr">queries</span>: &#123;<br>    <span class="hljs-attr">refetchOnWindowFocus</span>: <span class="hljs-literal">true</span>,<br>    <span class="hljs-attr">staleTime</span>: <span class="hljs-number">5</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>,<br>    <span class="hljs-attr">retry</span>: <span class="hljs-number">0</span><br>  &#125;,<br>&#125;;<br><br><span class="hljs-title class_">ReactDOM</span>.<span class="hljs-title function_">render</span>(<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">QueryClientProvider</span> <span class="hljs-attr">client</span>=<span class="hljs-string">&#123;new</span> <span class="hljs-attr">QueryClient</span>(&#123; <span class="hljs-attr">defaultOptions:</span> <span class="hljs-attr">queryConfig</span> &#125;)&#125;&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">QueryClientProvider</span>&gt;</span></span><br>    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;root&#x27;</span>)<br>  );<br><br></code></pre></td></tr></table></figure>
+
+<p>QueryClient 是可以与缓存交互的实例，其他组件如果想要获取这个实例可以用 useQueryClient 函数实现。<br>QueryClient 实例可配置的参数包括：</p>
+<div class="note note-info">
+            <p><strong>staleTime</strong> 重新获取数据的时间间隔 默认 0<br><strong>cacheTime</strong> 数据缓存时间<br><strong>retry</strong> 失败重试次数 默认 3 次<br><strong>refetchOnWindowFocus</strong> 窗口重新获得焦点时重新获取数据 默认 false<br><strong>refetchOnReconnect</strong> 网络重新链接<br><strong>refetchOnMount</strong> 实例重新挂载<br><strong>enabled</strong> 如果为“false”的化，“useQuery”不会触发</p>
+          </div>
+
+<p>这些参数也可以在钩子函数里配置</p>
+<p>react-query 常用的钩子函数有两个：useQuery 和 useMutation，用于应对常见的数据操作</p>
+<h3 id="useQuery（数据查询）"><a href="#useQuery（数据查询）" class="headerlink" title="useQuery（数据查询）"></a>useQuery（数据查询）</h3><h4 id="书写规范"><a href="#书写规范" class="headerlink" title="书写规范"></a>书写规范</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useQuery &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-query&quot;</span>;<br><span class="hljs-comment">// v3写法</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> info = <span class="hljs-title function_">useQuery</span>(<span class="hljs-string">&quot;todos&quot;</span>, fetchTodoList);<br>&#125;<br><span class="hljs-comment">// v4+写法</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> info = <span class="hljs-title function_">useQuery</span>(&#123; <span class="hljs-attr">queryKey</span>: [<span class="hljs-string">&quot;todos&quot;</span>], <span class="hljs-attr">queryFn</span>: fetchTodoList &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="入参出参"><a href="#入参出参" class="headerlink" title="入参出参"></a>入参出参</h4><p>queryKey 可以都是字符串数组，也可以是 object 元素<br>queryFn 可以自动接收到 queryKey 的值，通常会返回 promise 值；如果考虑请求出错、返回 rejected 状态的情况的话，queryFn 的内部需要考虑做抛出错误的处理，以 fetch 请求为例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title function_">useQuery</span>(&#123;<br>  <span class="hljs-attr">queryKey</span>: [<span class="hljs-string">&quot;todos&quot;</span>, todoId],<br>  <span class="hljs-attr">queryFn</span>: <span class="hljs-keyword">async</span> () =&gt; &#123;<br>    <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&quot;/todos/&quot;</span> + todoId);<br>    <span class="hljs-keyword">if</span> (!response.<span class="hljs-property">ok</span>) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&quot;Network response was not ok&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> response.<span class="hljs-title function_">json</span>();<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>当 queryKey 的内容发生变动时 queryFn 的内容就会自动执行<br>useQuery 返回的内容包括：</p>
+<div class="note note-info">
+            <p><strong>isLoading</strong>：请求是否在加载数据<br><strong>isError</strong>：请求是否报错<br><strong>isFetching</strong>：是否有一个挂起的请求，适用于无限滚动<br><strong>data</strong>：请求返回数据</p>
+          </div>
+
+<h3 id="useMutation（数据增删改）"><a href="#useMutation（数据增删改）" class="headerlink" title="useMutation（数据增删改）"></a>useMutation（数据增删改）</h3><p>该函数钩子通常用于有副作用的场景。</p>
+<h4 id="书写规范-1"><a href="#书写规范-1" class="headerlink" title="书写规范"></a>书写规范</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useQuery &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-query&quot;</span>;<br><span class="hljs-comment">// v3写法</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [mutate] = <span class="hljs-title function_">useMutation</span>(<span class="hljs-function">(<span class="hljs-params">newTodo</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> axios.<span class="hljs-title function_">post</span>(<span class="hljs-string">&quot;/todos&quot;</span>, newTodo);<br>  &#125;);<br>&#125;<br><span class="hljs-comment">// v4+写法</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> mutation = <span class="hljs-title function_">useMutation</span>(&#123;<br>    <span class="hljs-attr">mutationFn</span>: <span class="hljs-function">(<span class="hljs-params">newTodo</span>) =&gt;</span> &#123;<br>      <span class="hljs-keyword">return</span> axios.<span class="hljs-title function_">post</span>(<span class="hljs-string">&quot;/todos&quot;</span>, newTodo);<br>    &#125;,<br>  &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="入参出参-1"><a href="#入参出参-1" class="headerlink" title="入参出参"></a>入参出参</h4><p>常用的入参包括：</p>
+<div class="note note-info">
+            <p><strong>mutationFn</strong>：用于处理请求的函数，返回 promise 对象<br><strong>onMutate</strong>：请求触发、将要执行前触发的回调函数<br><strong>onError</strong>：请求失败时触发的回调函数<br><strong>onSuccess</strong>：请求失败时触发的回调函数<br><strong>onSettled</strong>：请求完成时触发的回调函数，不管成功与否；执行时机在 onSuccess 和 onError 之后</p>
+          </div>
+<p>除此以外也可以配置请求操作相关的一些配置，例如重试、重试延迟等<br>返回的内容主要包括：</p>
+<div class="note note-info">
+            <p><strong>mutate</strong>：在代码中运行突变的操作，接受的入参包括 mutationFn 的入参和 onSuccess、onError、onSettled<br><strong>isPending</strong>：请求是否在加载数据<br><strong>isError</strong>：请求是否报错</p>
+          </div>
+<p>涉及增删改的操作可以使用乐观更新来减少等待加载的时间，让用户体验更好。所谓乐观更新、就是前端默认后端接口请求一定会成功、提前将修改结果展示出来。<br>以下面这段代码为例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">useDeleteDiscussion</span> = (<span class="hljs-params">&#123; config &#125;: UseDeleteDiscussionOptions = &#123;&#125;</span>) =&gt; &#123;<br>  <span class="hljs-keyword">const</span> &#123; addNotification &#125; = <span class="hljs-title function_">useNotificationStore</span>();<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">useMutation</span>(&#123;<br>    <span class="hljs-attr">onMutate</span>: <span class="hljs-keyword">async</span> (deletedDiscussion) =&gt; &#123;<br>      <span class="hljs-keyword">await</span> queryClient.<span class="hljs-title function_">cancelQueries</span>(<span class="hljs-string">&#x27;discussions&#x27;</span>);<br><br>      <span class="hljs-keyword">const</span> previousDiscussions = queryClient.<span class="hljs-property">getQueryData</span>&lt;<span class="hljs-title class_">Discussion</span>[]&gt;(<span class="hljs-string">&#x27;discussions&#x27;</span>);<br><br>      queryClient.<span class="hljs-title function_">setQueryData</span>(<br>        <span class="hljs-string">&#x27;discussions&#x27;</span>,<br>        previousDiscussions?.<span class="hljs-title function_">filter</span>(<br>          <span class="hljs-function">(<span class="hljs-params">discussion</span>) =&gt;</span> discussion.<span class="hljs-property">id</span> !== deletedDiscussion.<span class="hljs-property">discussionId</span><br>        )<br>      );<br><br>      <span class="hljs-keyword">return</span> &#123; previousDiscussions &#125;;<br>    &#125;,<br>    <span class="hljs-attr">onError</span>: <span class="hljs-function">(<span class="hljs-params">_, __, context: any</span>) =&gt;</span> &#123;<br>      <span class="hljs-keyword">if</span> (context?.<span class="hljs-property">previousDiscussions</span>) &#123;<br>        queryClient.<span class="hljs-title function_">setQueryData</span>(<span class="hljs-string">&#x27;discussions&#x27;</span>, context.<span class="hljs-property">previousDiscussions</span>);<br>      &#125;<br>    &#125;,<br>    <span class="hljs-attr">onSuccess</span>: <span class="hljs-function">() =&gt;</span> &#123;<br>      queryClient.<span class="hljs-title function_">invalidateQueries</span>(<span class="hljs-string">&#x27;discussions&#x27;</span>);<br>      <span class="hljs-title function_">addNotification</span>(&#123;<br>        <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;success&#x27;</span>,<br>        <span class="hljs-attr">title</span>: <span class="hljs-string">&#x27;Discussion Deleted&#x27;</span>,<br>      &#125;);<br>    &#125;,<br>    ...config,<br>    <span class="hljs-attr">mutationFn</span>: <span class="hljs-function">(<span class="hljs-params">&#123; discussionId &#125;: &#123; discussionId: string &#125;</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">return</span> axios.<span class="hljs-title function_">delete</span>(<span class="hljs-string">`/discussions/<span class="hljs-subst">$&#123;discussionId&#125;</span>`</span>);<br>    &#125;<br>  &#125;);<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>这段代码的大致逻辑是：</p>
+<ul>
+<li>删除请求触发onMutate回调，为了乐观更新首先取消已有的讨论的请求（应该是为了应对配置了更新策略的queryClient）；从缓存中取出已存储的讨论列表、滤除删除的目标讨论、利用setQueryData将结果存入缓存</li>
+<li>删除请求成功时，用invalidateQueries清除缓存、重新拉取数据</li>
+<li>删除请求失败时，缓存重新存入上一次缓存即未删除的内容，相当于回退</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6882669076540456967">react-query</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/column/7105422212789714980">react-query手把手教程</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/React/">#React</a>
+      
+        <a href="/unknown404.github.io/tags/%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/">#状态管理</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>react-query状态管理</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2023/11/09/react-query/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2023/11/09/thumbSwipe/" title="带缩略图的图片切换展示实现">
+                        <span class="hidden-mobile">带缩略图的图片切换展示实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
