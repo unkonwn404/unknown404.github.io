@@ -12,7 +12,6 @@ tags:
 
 <!-- more -->
 
-
 ## let,const
 
 创建块级作用域，若调用发生在声明前会暂时性死区
@@ -71,7 +70,9 @@ Object.defineProperty 的缺点：
 
 ## 模块化
 
-导入导出方式：import、export
+导入导出方式：
+commonJs：require、module.exports、exports
+es6：import、export、export default
 
 ### commonJs vs ES6
 

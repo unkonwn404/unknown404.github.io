@@ -321,6 +321,7 @@ export default {
 - 高度自适应尽量不要用 fit-content 而是 auto，因为在 iOS 系统，部分机型不支持这个属性
 - 需要监听从图片展示模块传输的当前图片的 index，操作预览模块的 swiper 跳到该 index 的位置
 - 点击事件不要挂在 swiper 和 swiper-slide 组件上，否则无法生效
+- 为防止滚动查看预览弹窗时后面页面滚动，需要改变body的样式
 
 最终预览模块的实现大致如下：
 

@@ -168,6 +168,7 @@ Vue 3.0 是用 TypeScript 编写的，因此支持 TypeScript。
 ### 新内置组件 Suspense、Teleport
 
 - **Suspense**：组件有两个插槽：#default 和 #fallback。两个插槽都只允许一个直接子节点。初始渲染时渲染默认的插槽内容。如果遇到异步依赖，则会进入挂起状态。在挂起状态期间，展示的是后备内容。当所有遇到的异步依赖都完成后，将展示出默认插槽的内容。
+
 - **Teleport**：接收一个 to 的属性来指定传送的目标。to 的值可以是 CSS 选择器字符串，也可以是一个 DOM 元素对象。被 Teleport 标签包裹的模块将置于 to 指定的 DOM 之下。适用于子组件调用公共组件如全局提示框的场景
 
 ## Vue 生命周期（Vue3.0 版本）
@@ -335,6 +336,68 @@ export default{
 </script>
 ```
 
+使用组合式 api 时，需要注意`<script setup>` 语法糖的组件是默认关闭的，也即通过模板 ref 或者 $parent 链获取到的组件的公开实例，不会暴露任何在 `<script setup>` 中声明的绑定
+对于该问题的解决方式是子组件使用 defineExpose 明确暴露的属性。如下示例所示：
+
+```vue
+<!-- ChildComponent.vue -->
+<template>
+  <div>
+    <p>Child Component</p>
+    <p>Count: {{ count }}</p>
+    <button @click="increment">Increment</button>
+  </div>
+</template>
+
+<script>
+import { ref, defineExpose } from "vue";
+
+export default {
+  setup() {
+    const count = ref(0);
+
+    const increment = () => {
+      count.value++;
+    };
+
+    // 使用 defineExpose 暴露属性给父组件
+    defineExpose({
+      count,
+      increment,
+    });
+
+    return {
+      count,
+      increment,
+    };
+  },
+};
+</script>
+
+<!-- ParentComponent.vue -->
+
+<template>
+  <div>
+    <p>Parent Component</p>
+    <p>Count from Child: {{ childCount }}</p>
+    <ChildComponent ref="childRef" />
+  </div>
+</template>
+<script>
+import { ref } from "vue";
+import ChildComponent from "./ChildComponent.vue";
+export default {
+  setup() {
+    const childRef = ref();
+    const childCount = childRef.value.count;
+    return {
+      childCount,
+    };
+  },
+};
+</script>
+```
+
 **5) $attrs**
 子组件的$attrs 对象包含了除组件所声明的 props 和 emits 之外的所有其他 attribute，例如 class，style，v-on 监听器等等。子组件可以利用`v-bind="$attrs"`将属性传到目标元素上。
 vue2 中$listeners包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。而在vue3，$listeners 被移除了
@@ -358,46 +421,44 @@ Vue3 中移除了事件总线，但是可以借助于第三方工具来完成，
 祖先组件：使用 provide 属性或方法，指定想要提供给后代组件的数据或方法
 后代组件：使用 inject 获取祖先组件的值
 
-```
+```vue
 // 祖先组件
 
 <script setup>
-import { ref, provide } from 'vue'
-import { fooSymbol } from './injectionSymbols'
+import { ref, provide } from "vue";
+import { fooSymbol } from "./injectionSymbols";
 
 // 提供静态值
-provide('foo', 'bar')
+provide("foo", "bar");
 
 // 提供响应式的值
-const count = ref(0)
-provide('count', count)
+const count = ref(0);
+provide("count", count);
 
 // 提供时将 Symbol 作为 key
-provide(fooSymbol, count)
+provide(fooSymbol, count);
 </script>
-/////////////////////////////////////////////////
-// 后代组件
+///////////////////////////////////////////////// // 后代组件
 
 <script setup>
-import { inject } from 'vue'
-import { fooSymbol } from './injectionSymbols'
+import { inject } from "vue";
+import { fooSymbol } from "./injectionSymbols";
 
 // 注入值的默认方式
-const foo = inject('foo')
+const foo = inject("foo");
 
 // 注入响应式的值
-const count = inject('count')
+const count = inject("count");
 
 // 通过 Symbol 类型的 key 注入
-const foo2 = inject(fooSymbol)
+const foo2 = inject(fooSymbol);
 
 // 注入一个值，若为空则使用提供的默认值
-const bar = inject('foo', 'default value')
+const bar = inject("foo", "default value");
 
 // 注入时为了表明提供的默认值是个函数，需要传入第三个参数
-const fn = inject('function', () => {}, false)
+const fn = inject("function", () => {}, false);
 </script>
-
 ```
 
 ## Vue 生态
