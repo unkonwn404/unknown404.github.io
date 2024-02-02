@@ -74,7 +74,7 @@ _个人碎碎念：其实我觉得这个方法并不好，有的手机支持横�
 
 ## 问题 3: 针对整个屏幕竖直居中的图片在 ios 的 Safari 和 Chrome 浏览器不居中
 
-原因：书写样式时父元素的高度设置为 100vh，也就是屏幕高度，而 Safari 和 Chrome 都有工具栏，在工具栏显示的情况下看起来就不怎么竖直居中了。其实这是100vh的一个bug，可以详见[这篇文章](https://juejin.cn/post/7313979304513552435)
+原因：书写样式时父元素的高度设置为 100vh，也就是屏幕高度，而 Safari 和 Chrome 都有工具栏，在工具栏显示的情况下看起来就不怎么竖直居中了。其实这是 100vh 的一个 bug，可以详见[这篇文章](https://juejin.cn/post/7313979304513552435)
 解决方法：外层父元素高度设置为 100%，因为 position 的设置该元素已经脱离了原本文本流、基准变为视口，高度设置为 100%也不会出现撑不起高度的情况，会依照视口高度定值；虽然 document.documentElement.clientHeight 和 window.innerHeight 可获取可视高度，但 Safari 的工具栏是下滑时可隐藏的，所以需要反复监听高度进行调整也比较麻烦
 
 ```css
@@ -114,3 +114,13 @@ _个人碎碎念：其实我觉得这个方法并不好，有的手机支持横�
 
 原因：粘贴板使用的是 navigator.clipboard，该方法在 iOS 或比较先进的浏览器才会生效，而微信小程序安卓 webview 环境下使用用这个方法会报错
 解决方法：增加 navigator.clipboard 的 api 使用检查和设备识别，如果不存在该 api 则使用 npm 包 copy-to-clipboard 的方法
+
+## 问题 7:安卓 qq 浏览器点击图片会自动放大
+
+原因：qq 浏览器的自发行为（就跟他有时候会自动屏蔽 ad-wrap 的元素一样离谱）
+解决方法：使用 css 样式 pointer-events: none;可以阻止浏览器默认行为，但是如果希望保留一些浏览器默认行为如长按保存就不能使用该样式
+
+## 问题 8:ios 的 safari 下拉页面时页面外区域是黑的
+
+原因：和 meta 上设置的 theme color 有关
+解决方法：document.querySelector('meta[name="theme-color"]').setAttribute('content', bgColor || "#141416")

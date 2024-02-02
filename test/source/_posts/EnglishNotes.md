@@ -85,3 +85,7 @@ The boat was torn asunder on the rocks. 船触礁撞得支离破碎
 relapse v. 退回原状;(病情好转后)重新恶化,复发;
 
 impetus n.动力
+
+conducive adj. 有助于……的；有利的；有引导性的
+Exercise is conducive to health.锻炼有益于健康。
+This is a more conducive atmosphere for studying. 这种环境更适宜学习。

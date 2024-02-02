@@ -482,6 +482,38 @@ nodejs 的事件循环主要分为 6 个阶段：
 
 ![](/img/eventLoop.jpeg)
 
+事件循环的 6 个阶段中，我们只关心 4 个阶段的队列：timer queue、IO queue、check queue、close queue，这 4 个队列的回调都是宏任务。同时还有 2 个微任务队列：Promise queue 和 nextTick queue。
+如上图的流程所示：
+
+- 事件循环依次进入并执行 timer queue、IO queue、check queue、close queue。事件循环进入下一阶段前，都需要先清空微任务队列。
+- 每个宏任务执行完，都需要检查微任务队列是否有任务，如果有微任务，则先清空微任务，再执行下一个宏任务。
+- 在 node 11 以前，每个阶段都需要先执行完宏任务，切换到下一阶段前，才会清空微任务队列。
+- 微任务队列中，nextTick 的优先级比 Promise 高。微任务队列的执行，首先是检查process.nextTick队列，只有process.nextTick队列全部清空后,再检查promise队列；promise队列全部清空后，再检查process.nextTick队列。
+
+```js
+console.log("同步");
+
+process.nextTick(() => {
+  console.log("nextTick");
+});
+
+Promise.resolve().then(() => {
+  console.log("微任务");
+});
+
+// 到达可执行条件才会执行，与
+setTimeout(() => {
+  console.log("setTimeout");
+}, 0);
+
+// poll之后会立即检查是否有setImmediate，如果存在就立即执行
+setImmediate(() => {
+  console.log("setImmediate");
+});
+```
+
+打印结果为：同步 - nextTick - 微任务 - setTimeout - setImmediate
+
 ## 参考文献
 
 （1）[「2021」高频前端面试题汇总之 JavaScript 篇（下）](https://juejin.cn/post/6941194115392634888)
