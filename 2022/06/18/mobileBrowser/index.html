@@ -24,7 +24,7 @@
 <meta property="og:description" content="记录移动端开发时出现的各种兼容性问题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-18T08:01:05.000Z">
-<meta property="article:modified_time" content="2022-06-18T08:20:29.443Z">
+<meta property="article:modified_time" content="2024-02-22T10:05:34.262Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          246 字
+          406 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          3 分钟
+          4 分钟
         
       </span>
     
@@ -276,10 +276,12 @@
               <div class="markdown-body">
                 
                 <p>记录移动端开发时出现的各种兼容性问题。</p>
-<span id="more"></span> 
-<h2 id="问题1-部分模块在uc浏览器不显示"><a href="#问题1-部分模块在uc浏览器不显示" class="headerlink" title="问题1:部分模块在uc浏览器不显示"></a>问题1:部分模块在uc浏览器不显示</h2><p><strong>原因</strong>：uc浏览器内置样式文件，与自定义的样式文件存在覆盖关系。例如如果模块命名为ad-wrap，则该模块会被强制隐藏。</p>
-<h2 id="问题2-使用em为单位的模块在qq浏览器上比例失效"><a href="#问题2-使用em为单位的模块在qq浏览器上比例失效" class="headerlink" title="问题2:使用em为单位的模块在qq浏览器上比例失效"></a>问题2:使用em为单位的模块在qq浏览器上比例失效</h2><p><strong>原因</strong>：父元素的font-size的赋值问题。有的浏览器会存在最小font-size，小于该阈值则设置无效。qq浏览器下font-size最小8px，所以父元素的font-size的设置不能小于8px</p>
-<p><del>如果不是老项目的旧样式太多太难改了还是尽可能的用vw吧</del></p>
+<span id="more"></span>
+
+<h2 id="问题-1-部分模块在-uc-浏览器不显示"><a href="#问题-1-部分模块在-uc-浏览器不显示" class="headerlink" title="问题 1:部分模块在 uc 浏览器不显示"></a>问题 1:部分模块在 uc 浏览器不显示</h2><p><strong>原因</strong>：uc 浏览器内置样式文件，与自定义的样式文件存在覆盖关系。例如如果模块命名为 ad-wrap，则该模块会被强制隐藏。</p>
+<h2 id="问题-2-使用-em-为单位的模块在-qq-浏览器上比例失效"><a href="#问题-2-使用-em-为单位的模块在-qq-浏览器上比例失效" class="headerlink" title="问题 2:使用 em 为单位的模块在 qq 浏览器上比例失效"></a>问题 2:使用 em 为单位的模块在 qq 浏览器上比例失效</h2><p><strong>原因</strong>：父元素的 font-size 的赋值问题。有的浏览器会存在最小 font-size，小于该阈值则设置无效。qq 浏览器下 font-size 最小 8px，所以父元素的 font-size 的设置不能小于 8px</p>
+<p><del>如果不是老项目的旧样式太多太难改了还是尽可能的用 vw 吧</del></p>
+<h2 id="问题-3-输入框使用-keydown-enter-时回车操作键盘不会隐藏、对展示搜索结果有影响"><a href="#问题-3-输入框使用-keydown-enter-时回车操作键盘不会隐藏、对展示搜索结果有影响" class="headerlink" title="问题 3:输入框使用@keydown.enter 时回车操作键盘不会隐藏、对展示搜索结果有影响"></a>问题 3:输入框使用@keydown.enter 时回车操作键盘不会隐藏、对展示搜索结果有影响</h2><p><strong>原因</strong>：不明<br><strong>解决方式</strong>：使用 ref 方法，改为监听 keyup 事件，如果监听到 event.keyCode &#x3D;&#x3D; 13 进行后续操作，同时在之前的回调函数中增加 this.$refs.searchInput.blur()手动失焦</p>
 
                 
               </div>
