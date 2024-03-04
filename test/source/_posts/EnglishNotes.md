@@ -89,3 +89,21 @@ impetus n.动力
 conducive adj. 有助于……的；有利的；有引导性的
 Exercise is conducive to health.锻炼有益于健康。
 This is a more conducive atmosphere for studying. 这种环境更适宜学习。
+
+procrastination n. 耽搁，拖延；拖延症
+Procrastination is the thief of time.拖延就是浪费时间。
+
+incentive n. 激励某人做某事的事物；刺激；诱因，动机
+give sb. an incentive to do sth
+
+apathetic adj. 冷漠的；无动于衷的，缺乏兴趣的
+She roused herself from her apathetic musing 她从冷漠的沉思中清醒过来。
+
+sabotage vt. 妨害；对…采取破坏行动；vi. 从事破坏活动；n. 破坏；怠工；破坏活动
+sabotage an agreement 破坏协定
+
+inexplicable adj. 无法说明的；费解的；不能解释的
+an inexplicable animus against intellectuals. 对知识分子的莫名其妙的恶意
+
+concoct vt. 捏造；混合而制；调合；图谋
+concoct an excuse for being late编造迟到的借口

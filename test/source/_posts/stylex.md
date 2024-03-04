@@ -309,6 +309,10 @@ function MyComponent({style, ...}: Props) {
 - 庞大且体积不断增加的项目
 - 可复用组件项目
 
+## 后续碎碎念
+
+因为 stylex 提供的 demo 都太简陋了，所以自己尝试用 create-react-app 搭建了一个项目测试它的使用，结果发现居然没有修改打包配置的方法，要想实现还要安装 craco 脚手架，真是麻烦。。。node 版本还必须 16 以上才能运行正常，这个怎么没在文档里写啊。。。话说 create-react-app 这个框架这么封闭、复杂点的需求还要配router和redux、为什么这么多人还喜欢用啊不理解。。。
+
 ## 参考文献
 
 （1）[Introduction to StyleX](https://stylexjs.com/docs/learn/)

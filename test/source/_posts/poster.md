@@ -345,6 +345,6 @@ border-radius: 16rpx;
 当海报的高度没有超过设计稿的可视高度时，scroll-view作为套在海报外层的组件也不应该有滚动条。可以在海报生成组件的state里再维护一个isScroll的变量，判断和赋值的位置可以在[canvas初始化](#canvas初始化)执行。
 ## 参考文献
 1. [在Canvas中实现矩形、圆形、圆角矩形内阴影效果](http://www.yanghuiqing.com/web/350)  
-2. [手把手教你用canvas绘制小程序海报（一）](hhttps://juejin.cn/post/6983574104167170061)  
+2. [手把手教你用canvas绘制小程序海报（一）](https://juejin.cn/post/6983574104167170061)  
 3. [轻松生成小程序分享海报](https://juejin.cn/post/6844903663840788493#heading-0)  
 4. [微信小程序《海报生成》](https://juejin.cn/post/7039199842421178382#heading-1)  
