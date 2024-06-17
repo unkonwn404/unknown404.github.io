@@ -245,7 +245,7 @@ function inOrder(root){
         }
         let node=stack.pop()
         res.push(node.val)
-        current=current.right
+        current=node.right
     }
     return res
 

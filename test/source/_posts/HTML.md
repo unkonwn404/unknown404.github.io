@@ -29,8 +29,8 @@ tags:
 
 ## 语义化标签特点
 
-1. 对机器友好，有利于 SEO 和堵屏软件解析
-2. 对开发者友好增加可读型
+1. 对机器友好，有利于 SEO 和读屏软件解析
+2. 对开发者友好增加可读性
 
 ## HTML 元素
 
@@ -75,7 +75,7 @@ static：默认
 absolute：脱离文档流，相对非 static 父元素
 fixed：脱离文档流，相对浏览器窗口
 relative：相对原位置定位
-sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relative，之后是 fixed
+sticky：须指定 top、left、right、bottom，跨越特定阈值前是 relative，之后是 fixed
 **line-height 属性**
 子元素如何继承父元素 line-height 属性？
 
@@ -134,7 +134,7 @@ sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relati
 
 1. 根元素
 2. overflow 不为 visible
-3. display 为 inline-block 或 table
+3. display 为 inline-block 或 table、flex
 4. position 为 absolute 或 fixed
 5. float 不为 none
 
@@ -234,7 +234,7 @@ display:-webkit-box;
 
 #### 水平垂直居中
 
-1）margin：auto；left：0；right：0；top：0；bottom：0；
+1）position: absolute; margin：auto；left：0；right：0；top：0；bottom：0；
 2）position：absolute；left：50%；top：50%；transform：translate（-50%，-50%）；
 3）display：flex；align-items：center；justify-content：center；
 
@@ -244,7 +244,7 @@ display:-webkit-box;
 2）float+overflow
 3）grid-template-columns
 4）flex
-5）absolute\*2
+5）absolute+margin
 
 ### 三栏布局
 
@@ -253,8 +253,8 @@ display:-webkit-box;
 ```
 #wrapper{float:left;width:100%;height:50px;}
  #center{margin:0 100px 0 200px;}
-#left{float:left;margin-left:-100%;width:200px;height:50px;}
-#right{float:left;margin-left:-100px;width:100px;height:50px;}
+ #left{float:left;margin-left:-100%;width:200px;height:50px;}
+ #right{float:left;margin-left:-100px;width:100px;height:50px;}
 ```
 
 ### 圣杯布局

@@ -241,7 +241,7 @@ commit 的内容规范不应该被轻视，一个调理清晰的 commit 记录�
 - **BREAKING CHANGE**：当前修改是否发生了版本升级、接口参数减少、接口删除、迁移等破坏性调整。
 - **关闭 Issue**：填写格式`Closes #ISSUE_ID, #ISSUE_ID`
 
-当前使用比较广泛的规范化工具是[commitizen](https://www.npmjs.com/package/cz-conventional-changelog)。
+当前使用比较广泛的规范化工具是[commitizen](https://www.npmjs.com/package/cz-conventional-changelog)，具体操作可以参考[这篇文章](https://blog.csdn.net/sky529063865/article/details/120159366)。
 
 3）使用指令`git push`将代码提交到远程仓库。
 

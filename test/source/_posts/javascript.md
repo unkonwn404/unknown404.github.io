@@ -180,16 +180,16 @@ function deepCloneObj(obj){
 
 ## 原型和原型链
 
-**原型**：*proto*指向的对象
-**原型链**：当对象某一属性在当前对象找不到时会沿*proto*属性向上一个对象查找，如果没有就沿着*proto*属性继续向上查找，这个查找依据的规则就是原型链
+**原型**：`_proto_`指向的对象
+**原型链**：当对象某一属性在当前对象找不到时会沿`_proto_`属性向上一个对象查找，如果没有就沿着`_proto_`属性继续向上查找，这个查找依据的规则就是原型链
 ![](/img/proto-pic.jpg)
 
 ## 继承
 
 ### 原型链继承
 
-```
-Child.prototype=new Parent()
+```js
+Child.prototype = new Parent();
 ```
 
 基本思路：利用原型让一个引用类型继承另一个引用类型的属性和方法
@@ -197,9 +197,9 @@ Child.prototype=new Parent()
 
 ### 构造函数继承
 
-```
-function Child(){
-  Parent.call(this)
+```js
+function Child() {
+  Parent.call(this);
 }
 ```
 
@@ -403,18 +403,45 @@ function curry(fn){
 }
 ```
 
-### JavaScript 异步编程
+## JavaScript 异步编程
 
-#### 什么是异步？
+### 什么是异步？
 
 一个异步过程调用发出后，调用者不会立刻得到结果。而是在"调用"发出后，"被调用者"通过状态、通知来通知调用者，或通过回调函数处理这个调用。JavaScript 是单线程的。同步代码意味着什么呢？意味着有可能会阻塞，当我们有一个任务需要时间较长时，如果使用同步方式，那么就会阻塞之后的代码执行。
 
-#### 异步编程的实现方式
+### 异步编程的实现方式
 
 - **callback**：多个回调函数嵌套的时候会造成回调函数地狱
 - **promise**：使用 Promise 的方式可以将嵌套的回调函数作为链式调用。
 - **generator**：可以在函数的执行过程中，将函数的执行权转移出去，在函数外部还可以将执行权转移回来。当遇到异步函数执行的时候，将函数执行权转移出去，当异步函数执行完毕时再将执行权给转移回来。
 - **async**：generator 和 promise 实现的一个自动执行的语法糖，它内部自带执行器，当函数内部执行到一个 await 语句的时候，如果语句返回一个 promise 对象，那么函数将会等待 promise 对象的状态变为 resolve 后再继续向下执行。因此可以将异步逻辑，转化为同步的顺序来书写，并且这个函数可以自动执行。
+
+### AJAX 请求实现
+
+```js
+let xhr = new XMLHttpRequest();
+// 创建 Http 请求
+xhr.open("GET", url, true);
+// 设置状态监听函数
+xhr.onreadystatechange = function (res) {
+  if (res.readyState !== 4) return;
+  // 当请求成功时
+  if (res.status === 200) {
+    handle(res.response);
+  } else {
+    console.error(res.statusText);
+  }
+};
+// 设置请求失败时的监听函数
+xhr.onerror = function (res) {
+  console.error(res.statusText);
+};
+// 设置请求头信息
+xhr.responseType = "json";
+xhr.setRequestHeader("Accept", "application/json");
+// 发送 Http 请求
+xhr.send(null);
+```
 
 #### 事件循环
 
@@ -488,7 +515,7 @@ nodejs 的事件循环主要分为 6 个阶段：
 - 事件循环依次进入并执行 timer queue、IO queue、check queue、close queue。事件循环进入下一阶段前，都需要先清空微任务队列。
 - 每个宏任务执行完，都需要检查微任务队列是否有任务，如果有微任务，则先清空微任务，再执行下一个宏任务。
 - 在 node 11 以前，每个阶段都需要先执行完宏任务，切换到下一阶段前，才会清空微任务队列。
-- 微任务队列中，nextTick 的优先级比 Promise 高。微任务队列的执行，首先是检查process.nextTick队列，只有process.nextTick队列全部清空后,再检查promise队列；promise队列全部清空后，再检查process.nextTick队列。
+- 微任务队列中，nextTick 的优先级比 Promise 高。微任务队列的执行，首先是检查 process.nextTick 队列，只有 process.nextTick 队列全部清空后,再检查 promise 队列；promise 队列全部清空后，再检查 process.nextTick 队列。
 
 ```js
 console.log("同步");
@@ -513,6 +540,11 @@ setImmediate(() => {
 ```
 
 打印结果为：同步 - nextTick - 微任务 - setTimeout - setImmediate
+
+#### Node 和浏览器事件循环机制的区别
+
+- 浏览器事件循环会在宏任务结束后，检查微任务。而 Node 的微任务是在两个阶段之间执行。
+- node 的 process.nextTick 要高于其他微任务优先级。
 
 ## 参考文献
 

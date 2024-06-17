@@ -12,6 +12,8 @@ tags:
 
 <!-- more -->
 
+# 浏览器篇
+
 ## 问题 1: ios 系统输入框 disabled 状态样式过浅
 
 解决方法：增加 -webkit-text-fill-color 属性配置以及要调整 opacity。如下示例：
@@ -124,3 +126,15 @@ _个人碎碎念：其实我觉得这个方法并不好，有的手机支持横�
 
 原因：和 meta 上设置的 theme color 有关
 解决方法：document.querySelector('meta[name="theme-color"]').setAttribute('content', bgColor || "#141416")
+
+## 问题 9:ios 部分机型 border-radius 和 overflow：hidden 样式不生效
+
+原因：根据[这篇文章](https://juejin.cn/post/7372396174249459750)应该是因为 ios 手机会在 transform 的时候导致 border-radius 失效
+解决方法：1.按照文章的改法、使用动画效果带 transform 的元素的上一级 div 元素的 css 加上语句`-webkit-transform:rotate(0deg);`
+；2.将圆角样式加到内容器而不是带 transform 样式的外容器
+
+# 小程序篇
+
+## 问题 1: 弹窗滚动穿透问题（即弹窗出现时页面还可以做滚动操作）
+
+解决方法：跟使用的技术及小程序平台有关，如果只有[微信小程序](https://developers.weixin.qq.com/community/develop/doc/d615c9a8957a00225ae66b65a8c2bd01?highLine=%25E6%25BB%259A%25E5%258A%25A8%25E7%25A9%25BF%25E9%2580%258F)可以用官方提供的 page-meta，或者在弹窗上增加 catchtouchmove 属性；如果使用了跨端框架（例如[Taro](https://taro-docs.jd.com/docs/vue-overall#taro-3-%E5%9C%A8%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%AB%AF%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6)），可能这些属性不生效，只能通过改变页面样式如固定高度、溢出隐藏等来禁止页面的滚动

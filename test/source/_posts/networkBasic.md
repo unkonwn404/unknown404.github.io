@@ -8,8 +8,6 @@ categories:
 date: 2022-05-30 21:47:52
 ---
 
-
-
 ## 网络模型
 
 ### 网络模型一览
@@ -161,7 +159,7 @@ post vs get：
 1）client-server：客户端发送请求释放报文
 2）server-client：服务器收到请求，发送确认应答 ACK，客户端不能向服务器发送数据
 3）server-client：服务器不需要连接、发送请求释放报文 FIN
-4）client-server：发送确认应答 ACK，等待 2MSL 释放连接；服务器释放连接
+4）client-server：发送确认应答 ACK，等待 2MSL（Maximum Segment Lifetime） 释放连接；服务器释放连接
 
 ##### 四次挥手原因
 
@@ -249,5 +247,6 @@ udp 支持的协议：nfs、snmp、dns、tftp
 ## CDN 内容分发网络
 
 定义：将缓存服务器分布到用户访问集中到地区或网络中，用户访问网站时将访问指向最近的缓存服务器 ip
-A：dns 解析记录里原 ip 映射结果 cname：cdn 服务商地址
+A：dns 解析记录里原 ip 映射结果
+cname：cdn 服务商地址
 cdn 回源：缓存服务器没有符合请求的资源时会回到源服务器请求资源
