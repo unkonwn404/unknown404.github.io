@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle.png">
 <meta property="article:published_time" content="2022-09-18T09:02:00.000Z">
-<meta property="article:modified_time" content="2024-01-08T07:27:45.313Z">
+<meta property="article:modified_time" content="2024-03-17T14:35:36.971Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="vue">
 <meta name="twitter:card" content="summary_large_image">
@@ -234,7 +234,7 @@
         
         
         
-          92 分钟
+          96 分钟
         
       </span>
     
@@ -298,7 +298,12 @@
 <li>实现一个订阅者 watcher：连接 observer 和 compiler 桥梁，订阅 observer 属性变化消息，接收变化时触发 compiler 更新函数</li>
 <li>实现一个订阅器 dep：订阅发布管理模式，统一管理 watcher 和 observer</li>
 </ol>
-<h3 id="Vue-diff-算法"><a href="#Vue-diff-算法" class="headerlink" title="Vue diff 算法"></a>Vue diff 算法</h3><h4 id="vue-2-x-双端-diff"><a href="#vue-2-x-双端-diff" class="headerlink" title="vue 2.x - 双端 diff"></a>vue 2.x - 双端 diff</h4><p>双端 diff 算法是头尾指针向中间移动，分别判断头尾节点是否可以复用，如果没有找到可复用的节点再去遍历查找对应节点的下标，然后移动。全部处理完之后也要对剩下的节点进行批量的新增和删除。</p>
+<h3 id="Vue-diff-算法"><a href="#Vue-diff-算法" class="headerlink" title="Vue diff 算法"></a>Vue diff 算法</h3><ol>
+<li>新旧vnode对比是不是同类型标签，不是同类型直接替换</li>
+<li>如果是同类型标签，执行patchVnode方法，判断新旧vnode是否相等。如果相等，直接返回。</li>
+<li>新旧vnode不相等，需要比对新旧节点，比对原则是以新节点为主</li>
+</ol>
+<h4 id="vue-2-x-双端-diff"><a href="#vue-2-x-双端-diff" class="headerlink" title="vue 2.x - 双端 diff"></a>vue 2.x - 双端 diff</h4><p>双端 diff 算法是头尾指针向中间移动，分别判断头尾节点是否可以复用，如果没有找到可复用的节点再去遍历查找对应节点的下标，然后移动。全部处理完之后也要对剩下的节点进行批量的新增和删除。</p>
 <h4 id="vue-3-最长递增子序列"><a href="#vue-3-最长递增子序列" class="headerlink" title="vue 3 - 最长递增子序列"></a>vue 3 - 最长递增子序列</h4><h3 id="Vue-属性"><a href="#Vue-属性" class="headerlink" title="Vue 属性"></a>Vue 属性</h3><h4 id="data-为什么是一个函数而不是对象"><a href="#data-为什么是一个函数而不是对象" class="headerlink" title="data 为什么是一个函数而不是对象"></a>data 为什么是一个函数而不是对象</h4><p>如果 data 是对象，当组件复用时，由于多个实例引用同一个对象，只要一个实例对这个对象进行操作，其他实例中的数据也会发生变化。</p>
 <h4 id="computed-和-watch-区别"><a href="#computed-和-watch-区别" class="headerlink" title="computed 和 watch 区别"></a>computed 和 watch 区别</h4><p><strong>computed</strong></p>
 <ol>
@@ -371,7 +376,7 @@
    </tr>
 </table>
 
-<h3 id="新内置组件-Suspense、Teleport"><a href="#新内置组件-Suspense、Teleport" class="headerlink" title="新内置组件 Suspense、Teleport"></a>新内置组件 Suspense、Teleport</h3><ul>
+<h4 id="新内置组件-Suspense、Teleport"><a href="#新内置组件-Suspense、Teleport" class="headerlink" title="新内置组件 Suspense、Teleport"></a>新内置组件 Suspense、Teleport</h4><ul>
 <li><p><strong>Suspense</strong>：组件有两个插槽：#default 和 #fallback。两个插槽都只允许一个直接子节点。初始渲染时渲染默认的插槽内容。如果遇到异步依赖，则会进入挂起状态。在挂起状态期间，展示的是后备内容。当所有遇到的异步依赖都完成后，将展示出默认插槽的内容。</p>
 </li>
 <li><p><strong>Teleport</strong>：接收一个 to 的属性来指定传送的目标。to 的值可以是 CSS 选择器字符串，也可以是一个 DOM 元素对象。被 Teleport 标签包裹的模块将置于 to 指定的 DOM 之下。适用于子组件调用公共组件如全局提示框的场景</p>
@@ -419,12 +424,22 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;!-- ChildComponent.vue --&gt;<br>&lt;template&gt;<br>  &lt;div&gt;<br>    &lt;p&gt;Child Component&lt;/p&gt;<br>    &lt;p&gt;Count: &#123;&#123; count &#125;&#125;&lt;/p&gt;<br>    &lt;button @click=&quot;increment&quot;&gt;Increment&lt;/button&gt;<br>  &lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>import &#123; ref, defineExpose &#125; from &quot;vue&quot;;<br><br>export default &#123;<br>  setup() &#123;<br>    const count = ref(0);<br><br>    const increment = () =&gt; &#123;<br>      count.value++;<br>    &#125;;<br><br>    // 使用 defineExpose 暴露属性给父组件<br>    defineExpose(&#123;<br>      count,<br>      increment,<br>    &#125;);<br><br>    return &#123;<br>      count,<br>      increment,<br>    &#125;;<br>  &#125;,<br>&#125;;<br>&lt;/script&gt;<br><br>&lt;!-- ParentComponent.vue --&gt;<br><br>&lt;template&gt;<br>  &lt;div&gt;<br>    &lt;p&gt;Parent Component&lt;/p&gt;<br>    &lt;p&gt;Count from Child: &#123;&#123; childCount &#125;&#125;&lt;/p&gt;<br>    &lt;ChildComponent ref=&quot;childRef&quot; /&gt;<br>  &lt;/div&gt;<br>&lt;/template&gt;<br>&lt;script&gt;<br>import &#123; ref &#125; from &quot;vue&quot;;<br>import ChildComponent from &quot;./ChildComponent.vue&quot;;<br>export default &#123;<br>  setup() &#123;<br>    const childRef = ref();<br>    const childCount = childRef.value.count;<br>    return &#123;<br>      childCount,<br>    &#125;;<br>  &#125;,<br>&#125;;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
 <p><strong>5) $attrs</strong><br>子组件的$attrs 对象包含了除组件所声明的 props 和 emits 之外的所有其他 attribute，例如 class，style，v-on 监听器等等。子组件可以利用<code>v-bind=&quot;$attrs&quot;</code>将属性传到目标元素上。<br>vue2 中$listeners包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。而在vue3，$listeners 被移除了</p>
-<h3 id="兄弟组件通信"><a href="#兄弟组件通信" class="headerlink" title="兄弟组件通信"></a>兄弟组件通信</h3><h4 id="parent"><a href="#parent" class="headerlink" title="$parent"></a>$parent</h4><p>$parent 可以让组件访问父组件的实例（访问的是上一级父组件的属性和方法）<br>可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。</p>
+<h3 id="兄弟组件通信"><a href="#兄弟组件通信" class="headerlink" title="兄弟组件通信"></a>兄弟组件通信</h3><h4 id="parent"><a href="#parent" class="headerlink" title="$parent"></a>$parent</h4><p><code>$parent</code> 可以让组件访问父组件的实例（访问的是上一级父组件的属性和方法）<br>可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。</p>
 <h4 id="eventBus"><a href="#eventBus" class="headerlink" title="eventBus"></a>eventBus</h4><p>Vue3 中移除了事件总线，但是可以借助于第三方工具来完成，Vue 官方推荐 mitt 或 tiny-emitter；<br>但基本的使用方法保持不变，组件 1 使用 emit 函数发送事件名和参数，组件 2 使用 on 函数监听对应的事件名，执行处理函数</p>
 <h3 id="跨多层次组件通信"><a href="#跨多层次组件通信" class="headerlink" title="跨多层次组件通信"></a>跨多层次组件通信</h3><h4 id="provide、inject"><a href="#provide、inject" class="headerlink" title="provide、inject"></a>provide、inject</h4><p>祖先组件：使用 provide 属性或方法，指定想要提供给后代组件的数据或方法<br>后代组件：使用 inject 获取祖先组件的值</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs vue">// 祖先组件<br><br>&lt;script setup&gt;<br>import &#123; ref, provide &#125; from &quot;vue&quot;;<br>import &#123; fooSymbol &#125; from &quot;./injectionSymbols&quot;;<br><br>// 提供静态值<br>provide(&quot;foo&quot;, &quot;bar&quot;);<br><br>// 提供响应式的值<br>const count = ref(0);<br>provide(&quot;count&quot;, count);<br><br>// 提供时将 Symbol 作为 key<br>provide(fooSymbol, count);<br>&lt;/script&gt;<br>///////////////////////////////////////////////// // 后代组件<br><br>&lt;script setup&gt;<br>import &#123; inject &#125; from &quot;vue&quot;;<br>import &#123; fooSymbol &#125; from &quot;./injectionSymbols&quot;;<br><br>// 注入值的默认方式<br>const foo = inject(&quot;foo&quot;);<br><br>// 注入响应式的值<br>const count = inject(&quot;count&quot;);<br><br>// 通过 Symbol 类型的 key 注入<br>const foo2 = inject(fooSymbol);<br><br>// 注入一个值，若为空则使用提供的默认值<br>const bar = inject(&quot;foo&quot;, &quot;default value&quot;);<br><br>// 注入时为了表明提供的默认值是个函数，需要传入第三个参数<br>const fn = inject(&quot;function&quot;, () =&gt; &#123;&#125;, false);<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
-<h2 id="Vue-生态"><a href="#Vue-生态" class="headerlink" title="Vue 生态"></a>Vue 生态</h2><h3 id="vue-router"><a href="#vue-router" class="headerlink" title="vue-router"></a>vue-router</h3><h4 id="前端路由和后端路由区别"><a href="#前端路由和后端路由区别" class="headerlink" title="前端路由和后端路由区别"></a>前端路由和后端路由区别</h4><p>前端路由：页面跳转的 URL 规则匹配由前端来控制，把渲染的任务交给了浏览器，通过客户端的算力来解决页面的构建<br>后端路由：浏览器地址输入栏输入 URL 回车时后端根据路径将对应的 html 模版渲染好返回给前端</p>
+<h2 id="Vue-生态"><a href="#Vue-生态" class="headerlink" title="Vue 生态"></a>Vue 生态</h2><h3 id="单页面应用（SPA）"><a href="#单页面应用（SPA）" class="headerlink" title="单页面应用（SPA）"></a>单页面应用（SPA）</h3><p>使用 vue 全家桶构建的项目一般就属于单页面应用项目。其特点为：初始加载时只加载一个 HTML 页面，后续的导航通过 JavaScript 动态地更新页面内容</p>
+<h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>用户体验：加载初始页面后，可以在不刷新页面的情况下加载和渲染新内容。</li>
+<li>响应交互：用户可以在页面上执行各种操作，而不会导致页面的重新加载。</li>
+<li>负载较低：只有初始页面加载时需要从服务器获取 HTML、CSS 和 JavaScript 文件，减轻了服务器的负载</li>
+</ul>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>首次加载时间：SPA 首次加载时需要下载较大的 JavaScript 文件，这可能导致初始加载时间较长。</li>
+<li>SEO（搜索引擎优化）问题：由于 SPA 的内容是通过 JavaScript 动态生成的，搜索引擎的爬虫可能无法正确地获取和索引页面的内容</li>
+</ul>
+<h3 id="vue-router"><a href="#vue-router" class="headerlink" title="vue-router"></a>vue-router</h3><h4 id="前端路由和后端路由区别"><a href="#前端路由和后端路由区别" class="headerlink" title="前端路由和后端路由区别"></a>前端路由和后端路由区别</h4><p>前端路由：页面跳转的 URL 规则匹配由前端来控制，把渲染的任务交给了浏览器，通过客户端的算力来解决页面的构建<br>后端路由：浏览器地址输入栏输入 URL 回车时后端根据路径将对应的 html 模版渲染好返回给前端</p>
 <h4 id="直接使用-a-链接与使用-router-link-的区别"><a href="#直接使用-a-链接与使用-router-link-的区别" class="headerlink" title="直接使用 a 链接与使用 router-link 的区别"></a>直接使用 a 链接与使用 router-link 的区别</h4><p>抹平了两种模式下 href 的书写方式，会得到正确的 href 值；history 模式下调用 pushState 并阻止默认行为。</p>
 <h4 id="hash-模式和-history-模式区别"><a href="#hash-模式和-history-模式区别" class="headerlink" title="hash 模式和 history 模式区别"></a>hash 模式和 history 模式区别</h4><h5 id="hash-模式"><a href="#hash-模式" class="headerlink" title="hash 模式"></a>hash 模式</h5><p>开发中默认的模式，它的 URL 带着一个#。<br>特点：hash 值会出现在 URL 里面，但是不会出现在 HTTP 请求中，对后端完全没有影响。所以改变 hash 值，不会重新加载页面。<br>原理： hash 模式的主要原理就是监听 onhashchange()事件</p>
 <h5 id="history-模式"><a href="#history-模式" class="headerlink" title="history 模式"></a>history 模式</h5><p>传统的路由分发模式，即用户在输入一个 URL 时，服务器会接收这个请求，并解析这个 URL，然后做出相应的逻辑处理。URL 不会带#。<br>特点：history 模式下的某些路径如果后台没有配置，URL 输入访问时会返回 404。解决方法为需要在服务器上添加一个简单的回退路由。<br>原理：通过按钮进行的路由跳转用 pushState、replaceState 来改变路由但不触发后端请求，再用回调函数调用新页面组件；点击浏览器前进后退按钮时监听 popstate 事件进行页面切换</p>
@@ -457,7 +472,7 @@
 <h4 id="vuex-vs-localStorage"><a href="#vuex-vs-localStorage" class="headerlink" title="vuex vs localStorage"></a>vuex vs localStorage</h4><ol>
 <li>存储位置：vuex 存储在内存，localStorage 则以文件的方式存储在本地</li>
 <li>存储内容：localStorage 只能存储字符串类型的数据</li>
-<li>持久性：刷新页面时 vuex 存储的值会丢失，localstorage 不会</li>
+<li>持久性：刷新或关闭页面时 vuex 存储的值会丢失，localstorage 不会</li>
 </ol>
 <h3 id="pinia"><a href="#pinia" class="headerlink" title="pinia"></a>pinia</h3><p>全新的 Vue 状态管理库，vuex 的代替者。</p>
 <h4 id="pinia-特点"><a href="#pinia-特点" class="headerlink" title="pinia 特点"></a>pinia 特点</h4><ol>
@@ -487,6 +502,9 @@
 </ul>
 <figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">&lt;div v-bind:<span class="hljs-keyword">class</span>=&quot;[<span class="hljs-symbol">isActive</span> ? <span class="hljs-symbol">activeClass</span> : &#x27;&#x27;, <span class="hljs-symbol">errorClass</span>]&quot;&gt;&lt;/<span class="hljs-symbol">div</span>&gt;<br><br><span class="hljs-symbol">data: </span>&#123;<br>  activeClass: <span class="hljs-string">&#x27;active&#x27;</span>,<br>  errorClass: <span class="hljs-string">&#x27;text-danger&#x27;</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
+<h2 id="Vue-的性能优化有哪些"><a href="#Vue-的性能优化有哪些" class="headerlink" title="Vue 的性能优化有哪些"></a>Vue 的性能优化有哪些</h2><h3 id="编码阶段"><a href="#编码阶段" class="headerlink" title="编码阶段"></a>编码阶段</h3><p>v-if 和 v-for 不一起使用<br>v-for 保证 key 的唯一性<br>使用 keep-alive 缓存组件<br>v-if 和 v-show 酌情使用<br>路由懒加载、异步组件<br>图片懒加载<br>节流防抖</p>
+<h3 id="打包优化"><a href="#打包优化" class="headerlink" title="打包优化"></a>打包优化</h3><p>压缩代码<br>使用 CDN 加载第三方模块<br>抽离公共文件</p>
+<h3 id="用户体验"><a href="#用户体验" class="headerlink" title="用户体验"></a>用户体验</h3><p>骨架屏<br>客户端缓存</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6964779204462247950/">「2021」高频前端面试题汇总之 Vue 篇（下）</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7064368176846340132"> Vue 这一块拿捏了</a></p>
 
                 

@@ -16,22 +16,23 @@
   <meta name="author" content="小白的文件整理箱">
   <meta name="keywords" content="">
   
-    <meta name="description" content="虽然管理维护前端项目时经常需要跟该文件打交道，但在安装代码规范相关工具时，发现自己对其中的配置并不十分了解，所以想记录一下。">
+    <meta name="description" content="CI&#x2F;CD 简介CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。 CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以">
 <meta property="og:type" content="article">
-<meta property="og:title" content="package.json分析">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/12/15/packageJson/index.html">
+<meta property="og:title" content="CI&#x2F;CD初识">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/04/11/CICD/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
-<meta property="og:description" content="虽然管理维护前端项目时经常需要跟该文件打交道，但在安装代码规范相关工具时，发现自己对其中的配置并不十分了解，所以想记录一下。">
+<meta property="og:description" content="CI&#x2F;CD 简介CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。 CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-12-15T02:41:29.000Z">
-<meta property="article:modified_time" content="2023-11-08T03:26:46.744Z">
+<meta property="article:published_time" content="2022-04-11T13:07:01.000Z">
+<meta property="article:modified_time" content="2024-04-23T09:57:48.883Z">
 <meta property="article:author" content="小白的文件整理箱">
-<meta property="article:tag" content="前端依赖包管理">
+<meta property="article:tag" content="CI&#x2F;CD">
+<meta property="article:tag" content="运维小知识">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>package.json分析 - 小白的文件整理箱</title>
+  <title>CI/CD初识 - 小白的文件整理箱</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -198,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="package.json分析"></span>
+            <span id="subtitle" data-typed-text="CI/CD初识"></span>
           
         </div>
 
@@ -209,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-12-15 10:41" pubdate>
-          2022年12月15日 上午
+        <time datetime="2022-04-11 21:07" pubdate>
+          2022年4月11日 晚上
         </time>
       </span>
     
@@ -221,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          980 字
         
       </span>
     
@@ -232,7 +233,7 @@
         
         
         
-          15 分钟
+          9 分钟
         
       </span>
     
@@ -270,34 +271,24 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">package.json分析</h1>
+            <h1 style="display: none">CI/CD初识</h1>
             
             
               <div class="markdown-body">
                 
-                <p>虽然管理维护前端项目时经常需要跟该文件打交道，但在安装代码规范相关工具时，发现自己对其中的配置并不十分了解，所以想记录一下。</p>
-<span id="more"></span>
-
-<h2 id="文件配置"><a href="#文件配置" class="headerlink" title="文件配置"></a>文件配置</h2><p>描述配置在这里略过不计，除非自己要写包，不然感觉记忆没什么用</p>
-<h3 id="workspaces"><a href="#workspaces" class="headerlink" title="workspaces"></a>workspaces</h3><p>workspaces 主要用于 monorepo 仓库管理模式、解决如何在一个顶层 root package 下管理多个子 packages 的问题，在 workspaces 声明目录下的 package 会软链到最上层 root package 的 node_modules 中，不用手动执行 npm link 操作。</p>
-<p>通常子项目都会平铺管理在 packages 目录下，所以根目录下 workspaces 通常配置为：</p>
-<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs prolog"><span class="hljs-string">&quot;workspaces&quot;</span>: [<br>  <span class="hljs-string">&quot;packages/*&quot;</span><br>]<br></code></pre></td></tr></table></figure>
-
-<h2 id="脚本配置"><a href="#脚本配置" class="headerlink" title="脚本配置"></a>脚本配置</h2><h3 id="scripts"><a href="#scripts" class="headerlink" title="scripts"></a>scripts</h3><p>指定项目的一些内置脚本命令，这些命令可以通过 npm run 来执行。npm run 的时候，就会自动创建一个 shell 脚本，将本地目录的 node_modules&#x2F;.bin 子目录加入 PATH 变量。这意味着，当前目录的 node_modules&#x2F;.bin 子目录里面的所有脚本，都可以直接用脚本名调用，而不必加上路径。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-string">&quot;scripts&quot;</span>: &#123;<br>  <span class="hljs-string">&quot;build&quot;</span>: <span class="hljs-string">&quot;webpack&quot;</span>,<br>  <span class="hljs-string">&quot;prebuild&quot;</span>: <span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-regexp">//</span> build 执行之前的钩子<br>  <span class="hljs-string">&quot;postbuild&quot;</span>: <span class="hljs-string">&quot;xxx&quot;</span> <span class="hljs-regexp">//</span> build 执行之后的钩子<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>如果存在前缀指令<code>pre-*</code>、<code>post-*</code>的话，执行指令 npm run build 时会按照<code>prebuild - build - postbuild</code>执行顺序执行，这种语法现在并不推崇，需谨慎使用。</p>
-<h3 id="config"><a href="#config" class="headerlink" title="config"></a>config</h3><p>用于设置 scripts 里的脚本在运行时的参数。</p>
-<h2 id="依赖配置"><a href="#依赖配置" class="headerlink" title="依赖配置"></a>依赖配置</h2><h3 id="dependencies"><a href="#dependencies" class="headerlink" title="dependencies"></a>dependencies</h3><p>运行依赖，也就是项目生产环境下需要用到的依赖。比如 react，vue，状态管理库以及组件库等。</p>
-<p>使用 npm install xxx 或则 npm install xxx –save 时，会被自动插入到该字段中。</p>
-<h4 id="备注：别名安装依赖"><a href="#备注：别名安装依赖" class="headerlink" title="备注：别名安装依赖"></a>备注：别名安装依赖</h4><p>以 node-sass 为例，该安装包可以在 Node.js 中原生地编译.scss 文件为 css，但是它已经被废弃，因此可以使用 dart-sass 代替，执行指令<code>npm install node-sass@npm:dart-sass@1.25.0</code>即可实现无缝地从 node-sass 切换到 dart-sass，而不影响项目的正常运行，同时也可以让项目 package.json 自动生成”node-sass”: “npm:<a href="mailto:&#100;&#97;&#114;&#116;&#45;&#115;&#97;&#115;&#x73;&#x40;&#x31;&#x2e;&#50;&#x35;&#x2e;&#48;">&#100;&#97;&#114;&#116;&#45;&#115;&#97;&#115;&#x73;&#x40;&#x31;&#x2e;&#50;&#x35;&#x2e;&#48;</a>“这个依赖项，方便项目管理和维护</p>
-<h3 id="devDependencies"><a href="#devDependencies" class="headerlink" title="devDependencies"></a>devDependencies</h3><p>开发依赖，项目开发环境需要用到而运行时不需要的依赖，用于辅助开发，通常包括项目工程化工具比如 webpack，vite，eslint 等。<br>使用 npm install xxx -D 或者 npm install xxx –save-dev 时，会被自动插入到该字段中。</p>
-<h2 id="三方配置"><a href="#三方配置" class="headerlink" title="三方配置"></a>三方配置</h2><p>package.json 中也存在很多三方属性，比如 tsc 中使用的 types、构建工具中使用的 sideEffects,git 中使用的 husky，eslint 使用的 eslintIgnore。这里只列举部分属性。</p>
-<h3 id="lint-staged"><a href="#lint-staged" class="headerlink" title="lint-staged"></a>lint-staged</h3><p>lint-staged 是一个在 Git 暂存文件上运行 linters 的工具，配置后每次修改一个文件即可给所有文件执行一次 lint 检查，通常配合 gitHooks 一起使用。</p>
-<h3 id="browserslist"><a href="#browserslist" class="headerlink" title="browserslist"></a>browserslist</h3><p>browserslist 字段用来告知支持哪些浏览器及版本。也可以使用 .browserslistrc 单文件配置。</p>
-<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs prolog"><span class="hljs-string">&quot;browserslist&quot;</span>: [<br>  <span class="hljs-string">&quot;&gt; 1%&quot;</span>,<br>  <span class="hljs-string">&quot;last 2 versions&quot;</span><br>]<br></code></pre></td></tr></table></figure>
-
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7099041402771734559">深入浅出 package.json</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7023539063424548872">关于前端大管家 package.json，你知道多少？</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7161392772665540644">package.json 配置完全解读</a></p>
+                <h2 id="CI-x2F-CD-简介"><a href="#CI-x2F-CD-简介" class="headerlink" title="CI&#x2F;CD 简介"></a>CI&#x2F;CD 简介</h2><p>CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。</p>
+<p>CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以随时准备好进行发布。而持续部署更进一步，是指将软件构建、测试和部署的过程完全自动化，包括将新代码直接部署到生产环境，以便快速交付新功能和修复 bug。</p>
+<h2 id="常见-CI-x2F-CD-工具"><a href="#常见-CI-x2F-CD-工具" class="headerlink" title="常见 CI&#x2F;CD 工具"></a>常见 CI&#x2F;CD 工具</h2><h3 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h3><p>该软件提供了一个易于使用的 Web 界面，可以帮助开发团队快速、高效地构建、测试和交付软件。它与各种版本控制系统（如 Git、Subversion）和构建工具（如 Maven、Gradle）无缝集成，可以轻松地配置和管理项目的构建过程。</p>
+<h3 id="gitlab"><a href="#gitlab" class="headerlink" title="gitlab"></a>gitlab</h3><h4 id="gitlab-runner-启动"><a href="#gitlab-runner-启动" class="headerlink" title="gitlab runner 启动"></a>gitlab runner 启动</h4><p>gitlab runner 是一个开源项目，用于运行流水线任务并将结果发送回 GitLab。本质就是一个服务器。</p>
+<p>gitlab-runner的三种类型：</p>
+<ul>
+<li>共享Runner（Shared Runner），所有项目可以使用。</li>
+<li>群组Runner（Group Runner），特定群组里的所有项目和子群组。</li>
+<li>特定Runner（Specific Runner），用于独立的项目。</li>
+</ul>
+<h5 id="gitlab-runner安装"><a href="#gitlab-runner安装" class="headerlink" title="gitlab runner安装"></a>gitlab runner安装</h5><p>可以在任意一台server安装。首先添加GitLab官方源</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">curl -L https:<span class="hljs-regexp">//</span>packages.gitlab.com<span class="hljs-regexp">/install/</span>repositories<span class="hljs-regexp">/runner/gi</span>tlab-ci-multi-runner/script.rpm.sh | sudo bash<br><br>sudo yum install gitlab-ci-multi-runner<br></code></pre></td></tr></table></figure>
+<h5 id="gitlab-runner注册"><a href="#gitlab-runner注册" class="headerlink" title="gitlab runner注册"></a>gitlab runner注册</h5><h4 id="gitlab-ci-yml"><a href="#gitlab-ci-yml" class="headerlink" title=".gitlab-ci.yml"></a>.gitlab-ci.yml</h4><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://www.infoq.cn/article/WHt0wFMDRrBU-dtkh1Xp/">如何从零开始搭建 CI&#x2F;CD 流水线</a><br><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/yaml/#includeproject">https://docs.gitlab.com/ee/ci/yaml/#includeproject</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/453140826">https://zhuanlan.zhihu.com/p/453140826</a><br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1925580">https://cloud.tencent.com/developer/article/1925580</a></p>
 
                 
               </div>
@@ -331,7 +322,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/">#前端依赖包管理</a>
+        <a href="/unknown404.github.io/tags/CI-CD/">#CI/CD</a>
+      
+        <a href="/unknown404.github.io/tags/%E8%BF%90%E7%BB%B4%E5%B0%8F%E7%9F%A5%E8%AF%86/">#运维小知识</a>
       
     </div>
   
@@ -343,8 +336,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>package.json分析</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/12/15/packageJson/</div>
+      <div>CI/CD初识</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/04/11/CICD/</div>
     </div>
     <div class="license-meta">
       
@@ -356,7 +349,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年12月15日</div>
+          <div>2022年4月11日</div>
         </div>
       
       
@@ -388,9 +381,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/unknown404.github.io/2022/12/15/codeFormat/" title="代码样式调整">
+                      <a href="/unknown404.github.io/2022/04/27/gitCommand/" title="git指令回顾">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">代码样式调整</span>
+                        <span class="hidden-mobile">git指令回顾</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -398,8 +391,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/unknown404.github.io/2022/12/09/reactRef/" title="react中获取ref相关的函数总结">
-                        <span class="hidden-mobile">react中获取ref相关的函数总结</span>
+                      <a href="/unknown404.github.io/2022/04/08/reactHooks/" title="React Hooks学习笔记">
+                        <span class="hidden-mobile">React Hooks学习笔记</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

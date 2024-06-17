@@ -24,7 +24,7 @@
 <meta property="og:description" content="浏览器相关知识点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-29T13:04:09.000Z">
-<meta property="article:modified_time" content="2023-03-13T06:34:12.811Z">
+<meta property="article:modified_time" content="2024-03-25T08:56:58.685Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary_large_image">
@@ -337,7 +337,7 @@
 </li>
 </ol>
 <h4 id="刷新操作对缓存内容影响"><a href="#刷新操作对缓存内容影响" class="headerlink" title="刷新操作对缓存内容影响"></a>刷新操作对缓存内容影响</h4><p>正常操作（地址栏输入 url，跳转链接，前进后退等）：强制缓存有效，协商缓存有效。<br>手动刷新（f5，点击刷新按钮，右键菜单刷新）：强制缓存失效，协商缓存有效。<br>强制刷新（ctrl + f5，shift+command+r）：强制缓存失效，协商缓存失效。</p>
-<h2 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h2><h3 id="回流-vs-重绘"><a href="#回流-vs-重绘" class="headerlink" title="回流 vs 重绘"></a>回流 vs 重绘</h3><p>回流：布局或集合地点属性改变<br>重绘：节点更改外观、不影响布局</p>
+<h2 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h2><h3 id="回流-vs-重绘"><a href="#回流-vs-重绘" class="headerlink" title="回流 vs 重绘"></a>回流 vs 重绘</h3><p>回流：布局或元素几何属性改变<br>重绘：节点更改外观、不影响布局</p>
 <p>重绘不会引起回流，回流一定会导致重绘</p>
 <p>减少回流的方法：<br>1）transform 代替 top<br>2）visibility：hidden 代替 display：none<br>3）不用 table 布局<br>4）避免 css 表达式<br>5）动画选择 requestAnimationFrame</p>
 <h3 id="浏览器从输入-URL-到返回页面的过程"><a href="#浏览器从输入-URL-到返回页面的过程" class="headerlink" title="浏览器从输入 URL 到返回页面的过程"></a>浏览器从输入 URL 到返回页面的过程</h3><p>1）DNS 解析网址<br>2）tcp3 次握手建立连接，发送 http 请求<br>3）解析 html 文件转换为 dom 树<br>4）解析 css 生成 css dom 树<br>5）dom 树和 css dom 树结合生成 render 树（过滤掉 display：none、head、script 等结构）<br>6）根据 render 树布局，gpu 绘制、合成图层，显示在屏幕</p>

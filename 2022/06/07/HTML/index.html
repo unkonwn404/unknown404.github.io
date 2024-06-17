@@ -24,7 +24,7 @@
 <meta property="og:description" content="前端 HTML&#x2F;CSS 方面知识整理。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-07T15:42:01.000Z">
-<meta property="article:modified_time" content="2023-08-28T03:02:44.005Z">
+<meta property="article:modified_time" content="2024-03-17T14:59:06.821Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="HTML">
 <meta property="article:tag" content="CSS">
@@ -291,8 +291,8 @@
 <li>产生负面影响标签</li>
 </ol>
 <h2 id="语义化标签特点"><a href="#语义化标签特点" class="headerlink" title="语义化标签特点"></a>语义化标签特点</h2><ol>
-<li>对机器友好，有利于 SEO 和堵屏软件解析</li>
-<li>对开发者友好增加可读型</li>
+<li>对机器友好，有利于 SEO 和读屏软件解析</li>
+<li>对开发者友好增加可读性</li>
 </ol>
 <h2 id="HTML-元素"><a href="#HTML-元素" class="headerlink" title="HTML 元素"></a>HTML 元素</h2><p>行内元素：多个行内元素可占一行，只能设置 padding、margin 左右<br>块元素：一个块元素占一行，可设置宽高</p>
 <h2 id="src-和-href-区别"><a href="#src-和-href-区别" class="headerlink" title="src 和 href 区别"></a>src 和 href 区别</h2><ol>
@@ -309,7 +309,7 @@
 </ol>
 <h2 id="css-选择器"><a href="#css-选择器" class="headerlink" title="css 选择器"></a>css 选择器</h2><h3 id="选择器优先级"><a href="#选择器优先级" class="headerlink" title="选择器优先级"></a>选择器优先级</h3><p>!important &gt; 内联 &gt; id &gt; class &gt; tag &gt; *</p>
 <h3 id="伪元素-vs-伪类"><a href="#伪元素-vs-伪类" class="headerlink" title="伪元素 vs 伪类"></a>伪元素 vs 伪类</h3><p>伪元素（eg. ::after）：该元素在 dom 树下不存在，仅在 css 下渲染<br>伪类（eg. :hover）：为已存在的元素设置样式</p>
-<h2 id="css-属性相关"><a href="#css-属性相关" class="headerlink" title="css 属性相关"></a>css 属性相关</h2><p><strong>position 属性</strong><br>static：默认<br>absolute：脱离文档流，相对非 static 父元素<br>fixed：脱离文档流，相对浏览器窗口<br>relative：相对原位置定位<br>sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relative，之后是 fixed<br><strong>line-height 属性</strong><br>子元素如何继承父元素 line-height 属性？</p>
+<h2 id="css-属性相关"><a href="#css-属性相关" class="headerlink" title="css 属性相关"></a>css 属性相关</h2><p><strong>position 属性</strong><br>static：默认<br>absolute：脱离文档流，相对非 static 父元素<br>fixed：脱离文档流，相对浏览器窗口<br>relative：相对原位置定位<br>sticky：须指定 top、left、right、bottom，跨越特定阈值前是 relative，之后是 fixed<br><strong>line-height 属性</strong><br>子元素如何继承父元素 line-height 属性？</p>
 <ol>
 <li>父元素的 line-height 写了具体数值，比如 30px，则子元素 line-height 继承该值。</li>
 <li>父元素的 line-height 写了比例，比如 1.5 或 2，则子元素 line-height 也是继承该比例。</li>
@@ -342,7 +342,7 @@
 <ol>
 <li>根元素</li>
 <li>overflow 不为 visible</li>
-<li>display 为 inline-block 或 table</li>
+<li>display 为 inline-block 或 table、flex</li>
 <li>position 为 absolute 或 fixed</li>
 <li>float 不为 none</li>
 </ol>
@@ -378,9 +378,9 @@
 <h3 id="多行文本溢出"><a href="#多行文本溢出" class="headerlink" title="多行文本溢出"></a>多行文本溢出</h3><p>overflow:hidden;<br>text-overflow:ellipsis;<br>display:-webkit-box;<br>-webkit-box-orient:vertical;<br>-webkit-line-clamp:3;</p>
 <h3 id="居中方式"><a href="#居中方式" class="headerlink" title="居中方式"></a>居中方式</h3><h4 id="水平居中"><a href="#水平居中" class="headerlink" title="水平居中"></a>水平居中</h4><p>1）行内元素：text-align：center；<br>2）块元素：margin：0 auto；<br>3）position：absolute；left：50%；transform：translateX（-50%）；<br>4）display：flex；justify-content：center；</p>
 <h4 id="垂直居中"><a href="#垂直居中" class="headerlink" title="垂直居中"></a>垂直居中</h4><p>1）单行文本：line-height&#x3D;height<br>2）display：table-cell；vertical-align：middle；<br>3）position：absolute；top：50%；transform：translateY（-50%）；<br>4）display：flex；align-items：center；</p>
-<h4 id="水平垂直居中"><a href="#水平垂直居中" class="headerlink" title="水平垂直居中"></a>水平垂直居中</h4><p>1）margin：auto；left：0；right：0；top：0；bottom：0；<br>2）position：absolute；left：50%；top：50%；transform：translate（-50%，-50%）；<br>3）display：flex；align-items：center；justify-content：center；</p>
-<h3 id="两栏布局"><a href="#两栏布局" class="headerlink" title="两栏布局"></a>两栏布局</h3><p>1）float+margin<br>2）float+overflow<br>3）grid-template-columns<br>4）flex<br>5）absolute*2</p>
-<h3 id="三栏布局"><a href="#三栏布局" class="headerlink" title="三栏布局"></a>三栏布局</h3><h3 id="双飞翼布局"><a href="#双飞翼布局" class="headerlink" title="双飞翼布局"></a>双飞翼布局</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#wrapper</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100%</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br> <span class="hljs-selector-id">#center</span>&#123;<span class="hljs-attribute">margin</span>:<span class="hljs-number">0</span> <span class="hljs-number">100px</span> <span class="hljs-number">0</span> <span class="hljs-number">200px</span>;&#125;<br><span class="hljs-selector-id">#left</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100%</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br><span class="hljs-selector-id">#right</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100px</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="水平垂直居中"><a href="#水平垂直居中" class="headerlink" title="水平垂直居中"></a>水平垂直居中</h4><p>1）position: absolute; margin：auto；left：0；right：0；top：0；bottom：0；<br>2）position：absolute；left：50%；top：50%；transform：translate（-50%，-50%）；<br>3）display：flex；align-items：center；justify-content：center；</p>
+<h3 id="两栏布局"><a href="#两栏布局" class="headerlink" title="两栏布局"></a>两栏布局</h3><p>1）float+margin<br>2）float+overflow<br>3）grid-template-columns<br>4）flex<br>5）absolute+margin</p>
+<h3 id="三栏布局"><a href="#三栏布局" class="headerlink" title="三栏布局"></a>三栏布局</h3><h3 id="双飞翼布局"><a href="#双飞翼布局" class="headerlink" title="双飞翼布局"></a>双飞翼布局</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#wrapper</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100%</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br> <span class="hljs-selector-id">#center</span>&#123;<span class="hljs-attribute">margin</span>:<span class="hljs-number">0</span> <span class="hljs-number">100px</span> <span class="hljs-number">0</span> <span class="hljs-number">200px</span>;&#125;<br> <span class="hljs-selector-id">#left</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100%</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br> <span class="hljs-selector-id">#right</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100px</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="圣杯布局"><a href="#圣杯布局" class="headerlink" title="圣杯布局"></a>圣杯布局</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#parent</span>&#123;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;<span class="hljs-attribute">padding</span>:<span class="hljs-number">0</span> <span class="hljs-number">100px</span> <span class="hljs-number">0</span> <span class="hljs-number">200px</span>;&#125;<br> <span class="hljs-selector-id">#center</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100%</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br> <span class="hljs-selector-id">#left</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100%</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;<span class="hljs-attribute">position</span>:relative;<span class="hljs-attribute">left</span>:-<span class="hljs-number">200px</span>;&#125;<br> <span class="hljs-selector-id">#right</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100px</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;<span class="hljs-attribute">position</span>:relative;<span class="hljs-attribute">right</span>:<span class="hljs-number">100px</span>;&#125;<br></code></pre></td></tr></table></figure>
 

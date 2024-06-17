@@ -25,8 +25,14 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/k8s/structure.jpg">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/k8s/k8sObj.jpg">
+<meta property="og:image" content="https://qcloudimg.tencent-cloud.cn/image/document/b95228adfa9046858ad971882c800fe6.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/k8s/deployment.jpg">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/k8s/container.jpg">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/k8s/pod.jpg">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/k8s/service.jpg">
+<meta property="og:image" content="https://qcloudimg.tencent-cloud.cn/image/document/4b2622c6b32d982dd29c6b25eb847e10.png">
 <meta property="article:published_time" content="2024-02-22T14:47:26.000Z">
-<meta property="article:modified_time" content="2024-02-28T13:29:24.064Z">
+<meta property="article:modified_time" content="2024-03-04T06:45:50.810Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="k8s">
 <meta property="article:tag" content="前端部署">
@@ -225,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          4.2k 字
         
       </span>
     
@@ -236,7 +242,7 @@
         
         
         
-          12 分钟
+          36 分钟
         
       </span>
     
@@ -304,8 +310,41 @@
 </ul>
 <h4 id="重要概念"><a href="#重要概念" class="headerlink" title="重要概念"></a>重要概念</h4><h5 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h5><p>一组紧密关联的容器集合，它们共享 IPC 和 Network namespace，是 Kubernetes 调度的基本单位。在 VMware 的世界中，调度的原子单位是虚拟机（VM）；在 Docker 的 世界中，调度的原⼦单位是容器；⽽在 Kubernetes 的世界中，调度的原子单位是 Pod。每一个 pod 都有一个特殊的被称为“根容器”的 Pause 容器对应的镜像属于 Kubernetes 平台的一部分，除了 Pause 容器，每个 Pod 还包括一个或多个紧密相关的用户业务容器。</p>
 <p>通过与 Master 节点的交互，Pod 可以被创建、调度到适合的节点上运行；而在 Node 节点上，kubelet 负责管理 Pod 的生命周期，而 kube-proxy 则负责处理 Pod 的网络通信。</p>
+<h5 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h5><p>Pod 控制器是 Pod 启动的一种模版，用来保证在 K8S 里启动的 Pod 应始终按照用户的预期运行（副本数、生命周期、健康状态检查等）。之前主要是 Replication Controller 与 Replica Set 来实现，1.2 版本后官方更推荐用 Deployment。</p>
+<p>Deployment 属于无状态应用部署（不会在本地存储持久化数据 ，多个 pod 间是没有关系的）。Deployment 的作用是管理和控制 Pod 和 ReplicaSet，管控它们运行在用户期望的状态中。除 Pod 管理之外，还提供了如扩缩容管理、一键回滚、不停机更新以及版本控制及其他特性。</p>
+<h5 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h5><p>Pod 是非常重要的，但是可能随时会出现故障并销毁。如果通过 Deployment 或者 DaemonSet 对 Pod 进行管理，出现故障的 Pod 会自动被替换。但替换后的新 Pod 会拥有完全不同的 IP 地址。</p>
+<p>Service 就是用来解决这个问题的核心概念，它并不是我们常说的“服务”的含义，而更像是网关层，可以看作一组提供相同服务的 Pod 的对外访问接口、流量均衡器。</p>
+<h5 id="Label"><a href="#Label" class="headerlink" title="Label"></a>Label</h5><p>一个 Label 是一个 key&#x3D;value 的键值对。其中 key 与 value 由用户自己定义。Label 可以附加到各个资源对象上，例如 Node，Pod，Service，RC 等，一个资源对象可以定义任意数量的 Label，同一个 Label 也可以被添加到任意数量的资源对象上去，Label 通常在资源对象定义时确定，也可以在对象创建后动态添加或者删除。</p>
+<p>当给某个资源对象定义一个 Label，就相当于给它打了一个标签，然后可以通过“Label Selector”（标签选择器）查询和筛选拥有某些 Label 的资源对象</p>
+<p>Label Selector 可以用于以下场景：</p>
+<ul>
+<li>kube-controller 进程通过资源对象 RC 上定义的 Label Selector 来筛选要监控的 Pod 副本的数量，从而实现 Pod 副本的数量始终符合预期设定的全自动控制流程。</li>
+<li>kube-proxy 进程通过 Service 的 Label Selector 来选择对应的 Pod，自动建立起每个 Service 到对应 Pod 的请求转发路由表，从而实现 Service 的智能负载均衡机制。</li>
+<li>通过对某些 Node 定义特定的 Label，并且在 Pod 定义文件中使用 NodeSelector 这种标签调度策略，kube-scheduler 进程可以实现‘定向调度’的特性。</li>
+</ul>
 <h3 id="腾讯云-TKE-容器服务"><a href="#腾讯云-TKE-容器服务" class="headerlink" title="腾讯云 TKE 容器服务"></a>腾讯云 TKE 容器服务</h3><p>腾讯云容器服务（Tencent Kubernetes Engine, TKE）基于原生 kubernetes 提供以容器为核心的、高度可扩展的高性能容器管理服务。可以帮助用户轻松地在云上部署、管理和扩展容器化应用程序（大概吧）。</p>
 <p>目前腾讯云列出的可配置的 k8s 属性如下表格所示<br><img src="/unknown404.github.io/img/k8s/k8sObj.jpg" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<h3 id="腾讯云容器镜像服务"><a href="#腾讯云容器镜像服务" class="headerlink" title="腾讯云容器镜像服务"></a>腾讯云容器镜像服务</h3><p>一种容器镜像云端托管服务。该服务支持 Docker 镜像和 Helm Chart 的存储与分发，以及镜像的安全扫描。它为企业级客户提供了细颗粒度的访问权限管理和网络访问控制，支持镜像的全球同步及触发器，以满足客户拓展全球业务及使用容器 CI&#x2F;CD 工作流的需求。此外，TCR 还支持具有上千节点的大规模容器集群并发拉取 GB 级大镜像，保障业务的极速部署。</p>
+<p>通过使用容器镜像服务，客户无需自建并维护镜像托管服务，即可在云端享受安全高效的镜像托管和分发服务。同时，该服务可以与腾讯云的容器服务 TKE 结合使用，为客户提供顺畅的容器上云体验。</p>
+<h2 id="项目部署迁移操作"><a href="#项目部署迁移操作" class="headerlink" title="项目部署迁移操作"></a>项目部署迁移操作</h2><h3 id="镜像仓库迁移"><a href="#镜像仓库迁移" class="headerlink" title="镜像仓库迁移"></a>镜像仓库迁移</h3><p>公司里每个组都是有自己的命名空间的，所以项目迁移时需要在自己小组的命名空间下新建镜像仓库<br><img src="https://qcloudimg.tencent-cloud.cn/image/document/b95228adfa9046858ad971882c800fe6.png" srcset="/unknown404.github.io/img/loading.gif" lazyload><br>在部署工具里更新镜像仓库地址，打包镜像</p>
+<h3 id="容器迁移"><a href="#容器迁移" class="headerlink" title="容器迁移"></a>容器迁移</h3><p>进入容器服务页面、选择 Deployment 菜单。在自己小组所属的命名空间下创建新的 deployment。由于部署脚手架利用了 Label 特性，所以表单的 label 一栏要增加项目的 appcode<br><img src="/unknown404.github.io/img/k8s/deployment.jpg" srcset="/unknown404.github.io/img/loading.gif" lazyload><br>容器一栏容器名可以和 deployment 保持一致；镜像选择自己小组的命名空间下新建的镜像仓库，刚新建好的镜像仓库没有版本，需要提前打包镜像推送到仓库；cpu&#x2F;内存限制可以分环境考虑：</p>
+<ul>
+<li>测试环境 cpu 限制 0.25 核，内存 256</li>
+<li>正式环境 cpu 设置 0.25-0.5，内存 256-512</li>
+</ul>
+<p>核心思想就是测试环境能跑就行，正式环境需要有一定的扩展性。后面实例设置也是如此。<br><img src="/unknown404.github.io/img/k8s/container.jpg" srcset="/unknown404.github.io/img/loading.gif" lazyload><br>实例数量：等同于 replicas，直接指定 pod 实例数量。测试环境可以手动限制为 1 个，正式环境选择自动调节，实例范围 2-5，触发自动调节策略根据实际情况可以设置多个，例如满足 cpu 使用率高于 50%、内存利用率高于 50%中的一个触发<br><img src="/unknown404.github.io/img/k8s/pod.jpg" srcset="/unknown404.github.io/img/loading.gif" lazyload><br>镜像访问凭证：针对镜像仓库设置的，在 pod 中指定仓库密钥，默认都配置了 qcloudregistrykey 和 tencenthubkey，如果这个 key 设置错误将导致从镜像仓库拉取私有镜像失败（一般来说之前的人已经设过了，可以看看下拉列表；不确定的时候可以删除这一栏、估计也能跑的原因是腾讯云主账号权限高吧）</p>
+<h3 id="服务迁移"><a href="#服务迁移" class="headerlink" title="服务迁移"></a>服务迁移</h3><p><img src="/unknown404.github.io/img/k8s/service.jpg" srcset="/unknown404.github.io/img/loading.gif" lazyload><br>服务器访问方式中，仅在集群内访问即设置 ClusterIP 的选项，服务只会在集群内部被访问，一般正式环境使用该配置（因为正式环境代码会部署到两个集群，应该是为了防止单一集群挂掉整个网站不可访问的情况吧）；内网 LB 访问即使用 ip+port 的形式可以访问到</p>
+<p>容器端口：项目启动时的端口，一般如果是 ssr 项目就是指令启动时的端口，如果是 nginx 项目在没大改配置的条件下是 80<br>服务端口：自己随便设的端口，最后服务在集群外可通过负载均衡域名或 IP+服务端口访问服务</p>
+<h3 id="测试服务运行效果"><a href="#测试服务运行效果" class="headerlink" title="测试服务运行效果"></a>测试服务运行效果</h3><p>点击新建的负载，查看 pod 的运行情况，如果没有正常运行，点击 tab “修正历史”查看原因。<br>服务设置为“仅在集群内访问”时，可以通过远程登录 pod 进行测试：点击 tab“Pod 管理“，选择一个 pod 点击远程登录，进入 cmd 界面后执行<code>curl &lt;Kubernetes Service 的域名&gt;:&lt;服务端口&gt;</code>，看返回是否是打包项目的内容<br><img src="https://qcloudimg.tencent-cloud.cn/image/document/4b2622c6b32d982dd29c6b25eb847e10.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<p>服务设置为“内网 LB 访问”时，可以直接在浏览器地址栏输入<code>&lt;负载均衡IP&gt;:&lt;服务端口&gt;</code>看打开的页面是否是打包项目的内容。负载均衡 IP 在点击新建的 Service 名称的“详情”tab 里可以看到</p>
+<h4 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h4><p><strong>Kubernetes Service 的域名</strong>：在 Kubernetes 中，每个 Service 都有一个唯一的域名，该域名遵循以下格式：<code>&lt;service-name&gt;.&lt;namespace&gt;.svc.cluster.local</code>。其中：</p>
+<ul>
+<li><service-name> 是 Service 的名称。</li>
+<li><namespace> 是 Service 所属的命名空间（Namespace）。</li>
+<li>svc.cluster.local 是 Kubernetes 集群中所有 Service 的域名后缀。</li>
+</ul>
+<p>Kubernetes Service 的域名会映射到该 Service 的 ClusterIP 地址上。当你创建一个 Service 时，Kubernetes 会为该 Service 分配一个 ClusterIP 地址，并为该 Service 自动生成一个域名，其格式为 <code>&lt;service-name&gt;.&lt;namespace&gt;.svc.cluster.local</code>。这个域名会自动解析到该 Service 的 ClusterIP 地址。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/618249568">kubernetes 入门看这篇就够了</a><br>（2）<a target="_blank" rel="noopener" href="https://blog.csdn.net/wang_dian1/article/details/132045116">【云原生】K8S 超详细概述</a><br>（3）<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1412208">在 TKE 集群中新建工作负载</a><br>（4）<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/457/45598">tke 容器服务</a></p>
 
                 
               </div>
