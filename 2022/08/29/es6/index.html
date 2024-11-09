@@ -24,10 +24,10 @@
 <meta property="og:description" content="面试时常问的 ES6 特性">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-29T09:01:20.000Z">
-<meta property="article:modified_time" content="2023-11-28T02:05:42.892Z">
+<meta property="article:modified_time" content="2024-10-21T13:49:16.656Z">
 <meta property="article:author" content="小白的文件整理箱">
-<meta property="article:tag" content="ES6">
 <meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="ES6">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          3.9k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          24 分钟
+          33 分钟
         
       </span>
     
@@ -280,7 +280,7 @@
 <span id="more"></span>
 
 <h2 id="let-const"><a href="#let-const" class="headerlink" title="let,const"></a>let,const</h2><p>创建块级作用域，若调用发生在声明前会暂时性死区<br>const 指向地址不能改变，但可以增加内部属性</p>
-<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>特点：没有 this 和 arguments；不能作为构造函数；没有函数提升</p>
+<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>特点：没有 this 和 arguments；不能作为构造函数；没有函数提升<br>与普通函数本质区别：主要在于 this 的绑定方式。普通函数的 this 指向在运行时动态确定，取决于调用方式，而箭头函数的 this 是在定义时从外层作用域继承而来，不会随着调用方式的改变而改变。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> obj = &#123;<br> <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Tyler&#x27;</span>,<br> <span class="hljs-attr">a</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> name = <span class="hljs-string">&#x27;Anderson&#x27;</span><br>  <span class="hljs-keyword">let</span> <span class="hljs-title function_">test</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>   <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>)<br>  &#125;<br>  <span class="hljs-title function_">test</span>()<br> &#125;,<br>&#125;<br>obj.<span class="hljs-title function_">a</span>()<br><br><span class="hljs-comment">// Tyler</span><br><span class="hljs-comment">// 找到最近的非箭头函数a，所以箭头函数的this 就是a 的this。</span><br><span class="hljs-comment">// a目前是由obj调用的，因此此时箭头函数的this 为obj</span><br></code></pre></td></tr></table></figure>
 
 <h2 id="Proxy"><a href="#Proxy" class="headerlink" title="Proxy"></a>Proxy</h2><p>使用方法：const proxy &#x3D; new Proxy(target, handler)<br>输入参数：</p>
@@ -317,9 +317,19 @@
 <h2 id="异步编程"><a href="#异步编程" class="headerlink" title="异步编程"></a>异步编程</h2><h3 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h3><p>3 种状态：1）pending；2）resolved；3）rejected<br>特点：1）立即执行；2）then 异步回调；3）状态不可逆；4）链式调用</p>
 <h4 id="promise-简易实现"><a href="#promise-简易实现" class="headerlink" title="promise 简易实现"></a>promise 简易实现</h4><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs pf">function myPromise(fn) &#123;<br>    <span class="hljs-keyword">const</span> that = this<br>    that.<span class="hljs-keyword">state</span> = &#x27;pending&#x27;<br>    that.value = null<br>    that.resolvedCallbacks = []<br>    that.rejectedCallbacks = []<br><br>    function resolve(value) &#123;<br>        if (that.<span class="hljs-keyword">state</span> === &#x27;pending&#x27;) &#123;<br>            that.<span class="hljs-keyword">state</span> = &#x27;resolved&#x27;<br>            that.value = value<br>            that.resolvedCallbacks.map(cb =&gt; cb(value))<br>        &#125;<br>    &#125;<br><br>    function reject(value) &#123;<br>        if (that.<span class="hljs-keyword">state</span> === &#x27;pending&#x27;) &#123;<br>            that.<span class="hljs-keyword">state</span> = &#x27;rejected&#x27;<br>            that.value = value<br>            that.rejectedCallbacks.map(cb =&gt; cb(value))<br>        &#125;<br>    &#125;<br>    try &#123;<br>        fn(resolve, reject)<br>    &#125; catch (e) &#123;<br>        reject(e)<br>    &#125;<br>&#125;<br>myPromise.prototype.then = function (<span class="hljs-keyword">on</span>Fulfilled, <span class="hljs-keyword">on</span>Rejected) &#123;<br>    <span class="hljs-keyword">const</span> that = this<br>    <span class="hljs-keyword">on</span>Fulfilled = typeof <span class="hljs-keyword">on</span>Fulfilled === &#x27;function&#x27; ? <span class="hljs-keyword">on</span>Fulfilled : v =&gt; v<br>    <span class="hljs-keyword">on</span>Rejected = typeof <span class="hljs-keyword">on</span>Rejected === &#x27;function&#x27; ? <span class="hljs-keyword">on</span>Rejected : e =&gt;<br>        throw e<br>    if (that.<span class="hljs-keyword">state</span> === &#x27;resolved&#x27;) <span class="hljs-keyword">on</span>Fulfilled(that.value)<br>    if (that.<span class="hljs-keyword">state</span> === &#x27;rejected&#x27;) <span class="hljs-keyword">on</span>Rejected(that.value)<br>&#125;<br></code></pre></td></tr></table></figure>
 
+<h4 id="Promise-all-简易实现"><a href="#Promise-all-简易实现" class="headerlink" title="Promise.all 简易实现"></a>Promise.all 简易实现</h4><p>函数返回一个 promise，每个异步任务进入 resolve 态时计数都加 1，只有当计数与异步任务总数一致时返回的 promise 的状态置为 resolved</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">promiseAll</span>(<span class="hljs-params">promises</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">resolve, reject</span>) &#123;<br>    <span class="hljs-keyword">if</span> (!<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(promises)) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TypeError</span>(<span class="hljs-string">`argument must be a array`</span>);<br>    &#125;<br>    <span class="hljs-keyword">var</span> resolvedCounter = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">var</span> promiseNum = promises.<span class="hljs-property">length</span>;<br>    <span class="hljs-keyword">var</span> resolvedResult = [];<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; promiseNum; i++) &#123;<br>      <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>(promises[i]).<span class="hljs-title function_">then</span>(<br>        <span class="hljs-function">(<span class="hljs-params">value</span>) =&gt;</span> &#123;<br>          resolvedCounter++;<br>          resolvedResult[i] = value;<br>          <span class="hljs-keyword">if</span> (resolvedCounter == promiseNum) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-title function_">resolve</span>(resolvedResult);<br>          &#125;<br>        &#125;,<br>        <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> &#123;<br>          <span class="hljs-keyword">return</span> <span class="hljs-title function_">reject</span>(error);<br>        &#125;<br>      );<br>    &#125;<br>  &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Promise-race-简易实现"><a href="#Promise-race-简易实现" class="headerlink" title="Promise.race 简易实现"></a>Promise.race 简易实现</h4><p>因为 Promise 的状态只能改变一次, 那么我们只需要把 Promise.race 中产生的 Promise 对象的 resolve 方法, 注入到数组中的每一个 Promise 实例中的回调函数中即可.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Promise</span>.<span class="hljs-property">race</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">args</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>, len = args.<span class="hljs-property">length</span>; i &lt; len; i++) &#123;<br>      args[i].<span class="hljs-title function_">then</span>(resolve, reject);<br>    &#125;<br>  &#125;);<br>&#125;;<br></code></pre></td></tr></table></figure>
+
 <h3 id="async-await"><a href="#async-await" class="headerlink" title="async await"></a>async await</h3><p>generator 的语法糖。<br>async 声明 function 是一个异步函数，返回一个 promise 对象，可以使用 then 方法添加回调函数。<br>await 操作符只能在异步函数 async function 内部使用。await 会阻塞后面的代码，等待接在 await 后面的表达式返回 Promise 对象结果。</p>
 <h2 id="数据类型-Set、Map"><a href="#数据类型-Set、Map" class="headerlink" title="数据类型 Set、Map"></a>数据类型 Set、Map</h2><h3 id="Set-和-weakSet、Map-和-WeakMap-区别"><a href="#Set-和-weakSet、Map-和-WeakMap-区别" class="headerlink" title="Set 和 weakSet、Map 和 WeakMap 区别"></a>Set 和 weakSet、Map 和 WeakMap 区别</h3><p>weakSet 结构与 Set 类似，是不重复值集合，但 weakSet 只能是对象且为弱引用，且不可遍历<br>weakMap 结构与 Map 类似，但 weakMap 只接受对象为键名，键名是对象弱引用，且不可遍历</p>
 <h3 id="Map-和-Object-的区别"><a href="#Map-和-Object-的区别" class="headerlink" title="Map 和 Object 的区别"></a>Map 和 Object 的区别</h3><p>1）Key filed：在 Object 中， key 必须是简单数据类型（整数，字符串或者是 symbol），而在 Map 中则可以是 JavaScript 支持的所有数据类型，也就是说可以用一个 Object 来当做一个 Map 元素的 key。<br>2）元素顺序：Map 元素的顺序遵循插入的顺序，而 Object 的则没有这一特性。<br>3）初始化、增查删改方式</p>
+<h2 id="for-in-和-for-of-区别"><a href="#for-in-和-for-of-区别" class="headerlink" title="for in 和 for of 区别"></a>for in 和 for of 区别</h2><ul>
+<li>for in：用于遍历对象的可枚举属性（包括原型链上的属性），也可以用于数组。不过，当用于数组时，它遍历的是数组的索引而不是元素。</li>
+<li>for of：用于遍历可迭代对象（例如数组、字符串、Map、Set 等）。它遍历的是可迭代对象的值，不适合遍历对象的属性。</li>
+</ul>
 
                 
               </div>
@@ -353,9 +363,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/unknown404.github.io/tags/ES6/">#ES6</a>
-      
         <a href="/unknown404.github.io/tags/JavaScript/">#JavaScript</a>
+      
+        <a href="/unknown404.github.io/tags/ES6/">#ES6</a>
       
     </div>
   

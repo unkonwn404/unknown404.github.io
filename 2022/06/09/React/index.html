@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle-detail.jpeg">
 <meta property="article:published_time" content="2022-06-09T12:47:30.000Z">
-<meta property="article:modified_time" content="2023-03-13T07:25:20.200Z">
+<meta property="article:modified_time" content="2024-10-28T06:12:52.437Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -234,7 +234,7 @@
         
         
         
-          98 分钟
+          101 分钟
         
       </span>
     
@@ -292,6 +292,7 @@
 <h3 id="受控组件和非受控组件"><a href="#受控组件和非受控组件" class="headerlink" title="受控组件和非受控组件"></a>受控组件和非受控组件</h3><p>受控组件：表单组件如<code>&lt;input&gt;&lt;select&gt;&lt;textearea&gt;</code>等元素受外部数据源 state 控制，更新只能通过 onChange 事件内部设置 setState()来更新。<br>非受控组件：表单组件是通过使用 ref 来从 DOM 节点中获取表单数据、defaultValue 设置初始值。</p>
 <p>根据 React 官方文档，绝大部分时候推荐使用受控组件来实现表单，因为在受控组件中，表单数据由 React 组件负责处理；如果选择受受控组件的话，表单数据就由 DOM 本身处理。</p>
 <p>实际工作中，仅用于单次表单提交、提交时校验的情况使用非受控组件即可，其特点是更方便快捷，代码量小，但是控制能力比较弱。涉及对数据进行即时校验，格式化输入数据等需求，受控组件更适合使用，其控制能力强，但是代码量会比较多。在开发中应该权衡需求，进度进行相应的选择。</p>
+<h3 id="单向数据流的优缺点"><a href="#单向数据流的优缺点" class="headerlink" title="单向数据流的优缺点"></a>单向数据流的优缺点</h3><p>优点：<br>数据流从上到下非常清晰，状态变化容易预测，易于调试。可避免副作用，例如数据可以在多个组件之间随意修改，可能导致的状态的不一致性。<br>缺点：<br>如果数据需要跨层级传递，可能会出现大量属性传递，代码繁琐，也会导致不必要的渲染。<br>如果数据传递不存在父子关系，组件的通信会变得复杂。</p>
 <h3 id="react-组件重新渲染的方式"><a href="#react-组件重新渲染的方式" class="headerlink" title="react 组件重新渲染的方式"></a>react 组件重新渲染的方式</h3><ol>
 <li>state 改变</li>
 <li>props 改变</li>
@@ -422,11 +423,12 @@
 <h2 id="React-函数组件"><a href="#React-函数组件" class="headerlink" title="React 函数组件"></a>React 函数组件</h2><h3 id="hook-原理"><a href="#hook-原理" class="headerlink" title="hook 原理"></a>hook 原理</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-comment">// react-reconciler/src/ReactFiberHooks.js</span><br><span class="hljs-keyword">export</span> type <span class="hljs-title class_">Hook</span> = &#123;<br>  <span class="hljs-attr">memoizedState</span>: any, <span class="hljs-comment">// 最新的状态值</span><br>  <span class="hljs-attr">baseState</span>: any, <span class="hljs-comment">// 初始状态值，如`useState(0)`，则初始值为0</span><br>  <span class="hljs-attr">baseUpdate</span>: <span class="hljs-title class_">Update</span>&lt;any, any&gt; | <span class="hljs-literal">null</span>,<br>  <span class="hljs-attr">queue</span>: <span class="hljs-title class_">UpdateQueue</span>&lt;any, any&gt; | <span class="hljs-literal">null</span>, <span class="hljs-comment">// 临时保存对状态值的操作，更准确来说是一个链表数据结构中的一个指针</span><br>  <span class="hljs-attr">next</span>: <span class="hljs-title class_">Hook</span> | <span class="hljs-literal">null</span>,  <span class="hljs-comment">// 指向下一个链表节点</span><br>&#125;;<br></code></pre></td></tr></table></figure>
 
 <p>hooks 的实现就是基于 fiber 的，会在 fiber 节点上放一个链表，节点的结构如上面的 Hook 所示。React Hooks 是用链表来保存状态的，memoizedState 属性保存的实际上是这个链表的头指针。<br>每个 useXxx 的 hooks 都有 mountXxx 和 updateXxx 两个阶段，mount 阶段在节点的 memorizedState 属性上存放了对应的数据，然后 update 阶段使用不同的 hooks api 使用对应的数据来完成更新的功能。较为简单的钩子函数如 useRef、useCallback、useMemo，它们只是对值做了缓存；而复杂的钩子如 useState、useEffect 则会涉及 fiber 的空闲调度</p>
-<h3 id="class-与-hook-区别"><a href="#class-与-hook-区别" class="headerlink" title="class 与 hook 区别"></a>class 与 hook 区别</h3><ul>
-<li>类组件的根基是 OOP（面向对象编程），所以它有继承、有属性、有内部状态的管理。</li>
-<li>函数组件的根基是 FP，也就是函数式编程。它属于“结构化编程”的一种，与数学函数思想类似。也就是假定输入与输出存在某种特定的映射关系，那么输入一定的情况下，输出必然是确定的。</li>
+<h3 id="class-与-hook-区别"><a href="#class-与-hook-区别" class="headerlink" title="class 与 hook 区别"></a>class 与 hook 区别</h3><p><strong>类组件</strong>的根基是 OOP（面向对象编程），所以它有继承、有属性、有内部状态的管理。<br><strong>函数组件</strong>的根基是 FP，也就是函数式编程。它属于“结构化编程”的一种，与数学函数思想类似。也就是假定输入与输出存在某种特定的映射关系，那么输入一定的情况下，输出必然是确定的。</p>
+<ul>
 <li>类组件是可以实现继承的，而函数组件缺少继承的能力。继承比较黑盒，不建议采用。组合优于继承</li>
 <li>类组件 this 模糊性</li>
+<li>函数式组件写法简单，无生命周期函数，类组件划分了明确的生命周期</li>
+<li>类组件在涉及状态管理时代码会显得很复杂，函数式相比之下简单点</li>
 </ul>
 <h3 id="useState-要使用数组而不是对象"><a href="#useState-要使用数组而不是对象" class="headerlink" title="useState 要使用数组而不是对象"></a>useState 要使用数组而不是对象</h3><p>数组解构可以重命名</p>
 <ul>
@@ -472,6 +474,7 @@
 </ol>
 <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs JSX"><span class="hljs-title function_">componentDidMount</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">var</span> action = <span class="hljs-title function_">getHttpAction</span>(<span class="hljs-string">&#x27;/getData&#x27;</span>, getInitTodoItemAction)<br>    <span class="hljs-comment">// 发送函数类型的action时，该action的函数体会自动执行</span><br>    store.<span class="hljs-title function_">dispatch</span>(action)<br>&#125;<br></code></pre></td></tr></table></figure>
 
+<p>react-saga 也是处理异步的中间件，允许你在独立的 saga 文件中集中处理异步逻辑，相比 react-thunk 更适合复杂异步逻辑和流程控制的大型项目。</p>
 <h3 id="DVA"><a href="#DVA" class="headerlink" title="DVA"></a>DVA</h3><p>基于 redux 和 redux-saga 的数据流方案，dva 额外内置了 react-router 和 fetch 简化开发</p>
 <h4 id="相关概念-1"><a href="#相关概念-1" class="headerlink" title="相关概念"></a>相关概念</h4><ul>
 <li>State 数据，通常为一个 JavaScript 对象，操作的时候每次都要当作不可变数据（immutable data）来对待，保证每次都是全新对象，没有引用关系，这样才能保证 State 的独立性，便于测试和追踪变化。</li>
@@ -483,6 +486,11 @@
 </ul>
 <h4 id="实践示例"><a href="#实践示例" class="headerlink" title="实践示例"></a>实践示例</h4><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs JSX"><br><span class="hljs-comment">// 创建应用</span><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">dva</span>();<br>app.<span class="hljs-title function_">use</span>(<span class="hljs-title function_">createLoading</span>()) <span class="hljs-comment">// 使用插件</span><br><span class="hljs-comment">// 注册 Model</span><br>app.<span class="hljs-title function_">model</span>(&#123;<br>  <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;count&#x27;</span>,<br>  <span class="hljs-attr">state</span>: <span class="hljs-number">0</span>,<br>  <span class="hljs-attr">reducers</span>: &#123;<br>    <span class="hljs-title function_">add</span>(<span class="hljs-params">state</span>) &#123; <span class="hljs-keyword">return</span> state + <span class="hljs-number">1</span> &#125;,<br>  &#125;,<br>  <span class="hljs-attr">effects</span>: &#123;<br>    *<span class="hljs-title function_">addAfter1Second</span>(<span class="hljs-params">action, &#123; call, put &#125;</span>) &#123;<br>      <span class="hljs-keyword">yield</span> <span class="hljs-title function_">call</span>(delay, <span class="hljs-number">1000</span>);<br>      <span class="hljs-keyword">yield</span> <span class="hljs-title function_">put</span>(&#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;add&#x27;</span> &#125;);<br>    &#125;,<br>  &#125;,<br>&#125;);<br><span class="hljs-comment">// 注册视图</span><br>app.<span class="hljs-title function_">router</span>(<span class="hljs-function">() =&gt;</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ConnectedApp</span> /&gt;</span></span>);<br><span class="hljs-comment">// 启动应用</span><br>app.<span class="hljs-title function_">start</span>(<span class="hljs-string">&#x27;#root&#x27;</span>);<br></code></pre></td></tr></table></figure>
 
+<h3 id="React-项目优化"><a href="#React-项目优化" class="headerlink" title="React 项目优化"></a>React 项目优化</h3><ul>
+<li>使用 useMemo 缓存变量</li>
+<li>使用 useCallback 缓存函数</li>
+<li>循环添加 key, key 最好用数组项的唯一值，不推荐用 index</li>
+</ul>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7068649069610024974">React 事件机制</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6955636911214067720">「react 进阶」一文吃透 react 事件系统原理</a><br>（3）<a target="_blank" rel="noopener" href="https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/">react 生命周期</a><br>（4）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6940942549305524238">「2021」高频前端面试题汇总之 React 篇（下）</a><br>（5）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7131741751152214030">图解 React 的 diff 算法：核心就两个字 —— 复用</a><br>（6）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6919302952486174733">深入理解 React Diff 算法</a><br>（7）<a target="_blank" rel="noopener" href="https://alexjjwu.fun/web/docs/alexwjj/fe-study/">React</a><br>（8）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6963466553601835044">一文彻底搞懂 DvaJS 原理</a><br>（9）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7075701341997236261">React Hooks 的原理，有的简单有的不简单</a></p>
 
                 

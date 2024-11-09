@@ -24,7 +24,7 @@
 <meta property="og:description" content="浏览器相关知识点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-29T13:04:09.000Z">
-<meta property="article:modified_time" content="2024-03-25T08:56:58.685Z">
+<meta property="article:modified_time" content="2024-11-05T03:33:52.825Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.9k 字
+          4k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          33 分钟
+          34 分钟
         
       </span>
     
@@ -337,10 +337,16 @@
 </li>
 </ol>
 <h4 id="刷新操作对缓存内容影响"><a href="#刷新操作对缓存内容影响" class="headerlink" title="刷新操作对缓存内容影响"></a>刷新操作对缓存内容影响</h4><p>正常操作（地址栏输入 url，跳转链接，前进后退等）：强制缓存有效，协商缓存有效。<br>手动刷新（f5，点击刷新按钮，右键菜单刷新）：强制缓存失效，协商缓存有效。<br>强制刷新（ctrl + f5，shift+command+r）：强制缓存失效，协商缓存失效。</p>
-<h2 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h2><h3 id="回流-vs-重绘"><a href="#回流-vs-重绘" class="headerlink" title="回流 vs 重绘"></a>回流 vs 重绘</h3><p>回流：布局或元素几何属性改变<br>重绘：节点更改外观、不影响布局</p>
+<h2 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h2><p>浏览器一个 tab 就是一个进程</p>
+<h3 id="回流-vs-重绘"><a href="#回流-vs-重绘" class="headerlink" title="回流 vs 重绘"></a>回流 vs 重绘</h3><p>回流：布局或元素几何属性改变<br>重绘：节点更改外观、不影响布局</p>
 <p>重绘不会引起回流，回流一定会导致重绘</p>
 <p>减少回流的方法：<br>1）transform 代替 top<br>2）visibility：hidden 代替 display：none<br>3）不用 table 布局<br>4）避免 css 表达式<br>5）动画选择 requestAnimationFrame</p>
 <h3 id="浏览器从输入-URL-到返回页面的过程"><a href="#浏览器从输入-URL-到返回页面的过程" class="headerlink" title="浏览器从输入 URL 到返回页面的过程"></a>浏览器从输入 URL 到返回页面的过程</h3><p>1）DNS 解析网址<br>2）tcp3 次握手建立连接，发送 http 请求<br>3）解析 html 文件转换为 dom 树<br>4）解析 css 生成 css dom 树<br>5）dom 树和 css dom 树结合生成 render 树（过滤掉 display：none、head、script 等结构）<br>6）根据 render 树布局，gpu 绘制、合成图层，显示在屏幕</p>
+<h4 id="为什么分图层渲染"><a href="#为什么分图层渲染" class="headerlink" title="为什么分图层渲染"></a>为什么分图层渲染</h4><ol>
+<li>某些元素分离到独立图层可以利用 GPU 加速，提高渲染性能（eg. css动画，canvas绘制，webgl）。</li>
+<li>减少重绘</li>
+<li>处理动画：使用 CSS 的 3D 转换或动画时，浏览器通常会将这些元素提升到新的图层，以便更好地处理三维效果。</li>
+</ol>
 <h3 id="浏览器同源策略"><a href="#浏览器同源策略" class="headerlink" title="浏览器同源策略"></a>浏览器同源策略</h3><p>协议、域名、端口号一致</p>
 <h3 id="跨域方法"><a href="#跨域方法" class="headerlink" title="跨域方法"></a>跨域方法</h3><p>1）<strong>jsonp</strong>：script（img、link、iframe 可跨域）设置 script 的 src 为要访问的网址并设置回调函数接收数据。<br>特点：简单、兼容性好、但只能处理 get 请求</p>
 <figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs qml"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span>(<span class="hljs-params">url,callback,success</span>)</span>&#123;<br>  <span class="hljs-keyword">var</span> script=<span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&#x27;script&#x27;</span>)<br>  script.src=<span class="hljs-built_in">url</span><br>  script.async=<span class="hljs-literal">true</span><br>  script.type=<span class="hljs-string">&#x27;text/javascript&#x27;</span><br>  <span class="hljs-built_in">window</span>[callback]=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>&#123;<br>    success&amp;&amp;success(data)<br>  &#125;<br>  <span class="hljs-built_in">document</span>.body.append(script)<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -349,7 +355,7 @@
 <ol>
 <li>使用 get、post、head 请求</li>
 <li>content-type 仅限于 text&#x2F;plain,multipart&#x2F;form-data,application&#x2F;x-www-form-urlencoded</li>
-<li>header中只能包含以下请求头字段Accept、Accept-Language、Content-Language、Content-Type</li>
+<li>header 中只能包含以下请求头字段 Accept、Accept-Language、Content-Language、Content-Type</li>
 </ol>
 <p>复杂请求：<br>会使用 option 发预检请求、Access-Control—Request-Method 告知服务器实际使用的方法，Access-Control-Request-Header 告知服务器实际请求所携带自定义首部字段；预检请求完成后发送实际请求</p>
 <p>3）<strong>document.domain</strong>：只适用于二级域名相同的情况（备注：Chrome 101 版本开始，document.domain 将变为可读属性。即无法通过将两个页面的 document.domain 都设置为二级域名的方法绕过同源策略）<br>4）<strong>location.hash</strong>：通过中间页，不同域之间 iframe 用 location.hash 传值，相同域通过 js 访问<br>5）<strong>window.name</strong>：跨域数据由 iframe 的 window.name 从外域传到本地域，利用 window.name 在不同页面加载后仍然存在<br>6）<strong>postMessage</strong>：一个页面发信息，另一个页面监听该事件接收消息<br>7）<strong>nginx 反向代理</strong>：服务器代理目标服务器（eg.百度）将请求传给内部服务器</p>

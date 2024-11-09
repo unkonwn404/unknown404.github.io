@@ -24,7 +24,7 @@
 <meta property="og:description" content="记录常用的 React 钩子的使用方法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-04-08T06:47:53.000Z">
-<meta property="article:modified_time" content="2023-09-08T06:56:25.164Z">
+<meta property="article:modified_time" content="2024-10-22T07:36:08.820Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -232,7 +232,7 @@
         
         
         
-          56 分钟
+          57 分钟
         
       </span>
     
@@ -307,7 +307,8 @@
 <p>组件库 ahook 的 useLatest 就是利用 useRef 这一特性。其源码为：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useRef &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;<br><br><span class="hljs-comment">// 通过 useRef，保持每次获取到的都是最新的值</span><br><span class="hljs-keyword">function</span> useLatest&lt;T&gt;(<span class="hljs-attr">value</span>: T) &#123;<br>  <span class="hljs-keyword">const</span> ref = <span class="hljs-title function_">useRef</span>(value);<br>  ref.<span class="hljs-property">current</span> = value;<br>  <span class="hljs-keyword">return</span> ref;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> useLatest;<br></code></pre></td></tr></table></figure>
 
-<h2 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h2><p>使用示例：</p>
+<h2 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h2><p>允许你在函数组件中执行一些副作用操作，比如数据获取、订阅事件、手动修改 DOM 等。</p>
+<p>使用示例：</p>
 <figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs arcade">useEffect(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;<br>    ...<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;<br>&#125;,[variable])<br></code></pre></td></tr></table></figure>
 
 <p>第一参数的回调函数函数可以没有返回值，第二参数的书写不是必要的，如果设置了变量 variable，当且仅当 variable 改变时才会触发第一参数回调</p>
@@ -432,9 +433,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/unknown404.github.io/2022/04/11/CICD/" title="CI/CD初识">
+                      <a href="/unknown404.github.io/2022/04/27/gitCommand/" title="git指令回顾">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CI/CD初识</span>
+                        <span class="hidden-mobile">git指令回顾</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     

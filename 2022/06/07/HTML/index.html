@@ -24,7 +24,7 @@
 <meta property="og:description" content="前端 HTML&#x2F;CSS 方面知识整理。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-07T15:42:01.000Z">
-<meta property="article:modified_time" content="2024-03-17T14:59:06.821Z">
+<meta property="article:modified_time" content="2024-11-04T06:19:41.785Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="HTML">
 <meta property="article:tag" content="CSS">
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.9k 字
+          4.2k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          33 分钟
+          36 分钟
         
       </span>
     
@@ -315,6 +315,11 @@
 <li>父元素的 line-height 写了比例，比如 1.5 或 2，则子元素 line-height 也是继承该比例。</li>
 <li>父元素的 line-height 写了百分比，比如 200%，则子元素 line-height 继承的是父元素 font-size * 200% 计算出来的值。</li>
 </ol>
+<h3 id="animation-和-transition-的区别"><a href="#animation-和-transition-的区别" class="headerlink" title="animation 和 transition 的区别"></a>animation 和 transition 的区别</h3><ul>
+<li>实现方式：<br>transition 是过渡属性，强调过渡，它的实现需要触发一个事件（比如鼠标移动上去，焦点，点击等）才执行动画。<br>animation 是动画属性，它的实现不需要触发事件，设定好时间之后可以自己执行，且可以循环一个动画。</li>
+<li>应用场景：<br>transition 用于实现简单的动态效果，例如鼠标悬停在一个元素上时，该元素背景色或透明度的变化。<br>animation 用于实现复杂的动态效果，例如元素的旋转、缩放、平移等复杂变换，以及多个动画状态之间的切换。</li>
+<li>性能：<br>transition 在改变文档流的属性时，会引起页面的回流和重绘，对性能影响比较大。<br>animation 可以结合 keyframe 设置每一帧，但是 transition 只有两帧。</li>
+</ul>
 <h2 id="css-布局"><a href="#css-布局" class="headerlink" title="css 布局"></a>css 布局</h2><h3 id="flex-布局"><a href="#flex-布局" class="headerlink" title="flex 布局"></a>flex 布局</h3><p><strong>容器属性</strong></p>
 <ul>
 <li>flex-direction：主轴方向，默认 row</li>

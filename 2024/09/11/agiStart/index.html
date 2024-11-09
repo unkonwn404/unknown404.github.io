@@ -16,23 +16,22 @@
   <meta name="author" content="小白的文件整理箱">
   <meta name="keywords" content="">
   
-    <meta name="description" content="CI&#x2F;CD 简介CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。 CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以">
+    <meta name="description" content="自 chatgpt 面世以来，ai 相关的产品层出不穷，如何用好 ai、让它更好的为自己服务也是一大新课题。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CI&#x2F;CD初识">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/04/11/CICD/index.html">
+<meta property="og:title" content="AGI基础概念总结">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2024/09/11/agiStart/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
-<meta property="og:description" content="CI&#x2F;CD 简介CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。 CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以">
+<meta property="og:description" content="自 chatgpt 面世以来，ai 相关的产品层出不穷，如何用好 ai、让它更好的为自己服务也是一大新课题。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-04-11T13:07:01.000Z">
-<meta property="article:modified_time" content="2024-04-23T09:57:48.883Z">
+<meta property="article:published_time" content="2024-09-11T09:08:59.000Z">
+<meta property="article:modified_time" content="2024-09-25T06:32:35.807Z">
 <meta property="article:author" content="小白的文件整理箱">
-<meta property="article:tag" content="CI&#x2F;CD">
-<meta property="article:tag" content="运维小知识">
+<meta property="article:tag" content="AGI">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>CI/CD初识 - 小白的文件整理箱</title>
+  <title>AGI基础概念总结 - 小白的文件整理箱</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +198,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="CI/CD初识"></span>
+            <span id="subtitle" data-typed-text="AGI基础概念总结"></span>
           
         </div>
 
@@ -210,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-04-11 21:07" pubdate>
-          2022年4月11日 晚上
+        <time datetime="2024-09-11 17:08" pubdate>
+          2024年9月11日 下午
         </time>
       </span>
     
@@ -222,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          980 字
+          1.3k 字
         
       </span>
     
@@ -233,7 +232,7 @@
         
         
         
-          9 分钟
+          12 分钟
         
       </span>
     
@@ -271,24 +270,27 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">CI/CD初识</h1>
+            <h1 style="display: none">AGI基础概念总结</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="CI-x2F-CD-简介"><a href="#CI-x2F-CD-简介" class="headerlink" title="CI&#x2F;CD 简介"></a>CI&#x2F;CD 简介</h2><p>CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。</p>
-<p>CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以随时准备好进行发布。而持续部署更进一步，是指将软件构建、测试和部署的过程完全自动化，包括将新代码直接部署到生产环境，以便快速交付新功能和修复 bug。</p>
-<h2 id="常见-CI-x2F-CD-工具"><a href="#常见-CI-x2F-CD-工具" class="headerlink" title="常见 CI&#x2F;CD 工具"></a>常见 CI&#x2F;CD 工具</h2><h3 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h3><p>该软件提供了一个易于使用的 Web 界面，可以帮助开发团队快速、高效地构建、测试和交付软件。它与各种版本控制系统（如 Git、Subversion）和构建工具（如 Maven、Gradle）无缝集成，可以轻松地配置和管理项目的构建过程。</p>
-<h3 id="gitlab"><a href="#gitlab" class="headerlink" title="gitlab"></a>gitlab</h3><h4 id="gitlab-runner-启动"><a href="#gitlab-runner-启动" class="headerlink" title="gitlab runner 启动"></a>gitlab runner 启动</h4><p>gitlab runner 是一个开源项目，用于运行流水线任务并将结果发送回 GitLab。本质就是一个服务器。</p>
-<p>gitlab-runner的三种类型：</p>
-<ul>
-<li>共享Runner（Shared Runner），所有项目可以使用。</li>
-<li>群组Runner（Group Runner），特定群组里的所有项目和子群组。</li>
-<li>特定Runner（Specific Runner），用于独立的项目。</li>
-</ul>
-<h5 id="gitlab-runner安装"><a href="#gitlab-runner安装" class="headerlink" title="gitlab runner安装"></a>gitlab runner安装</h5><p>可以在任意一台server安装。首先添加GitLab官方源</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">curl -L https:<span class="hljs-regexp">//</span>packages.gitlab.com<span class="hljs-regexp">/install/</span>repositories<span class="hljs-regexp">/runner/gi</span>tlab-ci-multi-runner/script.rpm.sh | sudo bash<br><br>sudo yum install gitlab-ci-multi-runner<br></code></pre></td></tr></table></figure>
-<h5 id="gitlab-runner注册"><a href="#gitlab-runner注册" class="headerlink" title="gitlab runner注册"></a>gitlab runner注册</h5><h4 id="gitlab-ci-yml"><a href="#gitlab-ci-yml" class="headerlink" title=".gitlab-ci.yml"></a>.gitlab-ci.yml</h4><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://www.infoq.cn/article/WHt0wFMDRrBU-dtkh1Xp/">如何从零开始搭建 CI&#x2F;CD 流水线</a><br><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/yaml/#includeproject">https://docs.gitlab.com/ee/ci/yaml/#includeproject</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/453140826">https://zhuanlan.zhihu.com/p/453140826</a><br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1925580">https://cloud.tencent.com/developer/article/1925580</a></p>
+                <p>自 chatgpt 面世以来，ai 相关的产品层出不穷，如何用好 ai、让它更好的为自己服务也是一大新课题。</p>
+<span id="more"></span>
+
+<h2 id="Agent"><a href="#Agent" class="headerlink" title="Agent"></a>Agent</h2><h3 id="什么是-Agent（代理-x2F-智能体）"><a href="#什么是-Agent（代理-x2F-智能体）" class="headerlink" title="什么是 Agent（代理&#x2F;智能体）"></a>什么是 Agent（代理&#x2F;智能体）</h3><p>Agent，可以翻译为代理或者智能体。在 AGI 领域，则指的是一个通过传感器&#x2F;计算器感知其环境、做出决策并相应地响应的主体。</p>
+<h3 id="Agent-发展史"><a href="#Agent-发展史" class="headerlink" title="Agent 发展史"></a>Agent 发展史</h3><p>简单来说 Agent 不是现在才有的概念，早期的 Agent 依赖于制定的类似 ifelse 语句进行决策，后来基于强化学习的 Agent 的代表性产品——AlphaGo 出名后，人们将精力放在深度学习以及出现后深度神经网络来训练 Agent 学习复杂的策略。</p>
+<p>而近年来，大型语言模型（LLM）非常火热，潜力巨大。因此，一个新的研究领域已经出现，使用 LLM 作为 Agent 的核心控制器。</p>
+<h3 id="基于-LLM-的-Agent-的架构"><a href="#基于-LLM-的-Agent-的架构" class="headerlink" title="基于 LLM 的 Agent 的架构"></a>基于 LLM 的 Agent 的架构</h3><p>大致可以拆分为大模型、规划、记忆与工具使用四个组件部分。</p>
+<h4 id="大模型"><a href="#大模型" class="headerlink" title="大模型"></a>大模型</h4><p>LLM 是 Agent 的核心组件，基于 GPT-3、GPT-4 或类似的大型语言模型。LLM 负责处理自然语言理解（NLU）和自然语言生成（NLG），与用户进行对话，回答问题，生成文本等。</p>
+<h4 id="规划"><a href="#规划" class="headerlink" title="规划"></a>规划</h4><p>LLM 具备逻辑推理能力，但对于复杂的问题难以给出正确的答案，因为用户使用的 prompt（提示语）不合适，导致大模型直接给出了关联度高的字词。一项复杂的任务往往涉及许多步骤。AI Agent 需要首先拆解这些步骤，进行多步推理。<br>当下普遍的技术模式包括思维链和思维树。</p>
+<h4 id="记忆"><a href="#记忆" class="headerlink" title="记忆"></a>记忆</h4><p>记忆模块负责存储信息，包括过去的交互、学习到的知识，甚至是临时的任务信息。<br>在 LLM 中，记忆模块仿照了人类的记忆模式：短期记忆指 transformer 架构限制的上下文窗口内的输入信息；长期记忆类似于外部向量存储</p>
+<h4 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h4><p>AI Agent 与大模型的一大区别在于能够使用外部工具拓展模型能力。LLM 本身虽然强大，但也会有局限。因此，Agent 通常会与外部工具和 API 进行集成。插件系统允许 Agent 调用各种外部服务，如数据库查询、调用 Web API，甚至是与物理设备交互（如 IoT 设备）。<br>以 openAI 的 chatgpt 为例，其训练数据只截止到了 2021 年底，对于更新一些的知识内容它无法直接做出回答。后来 openAI 发布了 FunctionCall 模式，大概就是写一份规则，让 chatgpt 知道什么时候去调用外部工具。</p>
+<h3 id="Agent-应用"><a href="#Agent-应用" class="headerlink" title="Agent 应用"></a>Agent 应用</h3><p>目前各大企业都提供了制作 agent 的平台，比较有名的有字节的 coze、钉钉的AI助理、Dify等，主要可以分为以下几类</p>
+<h4 id="AI-插件"><a href="#AI-插件" class="headerlink" title="AI+插件"></a>AI+插件</h4><p>特点：提供为模型写人设（即 prompt）的功能，可替换模型、添加插件、数据库，以及配置好后的对话调试</p>
+<h4 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h4><p>特点：可以设置节点，处理一些复杂的任务：例如实现跳转和循环、根据多次输入的内容进行作答的场景；对不同类问题的回答有不同的输出格式要求的场景</p>
+<h2 id="prompt"><a href="#prompt" class="headerlink" title="prompt"></a>prompt</h2><h3 id="什么是-prompt（提示词）？"><a href="#什么是-prompt（提示词）？" class="headerlink" title="什么是 prompt（提示词）？"></a>什么是 prompt（提示词）？</h3><p>提示词在人工智能领域是一种特定的输入，用于激发 AI 系统进行特定的思考或行为。它们可以是问题、指令或描述，旨在引导 AI 理解用户的意图并作出相应的反应。提示词的设计需要考虑到 AI 的理解和生成能力，确保它们能够激发出期望的输出</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7359119142786154546">全面讲解基于大型语言模型的智能 Agent：发展历程、架构与基于 Langchain 的实现 demo</a><br>（2）<a target="_blank" rel="noopener" href="https://agijuejin.feishu.cn/wiki/F1jPwKffhiXedTkp26bcFuQInQb">十种 agent 工具，多种思路</a></p>
 
                 
               </div>
@@ -322,9 +324,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/unknown404.github.io/tags/CI-CD/">#CI/CD</a>
-      
-        <a href="/unknown404.github.io/tags/%E8%BF%90%E7%BB%B4%E5%B0%8F%E7%9F%A5%E8%AF%86/">#运维小知识</a>
+        <a href="/unknown404.github.io/tags/AGI/">#AGI</a>
       
     </div>
   
@@ -336,8 +336,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>CI/CD初识</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/04/11/CICD/</div>
+      <div>AGI基础概念总结</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2024/09/11/agiStart/</div>
     </div>
     <div class="license-meta">
       
@@ -349,7 +349,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年4月11日</div>
+          <div>2024年9月11日</div>
         </div>
       
       
@@ -381,18 +381,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/unknown404.github.io/2022/04/27/gitCommand/" title="git指令回顾">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">git指令回顾</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/unknown404.github.io/2022/04/08/reactHooks/" title="React Hooks学习笔记">
-                        <span class="hidden-mobile">React Hooks学习笔记</span>
+                      <a href="/unknown404.github.io/2024/09/02/vite/" title="vite小记">
+                        <span class="hidden-mobile">vite小记</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

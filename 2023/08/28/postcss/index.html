@@ -24,7 +24,7 @@
 <meta property="og:description" content="前端尤其是移动端开发时，对屏幕适配换设计稿的要求比较高。常见的方法是将 px 转为 rem，主要有两种实现方式。 使用 CSS 预处理器（如 Sass 或 Less）通过编写变量和函数来实现 12345678910$base-font-size: 16px;@function px2rem($px) &amp;#123;  @return $px &#x2F; $base-font-size * 1rem;&amp;#12">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-28T03:04:08.000Z">
-<meta property="article:modified_time" content="2024-01-24T02:53:03.516Z">
+<meta property="article:modified_time" content="2024-10-20T09:50:22.346Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="postcss">
 <meta property="article:tag" content="rem">
@@ -280,7 +280,12 @@
 <h3 id="使用-CSS-预处理器（如-Sass-或-Less）"><a href="#使用-CSS-预处理器（如-Sass-或-Less）" class="headerlink" title="使用 CSS 预处理器（如 Sass 或 Less）"></a>使用 CSS 预处理器（如 Sass 或 Less）</h3><p>通过编写变量和函数来实现</p>
 <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs less">$base-<span class="hljs-attribute">font-size</span>: <span class="hljs-number">16px</span>;<br><br><span class="hljs-variable">@function</span> px2rem($px) &#123;<br>  <span class="hljs-variable">@return</span> $px / $base-font-size * <span class="hljs-number">1rem</span>;<br>&#125;<br><br>.example &#123;<br>  <span class="hljs-attribute">font-size</span>: px2rem(<span class="hljs-number">24px</span>); <span class="hljs-comment">// 1.5rem</span><br>  <span class="hljs-attribute">width</span>: px2rem(<span class="hljs-number">200px</span>); <span class="hljs-comment">// 12.5rem</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h3 id="使用-postcss-插件"><a href="#使用-postcss-插件" class="headerlink" title="使用 postcss 插件"></a>使用 postcss 插件</h3><p>PostCSS 是一个用于转换 CSS 的工具，可以通过插件来实现将 px 转换为 rem。常用的插件包括 postcss-pxtorem 和 postcss-plugin-px2rem。配置插件后，它会自动将 CSS 文件中的 px 单位转换为 rem。</p>
+<h3 id="使用-postcss-插件"><a href="#使用-postcss-插件" class="headerlink" title="使用 postcss 插件"></a>使用 postcss 插件</h3><h4 id="关于-postcss"><a href="#关于-postcss" class="headerlink" title="关于 postcss"></a>关于 postcss</h4><p>PostCSS 是一个用于转换 CSS 的工具，可以通过插件来实现以下功能：</p>
+<ul>
+<li>自动补全浏览器前缀（autoprefixer）</li>
+<li>优化 CSS： cssnano 可以进行压缩，purgecss 可以删除未使用的 CSS。</li>
+</ul>
+<p>常用的单位转换插件包括 postcss-pxtorem 和 postcss-plugin-px2rem。配置插件后，它会自动将 CSS 文件中的 px 单位转换为 rem。</p>
 <p>如果想实现整个项目自动将 px 转为 rem，主要有两个步骤</p>
 <h4 id="1-根元素挂载-font-size-样式"><a href="#1-根元素挂载-font-size-样式" class="headerlink" title="1.根元素挂载 font-size 样式"></a>1.根元素挂载 font-size 样式</h4><p>rem 单位是相对于根节点的字体大小的，所以需要设置根节点的字体大小。当窗口大小调整时，通过调整根节点的字体大小来实现自适应。</p>
 <p>实现代码如下（一般来说设计稿都是 750 的宽度）：</p>

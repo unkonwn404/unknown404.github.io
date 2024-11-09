@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/proto-pic.jpg">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/eventLoop.jpeg">
 <meta property="article:published_time" content="2022-06-18T12:58:57.000Z">
-<meta property="article:modified_time" content="2024-04-07T07:10:28.011Z">
+<meta property="article:modified_time" content="2024-11-05T03:33:52.694Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="JavaScript">
 <meta name="twitter:card" content="summary_large_image">
@@ -225,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.8k 字
+          9.2k 字
         
       </span>
     
@@ -236,7 +236,7 @@
         
         
         
-          74 分钟
+          77 分钟
         
       </span>
     
@@ -290,7 +290,13 @@
 <li>引用类型：堆，占据空间大，大小不固定；栈中存储指向实体起始地址</li>
 </ul>
 <p>null vs undefined：null 是空对象，undefined 是声明的变量未定义</p>
-<h2 id="js-类型判断"><a href="#js-类型判断" class="headerlink" title="js 类型判断"></a>js 类型判断</h2><h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><p>适用于判断基本类型，除 typeof null&#x3D;&#x3D;‘object’其他都可以识别</p>
+<h3 id="0-1-0-2-为什么不等于-0-3"><a href="#0-1-0-2-为什么不等于-0-3" class="headerlink" title="0.1+0.2 为什么不等于 0.3"></a>0.1+0.2 为什么不等于 0.3</h3><p>因为像 0.1 和 0.2 这样的十进制数不能用二进制浮点数精确表示。因此，加法运算时，出现了微小的误差</p>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><ol>
+<li>使用 toFixed() 方法进行四舍五入</li>
+<li>使用第三方库：像 decimal.js 或 big.js</li>
+</ol>
+<h4 id="为什么不推荐把小数变成整数再做运算"><a href="#为什么不推荐把小数变成整数再做运算" class="headerlink" title="为什么不推荐把小数变成整数再做运算"></a>为什么不推荐把小数变成整数再做运算</h4><p>在极端情况下，放大的整数依然可能会遇到溢出或精度问题，尤其是涉及非常大或非常小的数字时。</p>
+<h2 id="js-类型判断"><a href="#js-类型判断" class="headerlink" title="js 类型判断"></a>js 类型判断</h2><h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><p>适用于判断基本类型，除 typeof null&#x3D;&#x3D;‘object’其他都可以识别（在 JavaScript 最初的版本中，使用 32 位的值表示一个变量，其中前 3 位用于表示值的类型。000 表示对象，在这种表示法下，null 被解释为一个全零的指针）</p>
 <h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><p>使用于判断引用类型，其原理是是判断在其原型链中能否找到该类型的原型。</p>
 <figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs nsis"><span class="hljs-keyword">function</span> <span class="hljs-title function_">myInstanceOf</span>(<span class="hljs-literal">left</span>,<span class="hljs-literal">right</span>)&#123;<br>  <span class="hljs-keyword">var</span> <span class="hljs-variable">prototype</span>=<span class="hljs-literal">right</span>.prototype<br>  <span class="hljs-keyword">var</span> <span class="hljs-variable">left</span>=<span class="hljs-literal">left</span>._proto_<br>  while(<span class="hljs-literal">true</span>)&#123;<br>    if(<span class="hljs-literal">left</span>==null||<span class="hljs-literal">left</span>==undefined)<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><span class="hljs-comment">;</span><br>    if(<span class="hljs-literal">left</span>==prototype)<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><span class="hljs-comment">;</span><br>    <span class="hljs-literal">left</span>=<span class="hljs-literal">left</span>._proto_<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
@@ -425,7 +431,7 @@
 <li><strong>JSON.stringify</strong><br>缺点：不能拷贝函数和循环引用</li>
 <li>递归函数</li>
 </ol>
-<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-keyword">function</span> deep<span class="hljs-constructor">CloneObj(<span class="hljs-params">obj</span>)</span>&#123;<br>  var newObj=<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Array</span>.</span></span>is<span class="hljs-constructor">Array(<span class="hljs-params">obj</span>)</span>?<span class="hljs-literal">[]</span>:&#123;&#125;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj)&#123;<br>    <span class="hljs-keyword">if</span>(obj.has<span class="hljs-constructor">OwnProperty(<span class="hljs-params">key</span>)</span>)&#123;<br>      newObj<span class="hljs-literal">[<span class="hljs-identifier">key</span>]</span>=typeof obj<span class="hljs-literal">[<span class="hljs-identifier">key</span>]</span>==&#x27;<span class="hljs-keyword">object</span>&#x27;?deep<span class="hljs-constructor">CloneObj(<span class="hljs-params">obj</span>[<span class="hljs-params">key</span>])</span>:obj<span class="hljs-literal">[<span class="hljs-identifier">key</span>]</span><br>    &#125;<br>  &#125;<br>  return newObj<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">deepCloneObj</span>(<span class="hljs-params">obj</span>) &#123;<br>  <span class="hljs-keyword">var</span> newObj = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(obj) ? [] : &#123;&#125;;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj) &#123;<br>    <span class="hljs-keyword">if</span> (obj.<span class="hljs-title function_">hasOwnProperty</span>(key)) &#123;<br>      <span class="hljs-comment">//排除原型链继承来的属性</span><br>      newObj[key] =<br>        <span class="hljs-keyword">typeof</span> obj[key] == <span class="hljs-string">&quot;object&quot;</span> ? <span class="hljs-title function_">deepCloneObj</span>(obj[key]) : obj[key];<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> newObj;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h2 id="原型和原型链"><a href="#原型和原型链" class="headerlink" title="原型和原型链"></a>原型和原型链</h2><p><strong>原型</strong>：<code>_proto_</code>指向的对象<br><strong>原型链</strong>：当对象某一属性在当前对象找不到时会沿<code>_proto_</code>属性向上一个对象查找，如果没有就沿着<code>_proto_</code>属性继续向上查找，这个查找依据的规则就是原型链<br><img src="/unknown404.github.io/img/proto-pic.jpg" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><h3 id="原型链继承"><a href="#原型链继承" class="headerlink" title="原型链继承"></a>原型链继承</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Child</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Parent</span>();<br></code></pre></td></tr></table></figure>
@@ -476,7 +482,7 @@
 <h3 id="执行上下文"><a href="#执行上下文" class="headerlink" title="执行上下文"></a>执行上下文</h3><p>定义：当前代码的执行环境，包括全局上下文、函数上下文、eval 上下文</p>
 <h4 id="执行上下文-3-个重要属性"><a href="#执行上下文-3-个重要属性" class="headerlink" title="执行上下文 3 个重要属性"></a>执行上下文 3 个重要属性</h4><ol>
 <li>变量对象（VO）：存储了上下文定义的变量和函数声明</li>
-<li>作用域链：一组对象列表，包括自身变量对象和指向父级变量对象作用域链属性</li>
+<li>作用域链：一组对象列表，包括自身变量对象和指向父级变量对象作用域链属性。在当前执行上下文的变量对象中查找变量，如果在当前变量对象中找不到变量，JavaScript 引擎会沿着作用域链向上一级作用域的变量对象中查找，直到找到变量或者到达全局作用域。</li>
 <li>this</li>
 </ol>
 <h4 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h4><ol>
@@ -490,7 +496,7 @@
 <ol start="2">
 <li>代码执行：根据代码修改变量对象的值<br>PS：函数上下文的变量对象初始化只包括 arguments</li>
 </ol>
-<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>定义：可以获取其他函数内变量的函数<br>优点：1.可创建私有变量；2.防止全局变量污染；3.模仿块级作用域<br>缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、闭包循环引用）</p>
+<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>定义：可以获取其他函数内变量的函数<br>优点：1.可创建私有变量；2.防止全局变量污染；3.模仿块级作用域<br>缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、dom监听未取消、闭包循环引用）</p>
 <h3 id="偏函数与柯里化"><a href="#偏函数与柯里化" class="headerlink" title="偏函数与柯里化"></a>偏函数与柯里化</h3><p>偏函数：将一个 n 元函数转为 n-x 函数</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">partial</span>(<span class="hljs-params">fn</span>)&#123;<br>  <span class="hljs-keyword">var</span> args=[...<span class="hljs-variable language_">arguments</span>].<span class="hljs-title function_">slice</span>(<span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">var</span> newArgs=args.<span class="hljs-title function_">concat</span>([...<span class="hljs-variable language_">arguments</span>])<br>    <span class="hljs-keyword">return</span> fn.<span class="hljs-title function_">apply</span>(<span class="hljs-variable language_">this</span>,newArgs)<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 

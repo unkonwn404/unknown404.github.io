@@ -1,0 +1,670 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最近领导迷恋上了跨端开发，把以前的一个项目迁移成 Taro 了。中间踩了不少奇奇怪怪的坑，终于忍不住列出来吐槽了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Taro项目开发中的问题总结">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2024/08/22/taroBug/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="最近领导迷恋上了跨端开发，把以前的一个项目迁移成 Taro 了。中间踩了不少奇奇怪怪的坑，终于忍不住列出来吐槽了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-22T09:51:18.000Z">
+<meta property="article:modified_time" content="2024-08-28T02:50:39.628Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="Taro">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Taro项目开发中的问题总结 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Taro项目开发中的问题总结"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-22 17:51" pubdate>
+          2024年8月22日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Taro项目开发中的问题总结</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最近领导迷恋上了跨端开发，把以前的一个项目迁移成 Taro 了。中间踩了不少奇奇怪怪的坑，终于忍不住列出来吐槽了。</p>
+<span id="more"></span>
+
+<h2 id="1-样式设置为-scoped-无法生效"><a href="#1-样式设置为-scoped-无法生效" class="headerlink" title="1. 样式设置为 scoped 无法生效"></a>1. 样式设置为 scoped 无法生效</h2><p>这好像没什么解决方法，自己写 scss 的时候小心点吧</p>
+<h2 id="2-Taro-redirectTo-url-“-x2F-pages-x2F-404-x2F-index”-小程序跳转正常，h5-端报-page-x2F-wap-x2F-error-notfound"><a href="#2-Taro-redirectTo-url-“-x2F-pages-x2F-404-x2F-index”-小程序跳转正常，h5-端报-page-x2F-wap-x2F-error-notfound" class="headerlink" title="2. Taro.redirectTo({ url: “&#x2F;pages&#x2F;404&#x2F;index” });小程序跳转正常，h5 端报 page &#x2F;wap&#x2F;error notfound"></a>2. Taro.redirectTo({ url: “&#x2F;pages&#x2F;404&#x2F;index” });小程序跳转正常，h5 端报 page &#x2F;wap&#x2F;error notfound</h2><p>原因：配置文件里配置了 customRoutes: { ‘&#x2F;pages&#x2F;404&#x2F;index’: ‘&#x2F;error’ }<br>解决方法：去除 customRoutes 配置，h5 的这个配置好像只是改了个 path 名字，并不能做为 route 使用。</p>
+<h2 id="3-百度小程序-first-child-的样式写法失效"><a href="#3-百度小程序-first-child-的样式写法失效" class="headerlink" title="3. 百度小程序 :first-child 的样式写法失效"></a>3. 百度小程序 :first-child 的样式写法失效</h2><p>原因：编译百度小程序的时候子元素外面都套了一层 dom，所以 first-child 对不上了<br>解决方法：改用 :first-of-type 或者在 template 代码加 class 判断条件</p>
+<h2 id="4-H5-下，button-在-active-状态下有默认的白色背景"><a href="#4-H5-下，button-在-active-状态下有默认的白色背景" class="headerlink" title="4. H5 下，button 在 active 状态下有默认的白色背景"></a>4. H5 下，button 在 active 状态下有默认的白色背景</h2><p>设置 <code>&amp;:active &#123; background: none; &#125;</code> 关掉背景色</p>
+<h2 id="5-mixins、extends-在-onShow、onHide-周期代码无法生效"><a href="#5-mixins、extends-在-onShow、onHide-周期代码无法生效" class="headerlink" title="5. mixins、extends 在 onShow、onHide 周期代码无法生效"></a>5. mixins、extends 在 onShow、onHide 周期代码无法生效</h2><p>原因：页面已经书写了 onShow 和 onHide 的代码，Taro 的代码扩展效果只限于 Vue 的几个生命周期<br>解决方法：手动在页面 onShow 和 onHide 添加目标逻辑</p>
+<h2 id="6-eventCenter-监听-onShow-事件在-iOS-失效"><a href="#6-eventCenter-监听-onShow-事件在-iOS-失效" class="headerlink" title="6. eventCenter 监听 onShow 事件在 iOS 失效"></a>6. eventCenter 监听 onShow 事件在 iOS 失效</h2><p>原因：官方提供的监听示例代码为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; eventCenter, getCurrentInstance &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@tarojs/taro&quot;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>  <span class="hljs-title function_">mounted</span>(<span class="hljs-params"></span>) &#123;<br>    eventCenter.<span class="hljs-title function_">on</span>(<span class="hljs-title function_">getCurrentInstance</span>().<span class="hljs-property">router</span>.<span class="hljs-property">onShow</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;onShow&quot;</span>);<br>    &#125;);<br>  &#125;,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>实际 iOS 的 router 实例里没有 onShow，就算手动构造也仍然会在 iOS 部分页面监听失效</p>
+<h2 id="7-抖音小程序-Button-唤起客服操作不生效"><a href="#7-抖音小程序-Button-唤起客服操作不生效" class="headerlink" title="7. 抖音小程序 Button 唤起客服操作不生效"></a>7. 抖音小程序 Button 唤起客服操作不生效</h2><p>原因：button 组件缺失 im 客服涉及的属性<br>解决方法：参考<a target="_blank" rel="noopener" href="https://github.com/NervJS/taro/issues/14118">这个 issue</a>，使用插件@tarojs&#x2F;plugin-inject 这个插件，并在 config 文件里添加这个配置</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-attr">plugins</span>: [<br>  [<br>    <span class="hljs-string">&quot;@tarojs/plugin-inject&quot;</span>,<br>    &#123;<br>      <span class="hljs-attr">components</span>: &#123;<br>        <span class="hljs-comment">// 给button组件添加自定义事件</span><br>        <span class="hljs-title class_">Button</span>: &#123;<br>          <span class="hljs-string">&quot;data-im-id&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>          <span class="hljs-attr">dataImId</span>: <span class="hljs-string">&quot;&quot;</span>,<br>          <span class="hljs-attr">dataImType</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// im卡片类型</span><br>          <span class="hljs-string">&quot;data-im-type&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>          <span class="hljs-attr">dataGoodsId</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// 商品id</span><br>          <span class="hljs-string">&quot;data-goods-id&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>          <span class="hljs-attr">dataBizLine</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// 类型</span><br>          <span class="hljs-string">&quot;data-biz-line&quot;</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// 类型</span><br>          <span class="hljs-attr">dataOrderId</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// 订单id</span><br>          <span class="hljs-string">&quot;data-order-id&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>          <span class="hljs-attr">bindim</span>: <span class="hljs-string">&quot;&#x27;eh&#x27;&quot;</span>, <span class="hljs-comment">// 监听跳转IM的成功回调</span><br>          <span class="hljs-attr">bindIm</span>: <span class="hljs-string">&quot;&#x27;eh&#x27;&quot;</span>, <span class="hljs-comment">// 监听跳转IM的成功回调</span><br>          <span class="hljs-attr">binderror</span>: <span class="hljs-string">&quot;&#x27;eh&#x27;&quot;</span>, <span class="hljs-comment">// 监听跳转IM的失败回调</span><br>          <span class="hljs-attr">bindError</span>: <span class="hljs-string">&quot;&#x27;eh&quot;</span>, <span class="hljs-comment">// 监听跳转IM的失败回调</span><br>        &#125;,<br>      &#125;,<br>    &#125;,<br>  ],<br>];<br></code></pre></td></tr></table></figure>
+
+<p>使用 Vue 组件书写时格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;button<br>  open-type=&quot;im&quot;<br>  dataImId=&quot;123456&quot;<br>  :onIm=&quot;imCallback&quot;<br>  :onError=&quot;onimError&quot;<br>&gt;<br>联系客服<br>&lt;/button&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="8-h5-页面跳转使用-navigateTo、redirectTo-会失败"><a href="#8-h5-页面跳转使用-navigateTo、redirectTo-会失败" class="headerlink" title="8. h5 页面跳转使用 navigateTo、redirectTo 会失败"></a>8. h5 页面跳转使用 navigateTo、redirectTo 会失败</h2><p>原因：跳转目标带参数且用 customRoute 改写过路径<br>解决方法：？？？基本没有，当时官方说后续版本修复，但实际如果使用这些 API 跳转在 wap 上的效果是创建了一个页面而不是像 spa 的跳转，也就是说如果连续点击跳转、就会创建好几个相同的页面</p>
+<h2 id="9-配置打包环境变量后运行代码报错"><a href="#9-配置打包环境变量后运行代码报错" class="headerlink" title="9. 配置打包环境变量后运行代码报错"></a>9. 配置打包环境变量后运行代码报错</h2><p>原因：环境变量名只设置了双引号，而实际运行时 Taro 会对变量名做解析，所以需要写成如下格式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-comment">// ...</span><br>  <span class="hljs-attr">env</span>: &#123;<br>    <span class="hljs-attr">NODE_ENV</span>: <span class="hljs-string">&#x27;&quot;development&quot;&#x27;</span>, <span class="hljs-comment">// JSON.stringify(&#x27;development&#x27;)</span><br>    <span class="hljs-attr">TARO_APP_VERSION</span>: <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(<span class="hljs-string">`<span class="hljs-subst">$&#123;process.env.TARO_ENV&#125;</span>_<span class="hljs-subst">$&#123;getTimeTag()&#125;</span>`</span>),<br>  &#125;,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>这个其实在<a target="_blank" rel="noopener" href="https://docs.taro.zone/docs/next/config-detail#env">说明文档</a>里有反映出来，但这不合常规的设置居然一点解释都没有，差评。。。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E8%B8%A9%E5%9D%91%E7%BB%8F%E5%8E%86/" class="category-chain-item">踩坑经历</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/Taro/">#Taro</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Taro项目开发中的问题总结</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2024/08/22/taroBug/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月22日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2024/09/02/vite/" title="vite小记">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">vite小记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2024/08/13/pageStyle/" title="页面效果实现整理">
+                        <span class="hidden-mobile">页面效果实现整理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
