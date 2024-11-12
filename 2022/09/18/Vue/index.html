@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle.png">
 <meta property="article:published_time" content="2022-09-18T09:02:00.000Z">
-<meta property="article:modified_time" content="2024-11-03T07:50:39.677Z">
+<meta property="article:modified_time" content="2024-11-09T15:17:58.686Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="vue">
 <meta name="twitter:card" content="summary_large_image">
@@ -234,7 +234,7 @@
         
         
         
-          105 分钟
+          107 分钟
         
       </span>
     
@@ -307,7 +307,8 @@
 <li>新旧 vnode 不相等，需要比对新旧节点，比对原则是以新节点为主进行更新</li>
 </ol>
 <h4 id="vue-2-x-双端-diff"><a href="#vue-2-x-双端-diff" class="headerlink" title="vue 2.x - 双端 diff"></a>vue 2.x - 双端 diff</h4><p>双端 diff 算法是头尾指针向中间移动，分别判断头尾节点是否可以复用，如果没有找到可复用的节点再去遍历查找对应节点的下标，然后移动。全部处理完之后也要对剩下的节点进行批量的新增和删除。</p>
-<h4 id="vue-3-最长递增子序列"><a href="#vue-3-最长递增子序列" class="headerlink" title="vue 3 - 最长递增子序列"></a>vue 3 - 最长递增子序列</h4><h3 id="Vue-属性"><a href="#Vue-属性" class="headerlink" title="Vue 属性"></a>Vue 属性</h3><h4 id="data-为什么是一个函数而不是对象"><a href="#data-为什么是一个函数而不是对象" class="headerlink" title="data 为什么是一个函数而不是对象"></a>data 为什么是一个函数而不是对象</h4><p>如果 data 是对象，当组件复用时，由于多个实例引用同一个对象，只要一个实例对这个对象进行操作，其他实例中的数据也会发生变化。</p>
+<h4 id="vue-3-最长递增子序列、静态标记"><a href="#vue-3-最长递增子序列、静态标记" class="headerlink" title="vue 3 - 最长递增子序列、静态标记"></a>vue 3 - 最长递增子序列、静态标记</h4><p>Vue 3 中对没有 key 的列表元素采用最长递增子序列算法（LIS），用最少的移动操作来保持节点顺序，尤其在长列表渲染中性能提升显著。<br>Vue 3 在编译阶段对静态节点打上标记，从而在更新时能够快速跳过静态内容，仅更新动态部分。</p>
+<h3 id="Vue-属性"><a href="#Vue-属性" class="headerlink" title="Vue 属性"></a>Vue 属性</h3><h4 id="data-为什么是一个函数而不是对象"><a href="#data-为什么是一个函数而不是对象" class="headerlink" title="data 为什么是一个函数而不是对象"></a>data 为什么是一个函数而不是对象</h4><p>如果 data 是对象，当组件复用时，由于多个实例引用同一个对象，只要一个实例对这个对象进行操作，其他实例中的数据也会发生变化。</p>
 <h4 id="computed-和-watch-区别"><a href="#computed-和-watch-区别" class="headerlink" title="computed 和 watch 区别"></a>computed 和 watch 区别</h4><p><strong>computed</strong></p>
 <ol>
 <li>支持缓存</li>
@@ -325,7 +326,7 @@
 <li>watch 属性函数不需要 return</li>
 </ol>
 <h3 id="Vue-模版指令"><a href="#Vue-模版指令" class="headerlink" title="Vue 模版指令"></a>Vue 模版指令</h3><h4 id="v-show-和-v-if-区别"><a href="#v-show-和-v-if-区别" class="headerlink" title="v-show 和 v-if 区别"></a>v-show 和 v-if 区别</h4><p>v-show 只是在 display: none 和 display: block 之间切换。DOM 一直存在<br>v-if 的话就得说到 Vue 底层的编译了。当属性初始为 false 时，组件就不会被渲染，直到条件为 true，并且切换条件时会触发销毁&#x2F;挂载组件</p>
-<h4 id="v-if-和-v-for-共用时控制台报错"><a href="#v-if-和-v-for-共用时控制台报错" class="headerlink" title="v-if 和 v-for 共用时控制台报错"></a>v-if 和 v-for 共用时控制台报错</h4><p>当它们同时存在于一个节点上时，v-if 比 v-for 的优先级更高。这意味着 v-if 的条件将无法访问到 v-for 作用域内定义的变量别名<br>正确写法：</p>
+<h4 id="v-if-和-v-for-共用时控制台报错"><a href="#v-if-和-v-for-共用时控制台报错" class="headerlink" title="v-if 和 v-for 共用时控制台报错"></a>v-if 和 v-for 共用时控制台报错</h4><p>Vue 3 里当它们同时存在于一个节点上时，v-if 比 v-for 的优先级更高。这意味着 v-if 的条件将无法访问到 v-for 作用域内定义的变量别名<br>正确写法：</p>
 <figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">template</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">&quot;todo in todos&quot;</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">&quot;!todo.isComplete&quot;</span>&gt;</span></span><br><span class="language-xml">    </span><span class="hljs-template-variable">&#123;&#123; <span class="hljs-name">todo.name</span> &#125;&#125;</span><span class="language-xml"></span><br><span class="language-xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
 
 <h3 id="Vue3-0-新特性"><a href="#Vue3-0-新特性" class="headerlink" title="Vue3.0 新特性"></a>Vue3.0 新特性</h3><h4 id="Proxy-替代-Object-defineProperty"><a href="#Proxy-替代-Object-defineProperty" class="headerlink" title="Proxy 替代 Object.defineProperty"></a>Proxy 替代 Object.defineProperty</h4><h5 id="Proxy-特点"><a href="#Proxy-特点" class="headerlink" title="Proxy 特点"></a>Proxy 特点</h5><ol>
@@ -341,6 +342,10 @@
 </ol>
 <h4 id="组合式-API"><a href="#组合式-API" class="headerlink" title="组合式 API"></a>组合式 API</h4><p>Vue 之前的风格可以说属于选项式 API，用包含多个选项的对象来描述组件的逻辑，例如 data、methods 和 mounted。组合式 API 是写在标签<code>&lt;script setup&gt;</code>的内部的，风格接近 react 钩子函数</p>
 <h5 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h5><p>1）生命周期钩子只有 onBeforeMount、onMounted、onBeforeUpdate、onUpdated、onBeforeUnmount 和 onUnmounted，不存在跟 beforeCreate 和 created 生命周期相关的钩子<br>2）父子组件之间的数据交互依赖于函数 defineProps 和 defineEmits、defineExpose<br>3）不会使用 this（因为不存在组件实例了）<br>4）需要使用 ref 或者 reactive 创建响应式数据</p>
+<h5 id="与选项式相比优点"><a href="#与选项式相比优点" class="headerlink" title="与选项式相比优点"></a>与选项式相比优点</h5><ol>
+<li>逻辑复用性好：通过 setup 函数将逻辑模块化，并可直接使用函数导入和返回数据。</li>
+<li>逻辑聚合性好：可以将与业务功能相关的逻辑组织在一起，提高了代码的可读性和可维护性。</li>
+</ol>
 <h5 id="ref-和-reactive-区别"><a href="#ref-和-reactive-区别" class="headerlink" title="ref 和 reactive 区别"></a>ref 和 reactive 区别</h5><p><strong>ref</strong>：通常用来定义常用的基础类型(String,Number,Boolean 等等)，ref 函数包裹的数据需要用.value 来查询<br><strong>reactive</strong>：通常用来定义对象</p>
 <h4 id="支持-TypeScript"><a href="#支持-TypeScript" class="headerlink" title="支持 TypeScript"></a>支持 TypeScript</h4><p>Vue 3.0 是用 TypeScript 编写的，因此支持 TypeScript。<br>在单文件组件中使用 TypeScript，需要在 <code>&lt;script&gt;</code> 标签上加上 lang&#x3D;”ts” 的 attribute。<br><strong>类型推断对比</strong></p>
 <table style="text-align:center;">
@@ -413,7 +418,7 @@
 <h2 id="组件间通信"><a href="#组件间通信" class="headerlink" title="组件间通信"></a>组件间通信</h2><h3 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h3><p><strong>1）props</strong><br>通过 props 传递数据给子组件<br><strong>2）emit</strong><br>父组件可以通过 v-on 或 @ 来选择性地监听子组件上抛的事件，如示例中自定义的事件 increaseBy；该属性的处理函数可以写在父组件的 method 里<br>子组件调用内置的 $emit 方法，通过传入事件名称来抛出一个事件；也可以通过设置 emits 属性实现</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-comment">// 父组件</span><br>&lt;MyButton <span class="hljs-meta">@increase</span>-<span class="hljs-keyword">by</span>=<span class="hljs-string">&quot;(n) =&gt; count += n&quot;</span> /&gt;<br><br><span class="hljs-comment">// 子组件</span><br>&lt;button <span class="hljs-meta">@click</span>=<span class="hljs-string">&quot;<span class="hljs-variable">$emit</span>(&#x27;increaseBy&#x27;, 1)&quot;</span>&gt;<br>  Increase <span class="hljs-keyword">by</span> <span class="hljs-number">1</span><br>&lt;/button&gt;<br></code></pre></td></tr></table></figure>
 
-<p><strong>3）v-model</strong><br>当 v-model 指令用于自定义的组件时，Vue3 等效于如下写法：</p>
+<p><strong>3）v-model</strong><br>v-model 用于实现表单组件及自定义组件的数据绑定。<br>当 v-model 指令用于自定义的组件时，Vue3 等效于如下写法：</p>
 <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs elixir">&lt;CustomInput<br>  <span class="hljs-symbol">:modelValue=<span class="hljs-string">&quot;searchText&quot;</span></span><br>  <span class="hljs-variable">@update</span><span class="hljs-symbol">:modelValue=<span class="hljs-string">&quot;newValue =&gt; searchText = newValue&quot;</span></span><br>/&gt;<br></code></pre></td></tr></table></figure>
 
 <p>如果要实现和原生元素 input 一样的绑定效果，自定义组件 CustomInput 内部需要做如下操作：</p>
@@ -441,9 +446,9 @@
 
 <h2 id="Vue-生态"><a href="#Vue-生态" class="headerlink" title="Vue 生态"></a>Vue 生态</h2><h3 id="单页面应用（SPA）"><a href="#单页面应用（SPA）" class="headerlink" title="单页面应用（SPA）"></a>单页面应用（SPA）</h3><p>使用 vue 全家桶构建的项目一般就属于单页面应用项目。其特点为：初始加载时只加载一个 HTML 页面，后续的导航通过 JavaScript 动态地更新页面内容</p>
 <h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><ul>
-<li>用户体验：加载初始页面后，可以在不刷新页面的情况下加载和渲染新内容。</li>
-<li>响应交互：用户可以在页面上执行各种操作，而不会导致页面的重新加载。</li>
-<li>负载较低：只有初始页面加载时需要从服务器获取 HTML、CSS 和 JavaScript 文件，减轻了服务器的负载</li>
+<li>用户体验：加载初始页面后，页面导航可以在不刷新页面的情况下加载和渲染新内容。</li>
+<li>前后端分离：独立部署，利于开发。</li>
+<li>负载较低：只有初始页面加载时需要从服务器获取 HTML、CSS 和 JavaScript 文件，减轻了服务器的负载。</li>
 </ul>
 <h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
 <li>首次加载时间：SPA 首次加载时需要下载较大的 JavaScript 文件，这可能导致初始加载时间较长。</li>
@@ -520,7 +525,7 @@
 <li>生命周期：Vue 提供完整的生命周期钩子（如 beforeCreate、created、beforeMount 等），React 函数式已没有生命周期，使用 useEffect 来处理生命周期需求。</li>
 <li>响应式：Vue 使用 Proxy 或 Object.defineProperty 实现，React 不会直接追踪状态依赖变化，而是通过对组件的更新触发 re-render</li>
 </ul>
-<h3 id="React-的-hooks-和-vue-的组合式-api-区别"><a href="#React-的-hooks-和-vue-的组合式-api-区别" class="headerlink" title="React 的 hooks 和 vue 的组合式 api 区别"></a>React 的 hooks 和 vue 的组合式 api 区别</h3><h3 id="Vue-和-React-diff-区别"><a href="#Vue-和-React-diff-区别" class="headerlink" title="Vue 和 React diff 区别"></a>Vue 和 React diff 区别</h3><p>相同点：</p>
+<h3 id="Vue-和-React-diff-区别"><a href="#Vue-和-React-diff-区别" class="headerlink" title="Vue 和 React diff 区别"></a>Vue 和 React diff 区别</h3><p>相同点：</p>
 <ul>
 <li>使用 vdom</li>
 <li>使用 key 标识列表节点优化渲染</li>

@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle-detail.jpeg">
 <meta property="article:published_time" content="2022-06-09T12:47:30.000Z">
-<meta property="article:modified_time" content="2024-10-28T06:12:52.437Z">
+<meta property="article:modified_time" content="2024-11-11T01:53:52.880Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -234,7 +234,7 @@
         
         
         
-          101 分钟
+          103 分钟
         
       </span>
     
@@ -315,8 +315,8 @@
 <li>当虚拟 DOM 发生变化后，就会根据差距计算生成 patch，这个 patch 是一个结构化的数据，内容包含了增加、更新、移除等；</li>
 <li>根据 patch 去更新真实的 DOM，反馈到用户的界面上。</li>
 </ul>
-<p>在 React16 之前，React 是直接递归渲染 vdom 的，setState 会触发重新渲染，对比渲染出的新旧 vdom，对差异部分进行 dom 操作。<br>在 React16 之后，为了优化性能，会先把 vdom 转换成 fiber，也就是从树转换成链表，然后再渲染。整体渲染流程分成了两个阶段：</p>
-<p>render 阶段：从 vdom 转换成 fiber，并且对需要 dom 操作的节点打上 effectTag 的标记<br>commit 阶段：对有 effectTag 标记的 fiber 节点进行 dom 操作，并执行所有的 effect 副作用函数。</p>
+<p>在 React16 之前，React 是直接递归比较 vdom 的，setState 会触发重新渲染，对比渲染出的新旧 vdom，对差异部分进行 dom 操作。<br>在 React16 之后，为了优化性能，会先把 vdom 转换成 fiber，也就是从树转换成链表，然后再渲染。整体渲染流程分成了两个阶段：</p>
+<p>reconciliation 阶段：从 vdom 转换成 fiber，并且对需要 dom 操作的节点打上 effectTag 的标记<br>commit 阶段：对有 effectTag 标记的 fiber 节点进行 dom 操作，并执行所有的 effect 副作用函数。这个阶段是同步的，不可中断，以保证最终的更新操作能应用到实际的 DOM 中。</p>
 <p>从 vdom 转成 fiber 的过程叫做 reconcile（调和），这个过程是可以打断的，由 scheduler 调度执行。</p>
 <p>React 的 diff 算法是分成两次遍历的：<br><strong>第一轮遍历</strong>，一一对比 vdom 和老的 fiber，如果 key 和 type 相同则认为该节点可以复用、处理下一个节点，否则就结束遍历。<br>如果所有的新的 vdom 处理完了，那就把剩下的老 fiber 节点删掉就行。<br>如果还有 vdom 没处理，那就进行第二次遍历；<br><strong>第二轮遍历</strong>，主要是解决节点移动的问题：遍历新的 vdom 节点，每一个都去看看这个节点在旧 fiber 链中的位置（旧位置），如果旧位置在最新固定节点的右边，说明这个节点位置不变，就是可复用，移动过来打上更新的标记，并成为新的固定节点；如果旧位置在最新固定节点的左边，当前这个节点的位置要往右挪。最后把剩下的老 fiber 删掉，剩下的新 vdom 新增。</p>
 <h4 id="React-列表渲染为什么要用-key？"><a href="#React-列表渲染为什么要用-key？" class="headerlink" title="React 列表渲染为什么要用 key？"></a>React 列表渲染为什么要用 key？</h4><p>diff 算法中通过 tag 和 key 来判断是否是同一个节点，因此必须用 key。且<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7099745927413366797">key 值最好不是 index</a>，因为列表依赖的数据长度可能会变化，而使用 index 作为 key 不能表征数据的变化，影响性能；在列表结构内部使用其他元素如 input 时 diff 算法会认为其没有发生变化，因此内部的数据也不会更新<br>key 值也不能是 random、不然会增加 diff 计算量</p>
@@ -326,6 +326,7 @@
 <li>react 绑定的事件如 onChange，在 document 上，可能有多个事件与之对应。</li>
 <li>react 并不是一开始，把所有的事件都绑定在 document 上，而是采取了一种按需绑定，比如发现了 onClick 事件,再去绑定 document click 事件。</li>
 </ol>
+<p>总结：采用了合成事件，即将浏览器的原生事件统一封装，暴露给组件以保持一致的事件接口；以事件委托的方式处理事件，即在根节点（如 document 或根 DOM 节点）上监听所有事件</p>
 <h3 id="事件机制流程"><a href="#事件机制流程" class="headerlink" title="事件机制流程"></a>事件机制流程</h3><h4 id="注册合成事件"><a href="#注册合成事件" class="headerlink" title="注册合成事件"></a>注册合成事件</h4><p>构建初始化 React 合成事件和原生事件的对应关系，合成事件和对应的事件处理插件关系。</p>
 <h4 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h4><ol>
 <li>react dom 对应的 fiber 会在 memoizedProps 和 pendingProps 保存事件</li>
@@ -486,6 +487,7 @@
 </ul>
 <h4 id="实践示例"><a href="#实践示例" class="headerlink" title="实践示例"></a>实践示例</h4><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs JSX"><br><span class="hljs-comment">// 创建应用</span><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">dva</span>();<br>app.<span class="hljs-title function_">use</span>(<span class="hljs-title function_">createLoading</span>()) <span class="hljs-comment">// 使用插件</span><br><span class="hljs-comment">// 注册 Model</span><br>app.<span class="hljs-title function_">model</span>(&#123;<br>  <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;count&#x27;</span>,<br>  <span class="hljs-attr">state</span>: <span class="hljs-number">0</span>,<br>  <span class="hljs-attr">reducers</span>: &#123;<br>    <span class="hljs-title function_">add</span>(<span class="hljs-params">state</span>) &#123; <span class="hljs-keyword">return</span> state + <span class="hljs-number">1</span> &#125;,<br>  &#125;,<br>  <span class="hljs-attr">effects</span>: &#123;<br>    *<span class="hljs-title function_">addAfter1Second</span>(<span class="hljs-params">action, &#123; call, put &#125;</span>) &#123;<br>      <span class="hljs-keyword">yield</span> <span class="hljs-title function_">call</span>(delay, <span class="hljs-number">1000</span>);<br>      <span class="hljs-keyword">yield</span> <span class="hljs-title function_">put</span>(&#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;add&#x27;</span> &#125;);<br>    &#125;,<br>  &#125;,<br>&#125;);<br><span class="hljs-comment">// 注册视图</span><br>app.<span class="hljs-title function_">router</span>(<span class="hljs-function">() =&gt;</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ConnectedApp</span> /&gt;</span></span>);<br><span class="hljs-comment">// 启动应用</span><br>app.<span class="hljs-title function_">start</span>(<span class="hljs-string">&#x27;#root&#x27;</span>);<br></code></pre></td></tr></table></figure>
 
+<h3 id="React-SSR"><a href="#React-SSR" class="headerlink" title="React SSR"></a>React SSR</h3><p>代表框架：Next.js<br>特点：服务器端渲染 HTML 字符串并注入数据状态，在首次加载时生成完整页面的 DOM 结构，并在客户端接手后增强交互性。这样不仅能提高 SEO 性能，还改善了页面的首屏渲染体验。</p>
 <h3 id="React-项目优化"><a href="#React-项目优化" class="headerlink" title="React 项目优化"></a>React 项目优化</h3><ul>
 <li>使用 useMemo 缓存变量</li>
 <li>使用 useCallback 缓存函数</li>
