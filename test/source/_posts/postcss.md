@@ -29,7 +29,14 @@ $base-font-size: 16px;
 
 ### 使用 postcss 插件
 
-PostCSS 是一个用于转换 CSS 的工具，可以通过插件来实现将 px 转换为 rem。常用的插件包括 postcss-pxtorem 和 postcss-plugin-px2rem。配置插件后，它会自动将 CSS 文件中的 px 单位转换为 rem。
+#### 关于 postcss
+
+PostCSS 是一个用于转换 CSS 的工具，可以通过插件来实现以下功能：
+
+- 自动补全浏览器前缀（autoprefixer）
+- 优化 CSS： cssnano 可以进行压缩，purgecss 可以删除未使用的 CSS。
+
+常用的单位转换插件包括 postcss-pxtorem 和 postcss-plugin-px2rem。配置插件后，它会自动将 CSS 文件中的 px 单位转换为 rem。
 
 如果想实现整个项目自动将 px 转为 rem，主要有两个步骤
 

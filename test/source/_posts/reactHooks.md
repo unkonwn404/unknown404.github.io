@@ -138,6 +138,8 @@ export default useLatest;
 
 ## useEffect
 
+允许你在函数组件中执行一些副作用操作，比如数据获取、订阅事件、手动修改 DOM 等。
+
 使用示例：
 
 ```

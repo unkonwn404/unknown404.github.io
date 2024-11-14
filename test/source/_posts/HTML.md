@@ -83,6 +83,18 @@ sticky：须指定 top、left、right、bottom，跨越特定阈值前是 relati
 2. 父元素的 line-height 写了比例，比如 1.5 或 2，则子元素 line-height 也是继承该比例。
 3. 父元素的 line-height 写了百分比，比如 200%，则子元素 line-height 继承的是父元素 font-size \* 200% 计算出来的值。
 
+### animation 和 transition 的区别
+
+- 实现方式：
+  transition 是过渡属性，强调过渡，它的实现需要触发一个事件（比如鼠标移动上去，焦点，点击等）才执行动画。
+  animation 是动画属性，它的实现不需要触发事件，设定好时间之后可以自己执行，且可以循环一个动画。
+- 应用场景：
+  transition 用于实现简单的动态效果，例如鼠标悬停在一个元素上时，该元素背景色或透明度的变化。
+  animation 用于实现复杂的动态效果，例如元素的旋转、缩放、平移等复杂变换，以及多个动画状态之间的切换。
+- 性能：
+  transition 在改变文档流的属性时，会引起页面的回流和重绘，对性能影响比较大。
+  animation 可以结合 keyframe 设置每一帧，但是 transition 只有两帧。
+
 ## css 布局
 
 ### flex 布局

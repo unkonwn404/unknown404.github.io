@@ -31,6 +31,8 @@ ViewModel 通过双向数据绑定连接 view 和 model，view 和 model 间的�
 
 ### 双向绑定/响应式原理
 
+#### Vue 2
+
 Object.defineProperty 劫持数据，添加 setter/getter 属性监听数据变化情况，发消息给订阅者触发监听回调
 
 1. 实现一个监听器 observer：遍历对象属性，添加 setter/getter，数据改变时可通过 setter 听到变化
@@ -38,17 +40,30 @@ Object.defineProperty 劫持数据，添加 setter/getter 属性监听数据变�
 3. 实现一个订阅者 watcher：连接 observer 和 compiler 桥梁，订阅 observer 属性变化消息，接收变化时触发 compiler 更新函数
 4. 实现一个订阅器 dep：订阅发布管理模式，统一管理 watcher 和 observer
 
+##### 为什么 defineProperty 不可以监听数组下标的变化 为什么实际应用中还可以监听到数组的增删？
+
+Object.defineProperty 不能直接监听数组下标的变化是因为在 JavaScript 中，对数组的下标赋值操作（如 arr[0] = 1）实际上是通过修改数组对象的内部属性（如 length 等）来实现的，而不是通过属性访问器（getter 和 setter）的方式。
+
+然而，在实际应用中可以通过重写数组的 push、pop、shift、unshift、splice 等方法来实现对数组增删操作的监听。
+
+#### Vue 3
+
+Proxy 可以代理整个对象进行读取、设置、删除属性。通过依赖收集（Dependency Collection）和触发更新（Trigger Update）来实现数据的自动同步：当一个响应式数据被读取时，Vue 3 会收集当前的依赖（即正在执行的副作用函数）；当响应式数据被修改时，Vue 3 会触发所有收集到的依赖，从而更新视图。
+
 ### Vue diff 算法
 
-1. 新旧vnode对比是不是同类型标签，不是同类型直接替换
-2. 如果是同类型标签，执行patchVnode方法，判断新旧vnode是否相等。如果相等，直接返回。
-3. 新旧vnode不相等，需要比对新旧节点，比对原则是以新节点为主
+1. 新旧 vnode 对比是不是同类型标签，不是同类型直接替换
+2. 如果是同类型标签，执行特有的 patchVnode 方法，判断新旧 vnode 是否相等。如果相等，直接返回。
+3. 新旧 vnode 不相等，需要比对新旧节点，比对原则是以新节点为主进行更新
 
 #### vue 2.x - 双端 diff
 
 双端 diff 算法是头尾指针向中间移动，分别判断头尾节点是否可以复用，如果没有找到可复用的节点再去遍历查找对应节点的下标，然后移动。全部处理完之后也要对剩下的节点进行批量的新增和删除。
 
-#### vue 3 - 最长递增子序列
+#### vue 3 - 最长递增子序列、静态标记
+
+Vue 3 中对没有 key 的列表元素采用最长递增子序列算法（LIS），用最少的移动操作来保持节点顺序，尤其在长列表渲染中性能提升显著。
+Vue 3 在编译阶段对静态节点打上标记，从而在更新时能够快速跳过静态内容，仅更新动态部分。
 
 ### Vue 属性
 
@@ -83,7 +98,7 @@ v-if 的话就得说到 Vue 底层的编译了。当属性初始为 false 时，
 
 #### v-if 和 v-for 共用时控制台报错
 
-当它们同时存在于一个节点上时，v-if 比 v-for 的优先级更高。这意味着 v-if 的条件将无法访问到 v-for 作用域内定义的变量别名
+Vue 3 里当它们同时存在于一个节点上时，v-if 比 v-for 的优先级更高。这意味着 v-if 的条件将无法访问到 v-for 作用域内定义的变量别名
 正确写法：
 
 ```
@@ -121,6 +136,11 @@ Vue 之前的风格可以说属于选项式 API，用包含多个选项的对象
 2）父子组件之间的数据交互依赖于函数 defineProps 和 defineEmits、defineExpose
 3）不会使用 this（因为不存在组件实例了）
 4）需要使用 ref 或者 reactive 创建响应式数据
+
+##### 与选项式相比优点
+
+1. 逻辑复用性好：通过 setup 函数将逻辑模块化，并可直接使用函数导入和返回数据。
+2. 逻辑聚合性好：可以将与业务功能相关的逻辑组织在一起，提高了代码的可读性和可维护性。
 
 ##### ref 和 reactive 区别
 
@@ -273,7 +293,8 @@ created、beforeMount、mounted 都可以做异步请求，因为在这三个钩
 ```
 
 **3）v-model**
-当 v-model 指令用于自定义的组件时，等效于如下写法：
+v-model 用于实现表单组件及自定义组件的数据绑定。
+当 v-model 指令用于自定义的组件时，Vue3 等效于如下写法：
 
 ```
 <CustomInput
@@ -303,6 +324,16 @@ export default {
 ```
 
 子组件中通过将属性 modelValue 和原生元素 input 的 value 绑定，当 input 的值变化时通过 emit 向上传递变化的值
+
+**扩展**：和 Vue2 的 v-model 不同之处
+
+1. 默认 Prop 和 Event 名称
+   Vue 2：v-model 默认使用 value 作为 prop，input 作为事件。
+   Vue 3：v-model 默认使用 modelValue 作为 prop，update:modelValue 作为事件。
+
+2. 支持多个 v-model 绑定
+   Vue 2：每个组件只支持一个 v-model 绑定。
+   Vue 3：支持多个 v-model 绑定，这在处理多个状态时特别有用。
 
 **4）ref**
 使用选项式 API 时，可以通过 this.$refs.name 的方式获取指定元素或者组件
@@ -473,9 +504,9 @@ const fn = inject("function", () => {}, false);
 
 #### 优点
 
-- 用户体验：加载初始页面后，可以在不刷新页面的情况下加载和渲染新内容。
-- 响应交互：用户可以在页面上执行各种操作，而不会导致页面的重新加载。
-- 负载较低：只有初始页面加载时需要从服务器获取 HTML、CSS 和 JavaScript 文件，减轻了服务器的负载
+- 用户体验：加载初始页面后，页面导航可以在不刷新页面的情况下加载和渲染新内容。
+- 前后端分离：独立部署，利于开发。
+- 负载较低：只有初始页面加载时需要从服务器获取 HTML、CSS 和 JavaScript 文件，减轻了服务器的负载。
 
 #### 缺点
 
@@ -662,6 +693,27 @@ v-if 和 v-show 酌情使用
 
 骨架屏
 客户端缓存
+
+## 扩展： Vue 和 React 对比
+
+### Vue 和 React 区别
+
+- 数据绑定：Vue 双向数据绑定，React 单向数据流
+- 生命周期：Vue 提供完整的生命周期钩子（如 beforeCreate、created、beforeMount 等），React 函数式已没有生命周期，使用 useEffect 来处理生命周期需求。
+- 响应式：Vue 使用 Proxy 或 Object.defineProperty 实现，React 不会直接追踪状态依赖变化，而是通过对组件的更新触发 re-render
+
+### Vue 和 React diff 区别
+
+相同点：
+
+- 使用 vdom
+- 使用 key 标识列表节点优化渲染
+- 大部分情况同层级节点比较
+
+不同点：
+
+- Vue 在编译过程中对静态和动态节点的标记，在更新时，Vue 会跳过这些静态节点的比较；React 每次组件的状态更新时会重新渲染整个虚拟 DOM 树，并且重新比较每个节点
+- Vue 的 diff 优化从编译时就开始，而 React 在运行时开始
 
 ## 参考文献
 

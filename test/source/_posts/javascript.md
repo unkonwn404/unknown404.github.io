@@ -24,11 +24,24 @@ date: 2022-06-18 20:58:57
 
 null vs undefined：null 是空对象，undefined 是声明的变量未定义
 
+### 0.1+0.2 为什么不等于 0.3
+
+因为像 0.1 和 0.2 这样的十进制数不能用二进制浮点数精确表示。因此，加法运算时，出现了微小的误差
+
+#### 解决方法
+
+1. 使用 toFixed() 方法进行四舍五入
+2. 使用第三方库：像 decimal.js 或 big.js
+
+#### 为什么不推荐把小数变成整数再做运算
+
+在极端情况下，放大的整数依然可能会遇到溢出或精度问题，尤其是涉及非常大或非常小的数字时。
+
 ## js 类型判断
 
 ### typeof
 
-适用于判断基本类型，除 typeof null==‘object’其他都可以识别
+适用于判断基本类型，除 typeof null==‘object’其他都可以识别（在 JavaScript 最初的版本中，使用 32 位的值表示一个变量，其中前 3 位用于表示值的类型。000 表示对象，在这种表示法下，null 被解释为一个全零的指针）
 
 ### instanceof
 
@@ -166,15 +179,17 @@ Object.defineProperties(window, {
    缺点：不能拷贝函数和循环引用
 2. 递归函数
 
-```
-function deepCloneObj(obj){
-  var newObj=Array.isArray(obj)?[]:{}
-  for(let key in obj){
-    if(obj.hasOwnProperty(key)){
-      newObj[key]=typeof obj[key]=='object'?deepCloneObj(obj[key]):obj[key]
+```js
+function deepCloneObj(obj) {
+  var newObj = Array.isArray(obj) ? [] : {};
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      //排除原型链继承来的属性
+      newObj[key] =
+        typeof obj[key] == "object" ? deepCloneObj(obj[key]) : obj[key];
     }
   }
-  return newObj
+  return newObj;
 }
 ```
 
@@ -352,7 +367,7 @@ function create(){
 #### 执行上下文 3 个重要属性
 
 1. 变量对象（VO）：存储了上下文定义的变量和函数声明
-2. 作用域链：一组对象列表，包括自身变量对象和指向父级变量对象作用域链属性
+2. 作用域链：一组对象列表，包括自身变量对象和指向父级变量对象作用域链属性。在当前执行上下文的变量对象中查找变量，如果在当前变量对象中找不到变量，JavaScript 引擎会沿着作用域链向上一级作用域的变量对象中查找，直到找到变量或者到达全局作用域。
 3. this
 
 #### 执行过程
@@ -371,7 +386,7 @@ function create(){
 
 定义：可以获取其他函数内变量的函数
 优点：1.可创建私有变量；2.防止全局变量污染；3.模仿块级作用域
-缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、闭包循环引用）
+缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、dom监听未取消、闭包循环引用）
 
 ### 偏函数与柯里化
 
@@ -459,6 +474,8 @@ JavaScript 有一个主线程和调用栈，所有的任务最终都会被放到
 - 执行所有微任务
 - 当执行完所有微任务后，如有必要会渲染页面
 - 然后开始下一轮 Event Loop，执行宏任务中的异步代码，也就是 setTimeout 中的回调函数
+
+**备注**：用户进行交互时会生成一个宏任务放到执行栈
 
 ```JavaScript
 console.log('script start')

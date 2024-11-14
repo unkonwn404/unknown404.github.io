@@ -7,9 +7,56 @@ tags:
   - 算法
 ---
 
+## 基础概念
+
+**时间复杂度**：随着输入数据规模的增长，算法执行时间的增长趋势。
+**空间复杂度**：随着输入数据规模的增长，算法所需要的存储空间的增长趋势。
+
 ## 数据结构
 
 ### 字符串
+
+#### 下划线转驼峰
+
+正则筛选下划线+首字母点位
+
+```js
+function camelCase(str) {
+  return str.replace(/_([a-z])/g, function (match, group1) {
+    return group1.toUpperCase();
+  });
+}
+
+console.log(camelCase("some_string"));
+```
+
+#### 数字千分位分割
+
+1. toLocaleString
+   如果考虑带小数点的情况，则需要配置属性
+
+```js
+const number = 1234567890.12345;
+const formattedNumber = number.toLocaleString("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+console.log(formattedNumber); // "1,234,567,890.12"
+```
+
+2. 正则
+   将整数部分和小数部分分开处理，再进行千分位分割。
+
+```js
+function formatNumber(num) {
+  const parts = num.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
+const number = 1234567890.12345;
+console.log(formatNumber(number)); // "1,234,567,890.12345"
+```
 
 #### 字符串相加（大数相加）
 
@@ -67,9 +114,29 @@ var lengthOfLongestSubstring = function(s) {
 
 ### 数组
 
+#### 数组乱序
+
+思路：洗牌算法，从数组的最后一个元素开始，生成一个随机索引 j，这个索引的范围是从 0 到当前元素的索引 i。交换数组中索引为 i 和 j 的元素。每次将当前索引 i 减 1，直到整个数组遍历完毕。
+
+```JavaScript
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    // 生成一个随机索引 j，范围是 0 到 i（包含 i）
+    const j = Math.floor(Math.random() * (i + 1));
+    // 交换 array[i] 和 array[j]
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+const arr = [1, 2, 3, 4, 5, 6];
+console.log(shuffle(arr)); // 输出乱序后的数组
+
+```
+
 #### 数组去重
 
-1. indexOf
+1. indexOf 和 filter（无法带 NaN）
 
 ```JavaScript
 const unique = arr => arr.filter((e,i) => arr.indexOf(e) === i);
@@ -81,9 +148,34 @@ const unique = arr => arr.filter((e,i) => arr.indexOf(e) === i);
 const unique = arr => [...new Set(arr)];
 ```
 
+3. reduce 和 includes
+   通过 reduce 方法遍历数组，并使用 includes 来判断结果数组中是否已经存在当前元素，来实现去重。
+
+```JavaScript
+const array = [1, 2, 2, 3, 4, 4, 5];
+const uniqueArray = array.reduce((acc, item) => {
+  if (!acc.includes(item)) {
+    acc.push(item);
+  }
+  return acc;
+}, []);
+
+console.log(uniqueArray); // 输出: [1, 2, 3, 4, 5]
+```
+
+4. Map 和 filter
+
+```JavaScript
+const array = [1, 2, 2, 3, 4, 4, 5];
+const map = new Map();
+const uniqueArray = array.filter(item => !map.has(item) && map.set(item, true));
+
+console.log(uniqueArray); // 输出: [1, 2, 3, 4, 5]
+```
+
 #### 数组扁平化
 
-1. 递归
+1. 递归（reduce 方法类似）
 
 ```JavaScript
 function flat(arr) {
@@ -113,6 +205,35 @@ const arr2 = arr.join().split(',').map(Number)
 const arr3 = arr.toString().split(',').map(Number)
 ```
 
+#### 数组转树形结构
+
+首先，我们创建一个空的 map 对象，它的键是每个 id，值是包含 children 的每个节点的引用。这样可以快速查找每个节点的父节点。通过两次遍历：第一次遍历将节点存储到 map，第二次遍历通过 pid 建立父子关系。
+
+```js
+function jsonToTree(data) {
+  // 初始化结果数组，并判断输入数据的格式
+  let result = [];
+  if (!Array.isArray(data)) {
+    return result;
+  }
+  // 使用map，将当前对象的id与当前对象对应存储起来
+  let map = {};
+  data.forEach((item) => {
+    map[item.id] = item;
+  });
+  //
+  data.forEach((item) => {
+    let parent = map[item.pid];
+    if (parent) {
+      (parent.children || (parent.children = [])).push(item);
+    } else {
+      result.push(item);
+    }
+  });
+  return result;
+}
+```
+
 #### 两数之和、三数之和
 
 ##### 两数之和
@@ -126,24 +247,122 @@ const arr3 = arr.toString().split(',').map(Number)
 如果取到了，则条件成立，返回。
 如果没有取到，将当前值作为 key，下标作为值存入 map
 
-```JavaScript
-function twoSum(arr,target){
-    var res=[],map={}
-    for(let i=0;i<arr.length;i++){
-        if(map[target-arr[i]]!=undefined){
-            res= [i,map[target-arr[i]]]
-        }else{
-            map[arr[i]]=i
-        }
+```js
+function twoSum(arr, target) {
+  var res = [],
+    map = {};
+  for (let i = 0; i < arr.length; i++) {
+    if (map[target - arr[i]] != undefined) {
+      res = [i, map[target - arr[i]]];
+    } else {
+      map[arr[i]] = i;
     }
-    return res
+  }
+  return res;
 }
 ```
 
 ##### 三数之和
 
 情景：给定一个整数数组 nums 和一个目标值 target，请在该数组中找出和为目标值的那 3 个整数，并返回他们的数组。
-思路：需要考虑结果去重。思路与两数之和有类似的地方，遍历数组时选定基准值`arr[i]`，在数组最左和最右设立指针，判断左指针+基准值+右指针的和是否等于目标值，如果不是需移动指针来靠近
+思路：需要考虑结果去重。思路与两数之和有类似的地方，遍历数组时选定基准值`arr[i]`，在数组最左和最右设立指针，判断左指针+基准值+右指针的和是否等于目标值，如果不是需移动指针来靠近。移动指针规则：如果和大于目标值右指针左移，小于左指针右移，等于的时候执行循环，判断左界和右界是否和下一位置重复，去除重复解。并同时将 L,R 移到下一位置，寻找新的解
+
+```js
+var threeSum = function (nums) {
+  let res = [];
+  if (nums.length < 3) return res;
+  nums.sort((a, b) => a - b);
+  for (let i = 0; i < nums.length - 2; i++) {
+    let first = nums[i];
+    if (i > 0 && first == nums[i - 1]) continue;
+    if (first > 0) break;
+    let left = i + 1,
+      right = nums.length - 1;
+    while (left < right) {
+      if (first + nums[left] + nums[right] == 0) {
+        res.push([first, nums[left], nums[right]]);
+        while (left < right && nums[left] == nums[left + 1]) {
+          left++;
+        }
+        while (left < right && nums[right] == nums[right - 1]) {
+          right--;
+        }
+        left++;
+        right--;
+      } else {
+        if (first + nums[left] + nums[right] > 0) {
+          right--;
+        } else {
+          left++;
+        }
+      }
+    }
+  }
+  return res;
+};
+```
+
+### 对象
+
+#### 对象展开
+
+思路：递归实现，遍历对象的 key 值，如果 key 对应的 value 是对象，则将展开的 key 值传入递归的函数里，为新键名提供父键信息；否则直接将 key-value 赋给新对象，返回结果必须参与递归入参进行 key 值更新
+
+```js
+function flattenObject(obj, parentKey = "", result = {}) {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const newKey = parentKey ? `${parentKey}.${key}` : key;
+
+      if (typeof obj[key] === "object" && obj[key] !== null) {
+        // 如果是数组，继续递归处理每个数组元素
+        if (Array.isArray(obj[key])) {
+          obj[key].forEach((item, index) => {
+            // 递归处理数组中的对象，其他类型直接赋值
+            if (typeof item === "object" && item !== null) {
+              flattenObject(item, `${newKey}[${index}]`, result);
+            } else {
+              result[`${newKey}[${index}]`] = item;
+            }
+          });
+        }
+        // 如果是对象，递归进行扁平化处理
+        else {
+          flattenObject(obj[key], newKey, result);
+        }
+      } else {
+        // 不是对象或数组，直接赋值
+        result[newKey] = obj[key];
+      }
+    }
+  }
+  return result;
+}
+
+// 示例对象和数组
+const nestedObj = {
+  name: "John",
+  address: {
+    city: "New York",
+    postalCode: {
+      code: "10001",
+      area: "Manhattan",
+    },
+  },
+  hobbies: ["Reading", "Travelling"],
+  contact: {
+    email: "john@example.com",
+    phone: {
+      home: "123-456-7890",
+      work: "987-654-3210",
+    },
+  },
+};
+
+// 执行对象扁平化
+const flatObj = flattenObject(nestedObj);
+console.log(flatObj);
+```
 
 ### 二叉树
 
@@ -268,6 +487,85 @@ function postOrder(root){
 }
 ```
 
+二叉树的问题基本可以认为是这两种遍历方式的延展，可以看以下几个例子
+
+#### 翻转二叉树
+
+思路：对于根节点来说就是将左子树翻转的结果放到右指针、右子树翻转的结果放在左指针；因此可以用递归的方式解决
+
+```js
+var invertTree = function (root) {
+  if (root == null) return root;
+  let leftTree = invertTree(root.right);
+  let rightTree = invertTree(root.left);
+  root.left = leftTree;
+  root.right = rightTree;
+  return root;
+};
+```
+
+#### 二叉树最大深度
+
+思路：根节点的最大深度可以看作是左子树的最大深度和右子树最大深度比较，最大值加上根节点的 1 就是结果
+
+```js
+function maxDepth(root) {
+  if (root == null) return 0;
+  let leftDepth = maxDepth(root.left);
+  let rightDepth = maxDepth(root.right);
+  return Math.max(leftDepth, rightDepth) + 1;
+}
+```
+
+#### 二叉树的最大直径
+
+思路：可以看成是二叉树的最大深度的延伸，节点直径就是该节点的左子树的最大深度加右子树最大深度加节点本身，所以最大直径就是遍历节点，把每个节点的直径进行比较。比较的过程可以放在最大深度的递归中实现
+
+```js
+var diameterOfBinaryTree = function (root) {
+  let res = 0;
+  function maxDepth(root) {
+    if (root == null) return 0;
+    let leftDepth = maxDepth(root.left);
+    let rightDepth = maxDepth(root.right);
+    res = Math.max(res, leftDepth + rightDepth + 1);
+    return Math.max(leftDepth, rightDepth) + 1;
+  }
+  maxDepth(root);
+  return res - 1;
+};
+```
+
+#### 二叉树层级遍历
+
+思路：运用迭代的思想，用队列维护每层的节点进出。注意 for 循环遍历队列前要先记录队列长度，因为循环内对队列长度有操作
+
+```js
+var levelOrder = function (root) {
+  let temp = [],
+    arr = [];
+  if (!root) return arr;
+  temp.push(root);
+  while (temp.length) {
+    let arrItem = [],
+      size = temp.length;
+    for (let i = 0; i < size; i++) {
+      let current = temp.shift();
+      arrItem.push(current.val);
+      if (current.left) {
+        temp.push(current.left);
+      }
+      if (current.right) {
+        temp.push(current.right);
+      }
+    }
+    arr.push(arrItem);
+    arrItem = [];
+  }
+  return arr;
+};
+```
+
 ### 链表
 
 特点：用一组任意存储的单元来存储线性表的数据元素。一个对象存储着本身的值和下一个元素的地址。
@@ -281,6 +579,7 @@ function ListNode(x){
 ```
 
 val 属性存储当前的值，next 属性存储下一个节点的引用。当 next 节点是 null 时，说明是最后一个节点，停止遍历。
+链表数据是线性的，存储空间是不连续的，访问的时间复杂度为 O（n）,增删的时间复杂度为 O(1)。
 解题思路：
 
 1. 涉及到可能对头部节点变动时，可以设置虚拟节点 dummy 与 head 连接
@@ -332,20 +631,19 @@ function printListNode(head){
 
 #### 翻转列表
 
-思路：双指针，慢指针保存前一个节点的值，快指针进行遍历修改指针方向
+思路：双指针，慢指针保存前一个节点的值，快指针进行遍历修改指针方向；需要先存储快指针下一个节点，快指针改变方向时慢指针赋值原快指针，同时将快指针赋值为 next；最后快指针会最先到 null，所以返回的应该是慢指针
 
 ```JavaScript
-function revertListNode(head){
-    let current=head
-    let pre=null
-    while(current){
-        const tmp=current.next
-        current.next=pre
-        pre=current
-        current=tmp
+var reverseList = function(head) {
+    let pre =null,cur = head
+    while(cur){
+        let next =cur.next
+        cur.next = pre
+        pre = cur
+        cur = next
     }
-}
-
+    return pre
+};
 ```
 
 #### 链表倒数第 K 个节点
@@ -368,7 +666,7 @@ function findKthFromTail(head,k){
 
 ##### 延伸：删除倒数第 K 个节点
 
-思路：类似链表倒数第 K 个节点，只是需要找到的节点是倒数 K+1，方便做指针操作；由于删除操作有可能涉及头部节点操作，最好加 dummy
+思路：类似链表倒数第 K 个节点，只是需要找到的节点是倒数 K+1，方便做指针操作：初始化时慢指针在 dummyHeader，快指针在 header。快指针比慢指针间隔 k 步当快指针移动到 null 时慢指针位于 n-k 处，刚好慢指针把倒数第 k 个指针指向改变；由于删除操作有可能涉及头部节点操作，最好加 dummy
 
 ```JavaScript
 function deleteKthFromTail(head,k){
@@ -396,8 +694,8 @@ function hasCircle(head){
     let fast=head,slow=head,index
     while(fast&&fast.next){
         fast=fast.next.next
-        slow=slow.fast
-        if(fast.val===slow.val){
+        slow=slow.next
+        if(fast===slow){
             return true
         }
     }
@@ -414,8 +712,8 @@ function findCircleStart(head){
     let fast=head,slow=head,index
     while(fast&&fast.next){
         fast=fast.next.next
-        slow=slow.fast
-        if(fast.val===slow.val){
+        slow=slow.next
+        if(fast===slow){
             break;
         }
     }
@@ -559,6 +857,8 @@ function climbStairs(n){
     return climbStairs(n-1)+climbStairs(n-2)
 }
 ```
+
+该方法属于尾递归，即递归调用的结果直接作为函数的返回值。这种特殊的递归形式可以被编译器优化，以减少栈空间的使用，从而提高程序的性能。
 
 ### 回溯
 
@@ -768,6 +1068,65 @@ var backtracking=function(tmp,res,nums){
 }
 ```
 
+### 动态规划
+
+特点：本质是穷举法，问题存在「重叠子问题」，需要用数组或者其他数据结构维护子问题的结果，避免不必要的计算；具有「最优子结构」，可以以「状态转移方程」的形式展示
+思路：
+
+- 定义 dp 数组/函数的含义
+- 明确 base case
+
+使用场景：
+
+- 求最值，最长递增子序列，最小编辑距离
+
+**关于状态转移方程**
+状态转移方程是动态规划中一个核心概念，它描述了系统从一个状态到另一个状态的转变过程。状态转移方程的一般形式为 x(t+1) = f(x(t), u(t))，其中 x 表示系统的状态向量，u 表示系统的控制输入向量，t 表示时间。f 是状态转移函数，它描述了系统状态从 t 时刻到 t+1 时刻的变化规律。
+
+#### 最长递增序列
+
+情景：给你一个整数数组 nums ，找到其中最长严格递增子序列（）的长度。
+思路：将 dp 数组每个元素设置为以 nums[i]这个数结尾的最长递增子序列的长度。计算 nums[i]时考虑既然是递增子序列，只要找到 0 ～（i-1）前面那些结尾比 nums[i] 小的子序列，然后把 nums[i] 接到这些子序列末尾，就可以形成一个新的递增子序列，而且这个新的子序列长度加一。
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function (nums) {
+  let dp = new Array(nums.length).fill(1);
+  for (let i = 0; i < nums.length; i++) {
+    for (let j = 0; j < i; j++) {
+      if (nums[j] < nums[i]) {
+        dp[i] = Math.max(dp[j] + 1, dp[i]);
+      }
+    }
+  }
+  return Math.max(...dp);
+};
+```
+
+#### 最大子序和
+
+情景：给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+思路：只需要求出这个数组每个位置的 最大子序和，然后返回最大子序数组中的最大值即可。对于位置 i 求最大子序，可以考虑 nums[i] 单独成为一段还是加入（i-1）位置的最大子序值 f(i−1) 对应的那一段，这取决于 nums[i] 和 f(i−1)+nums[i] 的大小。在这个问题中 dp 数组的元素即 nums[i]的最大子序和
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxSubArray = function (nums) {
+  let pre = 0,
+    max = nums[0];
+  for (let i = 0; i < nums.length; i++) {
+    pre = Math.max(pre + nums[i], nums[i]);
+    max = Math.max(pre, max);
+  }
+  return max;
+};
+```
+
 ### 广度优先搜索(BFS)
 
 特点:越是接近根结点的结点将越早地遍历。
@@ -878,6 +1237,8 @@ function dfs(grid:number[][],i:number,j:number,visited:boolean[][]){
 2. 岛屿数量
 
 #### 路径总和
+
+情景：给你二叉树的根节点 root 和一个表示目标和的整数 targetSum 。判断该树中是否存在 根节点到叶子节点 的路径，这条路径上所有节点值相加等于目标和 targetSum 。如果存在，返回 true ；否则，返回 false 。
 
 ```JavaScript
 /**

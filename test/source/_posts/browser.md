@@ -77,6 +77,8 @@ tags:
 
 ## 浏览器渲染
 
+浏览器一个 tab 就是一个进程
+
 ### 回流 vs 重绘
 
 回流：布局或元素几何属性改变
@@ -99,6 +101,12 @@ tags:
 4）解析 css 生成 css dom 树
 5）dom 树和 css dom 树结合生成 render 树（过滤掉 display：none、head、script 等结构）
 6）根据 render 树布局，gpu 绘制、合成图层，显示在屏幕
+
+#### 为什么分图层渲染
+
+1. 某些元素分离到独立图层可以利用 GPU 加速，提高渲染性能（eg. css动画，canvas绘制，webgl）。
+2. 减少重绘
+3. 处理动画：使用 CSS 的 3D 转换或动画时，浏览器通常会将这些元素提升到新的图层，以便更好地处理三维效果。
 
 ### 浏览器同源策略
 
@@ -127,7 +135,7 @@ function jsonp(url,callback,success){
 
 1. 使用 get、post、head 请求
 2. content-type 仅限于 text/plain,multipart/form-data,application/x-www-form-urlencoded
-3. header中只能包含以下请求头字段Accept、Accept-Language、Content-Language、Content-Type
+3. header 中只能包含以下请求头字段 Accept、Accept-Language、Content-Language、Content-Type
 
 复杂请求：
 会使用 option 发预检请求、Access-Control—Request-Method 告知服务器实际使用的方法，Access-Control-Request-Header 告知服务器实际请求所携带自定义首部字段；预检请求完成后发送实际请求
