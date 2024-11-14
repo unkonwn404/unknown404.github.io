@@ -24,7 +24,7 @@
 <meta property="og:description" content="面试时常问的 ES6 特性">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-29T09:01:20.000Z">
-<meta property="article:modified_time" content="2024-10-21T13:49:16.656Z">
+<meta property="article:modified_time" content="2024-11-14T08:45:28.746Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="ES6">
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.9k 字
+          4.2k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          33 分钟
+          35 分钟
         
       </span>
     
@@ -313,7 +313,7 @@
 <li>commonJs 模块运行时加载（先加载全部模块再导入方法），es6 模块是编译时加载（指定加载某输出值）</li>
 <li>commonJs 同步导入，es6 模块异步导入</li>
 </ol>
-<h3 id="其他模块化方法特点"><a href="#其他模块化方法特点" class="headerlink" title="其他模块化方法特点"></a>其他模块化方法特点</h3><p>amd 和 requireJs：依赖前置，提前执行<br>cmd 和 seaJs：依赖后置，延迟执行<br>umd：通用模块定义规范</p>
+<h3 id="其他模块化方法特点"><a href="#其他模块化方法特点" class="headerlink" title="其他模块化方法特点"></a>其他模块化方法特点</h3><p>amd ：应用实例 requireJs。特点：依赖预加载；依赖模块加载完成后就直接执行依赖模块，依赖模块的执行顺序和我们书写的顺序不一定一致（依赖前置、提前执行）<br>cmd ：应用实例 seaJs。特点：就近依赖，按需加载；模块加载完成后并不执行，只是下载而已，等到所有的依赖模块都加载好后，进入回调函数逻辑，遇到 require 语句的时候执行依赖模块（依赖就近、延迟执行）<br>umd：通用模块定义规范，兼容之前提到的模块规范 amd 和 commonJs 及全局变量。在 webpack 项目调用 umd 模块时工具自动处理，使得 import 语句能够正常工作 ‌</p>
 <h2 id="异步编程"><a href="#异步编程" class="headerlink" title="异步编程"></a>异步编程</h2><h3 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h3><p>3 种状态：1）pending；2）resolved；3）rejected<br>特点：1）立即执行；2）then 异步回调；3）状态不可逆；4）链式调用</p>
 <h4 id="promise-简易实现"><a href="#promise-简易实现" class="headerlink" title="promise 简易实现"></a>promise 简易实现</h4><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs pf">function myPromise(fn) &#123;<br>    <span class="hljs-keyword">const</span> that = this<br>    that.<span class="hljs-keyword">state</span> = &#x27;pending&#x27;<br>    that.value = null<br>    that.resolvedCallbacks = []<br>    that.rejectedCallbacks = []<br><br>    function resolve(value) &#123;<br>        if (that.<span class="hljs-keyword">state</span> === &#x27;pending&#x27;) &#123;<br>            that.<span class="hljs-keyword">state</span> = &#x27;resolved&#x27;<br>            that.value = value<br>            that.resolvedCallbacks.map(cb =&gt; cb(value))<br>        &#125;<br>    &#125;<br><br>    function reject(value) &#123;<br>        if (that.<span class="hljs-keyword">state</span> === &#x27;pending&#x27;) &#123;<br>            that.<span class="hljs-keyword">state</span> = &#x27;rejected&#x27;<br>            that.value = value<br>            that.rejectedCallbacks.map(cb =&gt; cb(value))<br>        &#125;<br>    &#125;<br>    try &#123;<br>        fn(resolve, reject)<br>    &#125; catch (e) &#123;<br>        reject(e)<br>    &#125;<br>&#125;<br>myPromise.prototype.then = function (<span class="hljs-keyword">on</span>Fulfilled, <span class="hljs-keyword">on</span>Rejected) &#123;<br>    <span class="hljs-keyword">const</span> that = this<br>    <span class="hljs-keyword">on</span>Fulfilled = typeof <span class="hljs-keyword">on</span>Fulfilled === &#x27;function&#x27; ? <span class="hljs-keyword">on</span>Fulfilled : v =&gt; v<br>    <span class="hljs-keyword">on</span>Rejected = typeof <span class="hljs-keyword">on</span>Rejected === &#x27;function&#x27; ? <span class="hljs-keyword">on</span>Rejected : e =&gt;<br>        throw e<br>    if (that.<span class="hljs-keyword">state</span> === &#x27;resolved&#x27;) <span class="hljs-keyword">on</span>Fulfilled(that.value)<br>    if (that.<span class="hljs-keyword">state</span> === &#x27;rejected&#x27;) <span class="hljs-keyword">on</span>Rejected(that.value)<br>&#125;<br></code></pre></td></tr></table></figure>
 
@@ -330,6 +330,7 @@
 <li>for in：用于遍历对象的可枚举属性（包括原型链上的属性），也可以用于数组。不过，当用于数组时，它遍历的是数组的索引而不是元素。</li>
 <li>for of：用于遍历可迭代对象（例如数组、字符串、Map、Set 等）。它遍历的是可迭代对象的值，不适合遍历对象的属性。</li>
 </ul>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>1）<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/108217164">《模块化系列》彻底理清 AMD,CommonJS,CMD,UMD,ES6</a></p>
 
                 
               </div>
