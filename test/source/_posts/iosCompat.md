@@ -8,7 +8,7 @@ tags:
   - Android
 ---
 
-吐槽一下移动端开发时碰到的各种意想不到的兼容性问题。
+吐槽一下移动端开发时碰到的各种意想不到的兼容性问题。有系统的问题，例如 iOS 和安卓的区别；也有浏览器区别，不同商家的浏览器设计也是差别很大的
 
 <!-- more -->
 
@@ -132,6 +132,72 @@ _个人碎碎念：其实我觉得这个方法并不好，有的手机支持横�
 原因：根据[这篇文章](https://juejin.cn/post/7372396174249459750)应该是因为 ios 手机会在 transform 的时候导致 border-radius 失效
 解决方法：1.按照文章的改法、使用动画效果带 transform 的元素的上一级 div 元素的 css 加上语句`-webkit-transform:rotate(0deg);`
 ；2.将圆角样式加到内容器而不是带 transform 样式的外容器
+
+## 问题 10: iPhone 16 部分条件判断效果与其他机型不一样
+
+原因：不明，网上几乎没有资料，表现上好像是不是很支持链式判断符，有可能会把接收到空数组变成其他？
+解决方法：没有什么具体的方法，现在只能根据现象推测可能的问题。例如`extra?.list?.length? true : false`改成`Array.isArray(extra?.list) && extra.list.length > 0? true : false`
+
+## 问题 11: ios 自动高度带滚动的 textarea 在输入需要转行时没有滚动到最新一行；安卓则是完全不会自动滚动到输入的最新行
+
+原因：ios 应该是监听了行数变化进行的滚动，而在中文输入法时存在一个输入到确认的时间，在这个时间内 ios 已经完成了行数监听的滚动；安卓没有这种监听
+解决方法：监听输入内容而不是行数变化，设置滚动高度时应该在原本的 scrollHeight 上增加一些行高，以防此时 ios 的滚动高度不包括或低于输入内容高度
+
+```js
+watch: {
+    inputValue(_new) {
+      const target = document.getElementById('textArea');
+      console.log(target.scrollHeight, target.clientHeight);
+      setTimeout(() => {
+        target.scrollTop = target.scrollHeight + 42;
+      });
+    },
+  },
+```
+
+## 问题 12:部分模块在 uc 浏览器不显示
+
+**原因**：uc 浏览器内置样式文件，与自定义的样式文件存在覆盖关系。例如如果模块命名为 ad-wrap，则该模块会被强制隐藏。
+
+## 问题 13:使用 em 为单位的模块在 qq 浏览器上比例失效
+
+**原因**：父元素的 font-size 的赋值问题。有的浏览器会存在最小 font-size，小于该阈值则设置无效。qq 浏览器下 font-size 最小 8px，所以父元素的 font-size 的设置不能小于 8px
+
+~~如果不是老项目的旧样式太多太难改了还是尽可能的用 vw 吧~~
+
+## 问题 14:输入框使用@keydown.enter 时回车操作键盘不会隐藏、对展示搜索结果有影响
+
+**原因**：不明
+**解决方式**：使用 ref 方法，改为监听 keyup 事件，如果监听到 event.keyCode == 13 进行后续操作，同时在之前的回调函数中增加 this.$refs.searchInput.blur()手动失焦
+
+## 问题 15:手机熄屏后设置的定时器无法生效
+
+原因：根据[这篇文章](https://blog.csdn.net/thirteen_king13/article/details/114077815)，这是系统固有特性
+解决方法：监听事件 visibilitychange，锁屏就记录时间，再次显示时记录此时时间，与之前设置的时间间隔比较，超出则立即执行，没有则设置一个新时间间隔的定时器
+
+```js
+document.addEventListener("visibilitychange", () => {
+  console.log("visibilitychange");
+  if (!this.winVisible) return;
+  // hidden 为锁屏隐藏状态，visible为重新显示状态
+  if (document.visibilityState === "hidden") {
+    this.screenShutdownTime = new Date().getTime();
+    clearTimeout(showIntroTimer);
+  } else if (document.visibilityState === "visible") {
+    let screenShowTime = new Date().getTime();
+    const diffTime = screenShowTime - this.screenShutdownTime;
+    this.countTime = parseInt(this.countTime) - diffTime;
+    if (this.countTime > 0) {
+      // 重新赋值，间隔后的新的定时器时间
+      this.initTimer();
+    } else {
+      // 已经超出范围，则默认秒数已经读完
+      this.countTime = 0;
+      this.initTimer();
+    }
+  }
+});
+```
 
 # 小程序篇
 

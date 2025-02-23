@@ -62,12 +62,15 @@ tags:
 
 1. expires：http1.0 产物，格林威治时间
 2. cache-control：http1.1 产物，max-age 单位 s
+cache-control其他属性：
+- no-cache：浏览器会存储资源，但在下一次访问时会向服务器发起验证请求
+- no-store：完全不缓存资源
 
 #### 协商缓存
 
 1. Last-Modified/If-Modified-Since：Last-Modified 表示本地文件最后修改日期，If-Modified-Since 会将 Last-Modified 的值发送给服务器，询问服务器在该日期后资源是否有更新，有更新的话就会将新的资源发送回来。但是如果本地文件被打开，会导致 Last-Modified 被修改
 
-2. ETag/If-None-Matched：ETag 类似于文件指纹，If-None-Match 会将当前 ETag 发送给服务器，询问该资源 ETag 是否变动，有变动的话就将新的资源发送回来。并且 ETag 优先级比 Last-Modified 高。适用文件周期查看、内容没变的情况
+2. ETag/If-None-Matched：ETag 类似于文件指纹，If-None-Match 会将当前 ETag 发送给服务器，询问该资源 ETag 是否变动，有变动的话就将新的资源发送回来。并且 ETag 优先级比 Last-Modified 高。适用文件周期查看、内容没变的情况或者资源频繁更新超过秒级情况
 
 #### 刷新操作对缓存内容影响
 

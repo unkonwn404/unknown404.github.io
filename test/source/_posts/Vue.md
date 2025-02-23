@@ -71,6 +71,10 @@ Vue 3 在编译阶段对静态节点打上标记，从而在更新时能够快�
 
 如果 data 是对象，当组件复用时，由于多个实例引用同一个对象，只要一个实例对这个对象进行操作，其他实例中的数据也会发生变化。
 
+#### vue 为什么 this.foo 可以访问 this.data.foo
+
+Vue 在初始化组件时，会对 data 中的属性进行代理。Vue 使用 Object.defineProperty（Vue 2）或 Proxy（Vue 3） 将 data 中的每个属性代理到组件实例上
+
 #### computed 和 watch 区别
 
 **computed**
@@ -695,6 +699,8 @@ v-if 和 v-show 酌情使用
 客户端缓存
 
 ## 扩展： Vue 和 React 对比
+相同点：
+- 渐进式框架：以从一个小的功能或页面引入，而不需要全盘接管整个项目
 
 ### Vue 和 React 区别
 

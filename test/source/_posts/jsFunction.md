@@ -170,6 +170,131 @@ const array2 = ["banana", "apple", "banana", "cherry", "1", 1, "11", 11];
 areArraysContentEqual(array1, array2); // true
 ```
 
+### 6.发布订阅模式
+
+```js
+class EventEmitter {
+  constructor() {
+    this.events = {}; // 存储事件与回调
+  }
+
+  // 订阅事件
+  on(eventName, callback) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = [];
+    }
+    this.events[eventName].push(callback);
+  }
+
+  // 取消订阅
+  off(eventName, callback) {
+    if (!this.events[eventName]) return;
+
+    // 如果不传 callback，则移除所有监听
+    if (!callback) {
+      delete this.events[eventName];
+    } else {
+      this.events[eventName] = this.events[eventName].filter(
+        (cb) => cb !== callback
+      );
+    }
+  }
+
+  // 触发事件
+  emit(eventName, ...args) {
+    if (!this.events[eventName]) return;
+
+    this.events[eventName].forEach((callback) => {
+      callback(...args);
+    });
+  }
+
+  // 订阅一次后自动取消订阅
+  once(eventName, callback) {
+    const wrapper = (...args) => {
+      callback(...args);
+      this.off(eventName, wrapper); // 调用后立即移除监听
+    };
+    this.on(eventName, wrapper);
+  }
+}
+```
+### 7.实现一个带并发限制的异步调度器 Scheduler，保证同时运行的任务最多有两个。完善下面代码中的 Scheduler 类，使得以下程序能正确输出。
+```
+class Scheduler {
+  add(promiseCreator) { ... }
+  // ...
+}
+
+const timeout = (time) => new Promise(resolve => {
+  setTimeout(resolve, time)
+})
+
+const scheduler = new Scheduler()
+const addTask = (time, order) => {
+  scheduler.add(() => timeout(time)).then(() => console.log(order))
+}
+
+addTask(1000, '1')
+addTask(500, '2')
+addTask(300, '3')
+addTask(400, '4')
+
+// 打印顺序是：2 3 1 4
+```
+实现方法：题目中scheduler.add(() => timeout(time))之后接的是then，说明add方法一定是一个Promise。add方法可以被立即调用，但是不一定会立即执行，说明维护了一个队列，存放我们的任务。
+另外，同时运行的任务最多有两个，说明要维护一个变量存放正在运行的任务数量。
+
+```js
+class Scheduler {
+  constructor() {
+    this.queue = []; // 存储等待执行的任务
+    this.running = 0; // 当前正在执行的任务数
+    this.maxConcurrent = 2; // 最大并发数
+  }
+
+  add(promiseCreator) {
+    return new Promise((resolve) => {
+      this.queue.push(() => promiseCreator().then(resolve));
+      this.runNext(); // 尝试运行下一个任务
+    });
+  }
+
+  runNext() {
+    if (this.running >= this.maxConcurrent || this.queue.length === 0) {
+      return; // 超过并发限制或无任务时直接返回
+    }
+
+    this.running++; // 增加当前运行的任务数
+    const task = this.queue.shift(); // 取出队列中的第一个任务
+    task().finally(() => {
+      this.running--; // 当前任务完成后减少计数
+      this.runNext(); // 继续运行下一个任务
+    });
+  }
+}
+
+// 工具函数，模拟延迟
+const timeout = (time) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+
+// 实例化 Scheduler
+const scheduler = new Scheduler();
+
+// 添加任务
+const addTask = (time, order) => {
+  scheduler.add(() => timeout(time)).then(() => console.log(order));
+};
+
+// 调用任务
+addTask(1000, '1');
+addTask(500, '2');
+addTask(300, '3');
+addTask(400, '4');
+```
+
 ## 参考资料
 
 （1）[字节跳动面试之如何用 JS 实现 Ajax 并发请求控制](https://www.jb51.net/article/211898.htm)

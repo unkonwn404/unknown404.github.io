@@ -99,6 +99,46 @@ plugins: [
 </button>
 ```
 
+**延伸**：抖音小程序 textarea 无法监听键盘弹起，也是因为属性缺失（很神奇，input 组件对此进行了补充，但 textarea 却没有，截止目前 4.0.9 版本 https://github.com/NervJS/taro/pull/16098）
+解决方法同上，如果不想改包的话：
+在 config 文件里添加这个配置
+
+```js
+plugins: [
+  [
+    "@tarojs/plugin-inject",
+    {
+      components: {
+        Textarea: {
+          bindkeyboardheightchange: "'eh'",
+          bindKeyboardHeightChange: "'eh'",
+        },
+      },
+    },
+  ],
+];
+```
+
+组件使用：
+
+```vue
+<textarea
+  type="text"
+  v-model.trim="inputValue"
+  maxlength="-1"
+  class="textarea"
+  :cursor-spacing="12"
+  placeholder="请输入消息…"
+  placeholder-style="color: rgba(255,255,255,0.8);"
+  :auto-height="true"
+  :fixed="true"
+  :adjust-position="false"
+  @focus="inputFocusHandler"
+  @blur="inputBlurHandler"
+  @keyboardheightchange="keyboardHeightHandler"
+></textarea>
+```
+
 ## 8. h5 页面跳转使用 navigateTo、redirectTo 会失败
 
 原因：跳转目标带参数且用 customRoute 改写过路径
@@ -119,3 +159,34 @@ module.exports = {
 ```
 
 这个其实在[说明文档](https://docs.taro.zone/docs/next/config-detail#env)里有反映出来，但这不合常规的设置居然一点解释都没有，差评。。。
+
+## 10. H5 的 TextArea 设置 autoHeight 为 true 时在数据清空时 TextArea 高度仍然是清空前的高度
+
+原因：原代码是在输入的时候调整高度，数据清除不触发 input 事件
+解决方法：监听输入内容，当输入内容为空时手动设置高度
+
+```js
+watch: {
+    inputValue(_new) {
+      if (!_new || _new.length == 0) {
+        if (this.isH5) {
+          document.querySelector(
+            '.textarea .taro-textarea.auto-height',
+          ).style.height = '21px';
+        }
+      } else {
+        if (this.isH5) {
+          document.querySelector(
+            '.textarea .taro-textarea.auto-height',
+          ).style.height = 'auto';
+        }
+      }
+    },
+  },
+```
+
+## 11. onNetworkStatusChange API 没生效
+
+原因：
+1）其实不是 Taro 的问题，根据[这篇文章](https://blog.51cto.com/u_16175487/6665743)，onNetworkStatusChange 方法是通过监听设备的网络状态来判断网络是否可用。在真实的移动设备上，网络状态的变化是由设备的网络模块来控制，并且设备会及时通知应用程序。但是，在自己电脑上测试时，我们通常会使用模拟器或者浏览器来模拟移动设备的环境，这就导致了一些问题，例如模拟器或者浏览器本身没有真实的网络模块，它们无法真实地模拟设备的网络状态变化。
+2）onNetworkStatusChange 设置的位置不对，最好的是在页面的 onShow，app 的 onShow 也可以

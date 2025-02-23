@@ -142,7 +142,7 @@ key 值也不能是 random、不然会增加 diff 计算量
 1）事件名称命名方式：原生事件为全小写，react 事件采用小驼峰
 2）事件函数处理语法：原生事件为字符串，react 事件为函数
 3）默认行为处理：react 事件不能采用 return false 的方式来阻止浏览器的默认行为，而必须要地明确地调用 preventDefault()来阻止默认行为
-4）执行时机：两种事件同时存在时会先执行原生事件，再执行 react 合成事件
+4）执行时机：两种事件同时存在时，如果合成事件和原生事件绑定在同一个元素上，会先执行原生事件，再执行 react 合成事件，因为 React 的合成事件绑定在父节点上（事件委托），而原生事件直接绑定在元素上；如果合成事件绑定在 React 组件中，而原生事件绑定在其父元素上，合成事件会先触发，因为 React 的事件委托机制优先处理合成事件。
 5）阻止冒泡行为的影响：原生事件（阻止冒泡）会阻止合成事件的执行，react 合成事件（阻止冒泡）不会阻止原生事件的执行
 
 ### react 使用合成事件的优点
@@ -272,6 +272,8 @@ export type Hook = {
 
 hooks 的实现就是基于 fiber 的，会在 fiber 节点上放一个链表，节点的结构如上面的 Hook 所示。React Hooks 是用链表来保存状态的，memoizedState 属性保存的实际上是这个链表的头指针。
 每个 useXxx 的 hooks 都有 mountXxx 和 updateXxx 两个阶段，mount 阶段在节点的 memorizedState 属性上存放了对应的数据，然后 update 阶段使用不同的 hooks api 使用对应的数据来完成更新的功能。较为简单的钩子函数如 useRef、useCallback、useMemo，它们只是对值做了缓存；而复杂的钩子如 useState、useEffect 则会涉及 fiber 的空闲调度
+
+总结：React Hooks 的状态和副作用绑定在 Fiber 节点 上，Fiber 控制 Hooks 在组件中以固定顺序调用
 
 ### class 与 hook 区别
 
@@ -480,6 +482,12 @@ app.router(() => <ConnectedApp />);
 // 启动应用
 app.start('#root');
 ```
+
+#### 辨析：Redux vs DVA
+
+- 异步实现：Redux 需要借助中间件如 redux-thunk、redux-saga，dva 提供了 effects 函数处理
+- 路由管理：Redux 不直接处理路由相关的功能，DVA 提供了对路由的内建支持
+- 管理模型：在 Redux 中，store 和 actions 是应用状态管理的核心，DVA 引入了 model 的概念，将 state、reducers、effects（异步逻辑）和 subscriptions（订阅）集成在一起
 
 ### React SSR
 

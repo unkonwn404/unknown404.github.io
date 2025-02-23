@@ -27,6 +27,12 @@ date: 2022-04-08 14:47:53
 输入参数：初始状态 initialState。如果 initialState 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。
 返回参数：当前状态名 selfState 和更新状态函数名 setSelfState
 setSelfState 可以传入新值来变更状态 setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数 setSelfState(prevState => newState)
+
+**辨析**：setSelfState 直接传值和传函数的区别：
+1）直接传值更新为指定值，传函数更新与当前状态值相关
+2）传函数可处理多次调用的累加场景，直接传值不行
+3）传函数可避免闭包
+
 注意点：
 （1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。
 （2）initialState 可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。
@@ -114,6 +120,8 @@ function basicStateReducer(state, action) {
   return typeof action === "function" ? action(state) : action;
 }
 ```
+
+总结：函数式组件每次渲染都会生成新的函数和新的状态值，但闭包函数会捕获当时的状态。
 
 #### 闭包的解决方法
 
@@ -286,6 +294,37 @@ useRef() 和自建一个 {current: ...} 对象的唯一区别是，useRef 会在
 （1）引用如 input 等有参数频繁变动更新的 dom 元素。
 （2）解决闭包问题，见 react 闭包的内容介绍
 （3）自定义组件时提供了传入函数的入参、为防止自定义组件依赖入参函数的情况使用 useRef 包裹
+
+## useReducer
+
+使用示例：
+
+```
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+适用场景：
+包含多个子状态、单组件小范围使用
+
+| 特性         | useReducer                                     | Redux                                      |
+| ------------ | ---------------------------------------------- | ------------------------------------------ |
+| 定位         | React 内部的局部状态管理工具                   | 独立于 React 的全局状态管理工具            |
+| 适用范围     | 组件树的局部状态，主要在单个组件或小范围内使用 | 跨组件树的全局状态，适合大型应用的状态管理 |
+| 状态存储位置 | 状态存储在组件内，随组件生命周期销毁           | 状态存储在全局的 Redux Store 中            |
+| 中间件支持   | 无内置中间件支持                               | 支持如 redux-thunk、redux-saga 等中间件    |
+| 异步操作     | 无内置机制，需要结合自定义逻辑处理             | 支持中间件优雅处理异步操作                 |
 
 ## 参考文献
 

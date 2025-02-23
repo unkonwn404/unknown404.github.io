@@ -277,3 +277,8 @@ display:-webkit-box;
  #left{float:left;margin-left:-100%;width:200px;height:50px;position:relative;left:-200px;}
  #right{float:left;margin-left:-100px;width:100px;height:50px;position:relative;right:100px;}
 ```
+
+## less vs sass
+
+- 变量定义方式不同：less 使用 @开头，sass 使用 $开头
+- 循环和条件语句：sass 支持的内容更完整
