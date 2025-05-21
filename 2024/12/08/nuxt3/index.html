@@ -1,0 +1,748 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最近因产品需求，需要搭建一个支持 ssr 渲染的项目。在搭建 Nuxt3 项目的过程中，出现了很多问题，在此集中记录一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nuxt3项目实践踩坑">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2024/12/08/nuxt3/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="最近因产品需求，需要搭建一个支持 ssr 渲染的项目。在搭建 Nuxt3 项目的过程中，出现了很多问题，在此集中记录一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-12-08T04:39:13.000Z">
+<meta property="article:modified_time" content="2025-04-15T02:02:42.252Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="Nuxt">
+<meta property="article:tag" content="ssr">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Nuxt3项目实践踩坑 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Nuxt3项目实践踩坑"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-12-08 12:39" pubdate>
+          2024年12月8日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          78 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Nuxt3项目实践踩坑</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最近因产品需求，需要搭建一个支持 ssr 渲染的项目。在搭建 Nuxt3 项目的过程中，出现了很多问题，在此集中记录一下。</p>
+<span id="more"></span>
+
+<p>之所以选 Nuxt3 是考虑团队技术栈和 Vue 2 停止维护的事实决定的，本以为会多少兼容一下 Nuxt 2、Vue 2 的语法，事实证明太天真了。</p>
+<h2 id="项目初始化"><a href="#项目初始化" class="headerlink" title="项目初始化"></a>项目初始化</h2><p>项目需求：<br>Nodejs &gt;&#x3D; 18<br>执行指令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npx nuxi@latest init &lt;project-name&gt;<br></code></pre></td></tr></table></figure>
+
+<p>执行完成后进入<code>&lt;project-name&gt;</code>目录下，执行指令 <code>npm run dev</code>即可访问 <a target="_blank" rel="noopener" href="http://localhost:3000/">http://localhost:3000</a></p>
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><p>初始化的 Nuxt 项目目录结构如下：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs csharp">Nuxt3<br>├── assets                    <span class="hljs-meta"># 工程化处理的静态资源</span><br>├── components                <span class="hljs-meta"># 项目组件</span><br>├── composables               <span class="hljs-meta"># 响应式共享状态</span><br>├── layouts                   <span class="hljs-meta"># 布局组件</span><br>├── middleware                <span class="hljs-meta"># 路由中间件</span><br>├── pages                     <span class="hljs-meta"># 页面视图</span><br>├── plugins                   <span class="hljs-meta"># 项目公共插件</span><br>├── <span class="hljs-keyword">public</span>                    <span class="hljs-meta"># 不需要工程化处理的静态资源</span><br>├── store                     <span class="hljs-meta"># 状态管理</span><br>├── utils                     <span class="hljs-meta"># 静态工具函数</span><br>├── app.vue                   <span class="hljs-meta"># 入口页面</span><br>├── .gitignore                    <span class="hljs-meta"># git仓库提交忽略配置</span><br>├── nuxt.config.ts                <span class="hljs-meta"># Vite 构建配置入口</span><br>├── package.json                  <span class="hljs-meta"># 项目包管理文件</span><br>├── pnpm-<span class="hljs-keyword">lock</span>.yaml                <span class="hljs-meta"># pnpm包版本管理锁定</span><br>└── README.md                     <span class="hljs-meta"># 项目说明</span><br></code></pre></td></tr></table></figure>
+
+<p>一般情况下我们认为项目开发内容（如页面、组件等）统一放在 src 文件夹内方便管理，因此需要修改 nuxt.config.ts 的配置为</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">NuxtConfig</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;nuxt/config&#x27;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineNuxtConfig</span>(&#123;<br>++  <span class="hljs-attr">srcDir</span>: <span class="hljs-string">&#x27;src/&#x27;</span>,<br>&#125; <span class="hljs-keyword">as</span> <span class="hljs-title class_">NuxtConfig</span>);<br></code></pre></td></tr></table></figure>
+
+<p>同时将 app.vue、pages、server 文件等移到 src 目录下，变更为以下目录结构</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs 1c">-<span class="hljs-string">| /</span><br>---<span class="hljs-string">| node_modules/</span><br>---<span class="hljs-string">| nuxt.config.js</span><br>---<span class="hljs-string">| package.json</span><br>---<span class="hljs-string">| src/</span><br>------<span class="hljs-string">| assets/</span><br>------<span class="hljs-string">| components/</span><br>------<span class="hljs-string">| layouts/</span><br>------<span class="hljs-string">| middleware/</span><br>------<span class="hljs-string">| pages/</span><br>------<span class="hljs-string">| plugins/</span><br>------<span class="hljs-string">| public/</span><br>------<span class="hljs-string">| store/</span><br>------<span class="hljs-string">| server/</span><br>------<span class="hljs-string">| app.config.ts</span><br>------<span class="hljs-string">| app.vue</span><br>------<span class="hljs-string">| error.vue</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="重要目录介绍"><a href="#重要目录介绍" class="headerlink" title="重要目录介绍"></a>重要目录介绍</h4><h5 id="pages"><a href="#pages" class="headerlink" title="pages"></a>pages</h5><p>页面目录。Nuxt 提供了一个基于文件的路由，使用 Vue Router 在底层创建路由。<code>pages/index.vue</code> 文件将映射到应用程序的 <code>/ </code>路由。如果要设置动态路由，可用带方括号的文件名或文件夹表示，双方括号表示参数是可选的</p>
+<h5 id="components"><a href="#components" class="headerlink" title="components"></a>components</h5><p>组件目录，放置全部的组件，Nuxt 项目会自动导入注册目录下的组件<br>如果您在嵌套目录中有一个组件，例如：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs 1c"><span class="hljs-string">| components/</span><br>--<span class="hljs-string">| base/</span><br>----<span class="hljs-string">| foo/</span><br>------<span class="hljs-string">| Button.vue</span><br></code></pre></td></tr></table></figure>
+
+<p>那么组件的名称将基于其自身的路径目录和文件名，成为 BaseFooButton。如果希望仅根据组件名称而不是路径自动导入组件，则需要使用扩展形式的配置对象将 pathPrefix 选项设置为 false</p>
+<h5 id="app-vue"><a href="#app-vue" class="headerlink" title="app.vue"></a>app.vue</h5><p>根视图组件，可以在组件中定义全局的样式和行为，并且在应用程序的整个生命周期内始终存在，可以说 app.vue 是 Nuxt.js 3 应用程序的视图层的入口文件。</p>
+<h3 id="常用工具配置"><a href="#常用工具配置" class="headerlink" title="常用工具配置"></a>常用工具配置</h3><p>nuxt 自身提供了很多适配的模块，可优先在<a target="_blank" rel="noopener" href="https://www.nuxt.com.cn/modules">官网</a>上进行查找，阅读安装指南</p>
+<h4 id="pinia"><a href="#pinia" class="headerlink" title="pinia"></a>pinia</h4><p>Nuxt 3 不支持 Vuex，推荐 pinia，在插件市场提供了 pinia 的安装。<br>安装指令：<code>npm i pinia @pinia/nuxt</code><br>配置调整：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineNuxtConfig</span>(&#123;<br>  <span class="hljs-attr">modules</span>: [<span class="hljs-string">&quot;@pinia/nuxt&quot;</span>],<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>对于选项式文件，如果要引入 pinia 内部的方法和 data 时应使用 setup 函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title function_">setup</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> baseStore = <span class="hljs-title function_">useBaseStore</span>();<br>    <span class="hljs-keyword">return</span> &#123; baseStore &#125;;<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<h4 id="element-ui"><a href="#element-ui" class="headerlink" title="element ui"></a>element ui</h4><p>Nuxt 3 支持 element plus，和之前的 element ui 略有差异，但基本语法一致<br>安装指令：<code>npm i element-plus @element-plus/nuxt -D</code><br>配置调整：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineNuxtConfig</span>(&#123;<br>  <span class="hljs-attr">modules</span>: [<span class="hljs-string">&quot;@element-plus/nuxt&quot;</span>],<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h4 id="postcss-px-to-viewport-8-plugin"><a href="#postcss-px-to-viewport-8-plugin" class="headerlink" title="postcss-px-to-viewport-8-plugin"></a>postcss-px-to-viewport-8-plugin</h4><p>如果页面包括 wap 页面，需要引入 postcss-px-to-viewport-8-plugin 插件，实现页面样式与屏幕适配。该插件可以将代码中的 px 自动转换为 vw 单位。<br>安装指令：<code>npm i postcss-px-to-viewport-8-plugin --save-dev</code><br>配置调整：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineNuxtConfig</span>(&#123;<br>  <span class="hljs-attr">postcss</span>: &#123;<br>    <span class="hljs-attr">plugins</span>: &#123;<br>      <span class="hljs-string">&quot;postcss-px-to-viewport-8-plugin&quot;</span>: &#123;<br>        <span class="hljs-attr">unitToConvert</span>: <span class="hljs-string">&quot;px&quot;</span>, <span class="hljs-comment">// 要转化的单位</span><br>        <span class="hljs-attr">viewportWidth</span>: <span class="hljs-number">375</span>, <span class="hljs-comment">// UI设计稿的宽度</span><br>        <span class="hljs-attr">unitPrecision</span>: <span class="hljs-number">6</span>, <span class="hljs-comment">// 转换后的精度，即小数点位数</span><br>        <span class="hljs-attr">propList</span>: [<span class="hljs-string">&quot;*&quot;</span>], <span class="hljs-comment">// 指定转换的css属性的单位，*代表全部css属性的单位都进行转换</span><br>        <span class="hljs-attr">viewportUnit</span>: <span class="hljs-string">&quot;vw&quot;</span>, <span class="hljs-comment">// 指定需要转换成的视窗单位，默认vw</span><br>        <span class="hljs-attr">fontViewportUnit</span>: <span class="hljs-string">&quot;vw&quot;</span>, <span class="hljs-comment">// 指定字体需要转换成的视窗单位，默认vw</span><br>        <span class="hljs-attr">minPixelValue</span>: <span class="hljs-number">1</span>, <span class="hljs-comment">// 默认值1，小于或等于1px则不进行转换</span><br>        <span class="hljs-attr">mediaQuery</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// 是否在媒体查询的css代码中也进行转换，默认false</span><br>        <span class="hljs-attr">replace</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// 是否转换后直接更换属性值</span><br>        <span class="hljs-attr">exclude</span>: [<span class="hljs-regexp">/node_modules/</span>, <span class="hljs-regexp">/src\/pages\/pc/</span>, <span class="hljs-regexp">/src\/components\/pc/</span>], <span class="hljs-comment">// 设置忽略文件，用正则做目录名匹配</span><br>      &#125;,<br>    &#125;,<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>插件的配置规则与之前写过的 postcss-px-to-viewport 一致，只是 postcss-px-to-viewport 已废弃了。</p>
+<h3 id="工程化配置"><a href="#工程化配置" class="headerlink" title="工程化配置"></a>工程化配置</h3><h4 id="eslint"><a href="#eslint" class="headerlink" title="eslint"></a>eslint</h4><p>安装指令：<code>npx nuxi module add eslint</code><br>指令会自动将模块添加到 nuxt.config.ts 中<br>配置调整：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineNuxtConfig</span>(&#123;<br>  <span class="hljs-attr">modules</span>: [<span class="hljs-string">&quot;@nuxt/eslint&quot;</span>],<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>eslint 规则的修改放到根目录的 eslint.config.mjs 中（基本上就是提交时看哪个校验规则不顺眼，就把插件规则关掉或者从错误降级为 warn）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> withNuxt <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./.nuxt/eslint.config.mjs&quot;</span>;<br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">withNuxt</span>(<br>  <span class="hljs-comment">// Your custom configs here</span><br>  &#123;<br>    <span class="hljs-attr">rules</span>: &#123;<br>      <span class="hljs-string">&quot;no-empty&quot;</span>: <span class="hljs-string">&quot;off&quot;</span>,<br>      <span class="hljs-string">&quot;@typescript-eslint/no-this-alias&quot;</span>: <span class="hljs-string">&quot;off&quot;</span>,<br>      <span class="hljs-string">&quot;@typescript-eslint/no-unused-expressions&quot;</span>: <span class="hljs-string">&quot;warn&quot;</span>,<br>    &#125;,<br>  &#125;<br>);<br></code></pre></td></tr></table></figure>
+
+<h4 id="husky"><a href="#husky" class="headerlink" title="husky"></a>husky</h4><p>为保证代码格式一致、避免多人提交时因本地代码规则不同出现大量的样式变动修改，影响 review；同时有效防止错误的代码提交到远程，需要用 husky 对提交进行检查。<br>安装指令：<code>npm i husky prettier lint-staged --save-dev</code><br>prettier 是规范代码样式的模块，确保团队的代码使用统一相同的格式。lint-staged 是一个基于 Node.js 的库,它可以对 Git 仓库中的暂存区(staged)代码进行线性检测,从而确保代码质量。<br>接下来的操作包括：</p>
+<ol>
+<li>向 package.json 的 scripts 中添加命令：<code>&quot;lint&quot;: &quot;lint-staged&quot;,</code>同时在 package.json 添加 lint-staged 配置：</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;lint-staged&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;*.&#123;js,vue&#125;&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eslint --fix&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;*.&#123;css,less,html,json,vue&#125;&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;prettier --write&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>这样会对提交的 js、vue 代码做 eslint 检查，对 css,less,html,json,vue 做代码样式检查 2. 运行指令<code>npx husky install</code>会在项目根目录下生成一个 .husky&#x2F; 文件夹，用于存放 Git 钩子。找到 pre-commit 文件，添加指令：npm run lint。或者在 package.json 中增加配置：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;husky&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;hooks&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;pre-commit&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;lint-staged&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="项目开发"><a href="#项目开发" class="headerlink" title="项目开发"></a>项目开发</h2><h3 id="host-别名访问"><a href="#host-别名访问" class="headerlink" title="host 别名访问"></a>host 别名访问</h3><p>Nuxt 默认启动时会将开发服务器绑定到 localhost（即 127.0.0.1），这意味着它只允许来自本地主机的访问。如果需要通过其他主机名或 IP 地址访问，必须明确设置绑定的 host。需要修改 nuxt.config.ts 配置如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-attr">devServer</span>: &#123;<br>    <span class="hljs-attr">port</span>: <span class="hljs-number">3000</span>,<br>    <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;0.0.0.0&quot;</span>,<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<h3 id="环境区分"><a href="#环境区分" class="headerlink" title="环境区分"></a>环境区分</h3><p>nuxt 3 无法和 nuxt 2 一样设置 cross-env、服务端和客户端都可以从 process.env 中获取环境变量。只能在 nuxt.config.ts 设置 runtimeConfig，使用 API useRuntimeConfig 获取设置的环境变量；以前静态获取环境变量、导出请求域名的方式无法实现。<br>示例：<br>在运行项目的指令中设置形如：<code>&quot;dev:prod&quot;: &quot;cross-env CODE_ENV=prod nuxt dev&quot;</code>的指令，确定了运行环境变量 CODE_ENV<br>项目的 utils 目录下的方法会全局注册，可以在目录下增加一个方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">getEnv</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-keyword">const</span> config = <span class="hljs-title function_">useRuntimeConfig</span>();<br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">CODE_ENV</span> = config.<span class="hljs-property">public</span>.<span class="hljs-property">CODE_ENV</span> || <span class="hljs-string">&quot;prod&quot;</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-variable constant_">CODE_ENV</span>;<br>&#125;;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> getEnv;<br></code></pre></td></tr></table></figure>
+
+<p>在使用组合式 API 写法时可以直接用 getEnv 方法获取运行环境。选项式文件就只能用 setup 生命周期获取了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title function_">setup</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> env = <span class="hljs-title function_">getEnv</span>();<br>    <span class="hljs-keyword">return</span> &#123; env &#125;;<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<h3 id="错误页面"><a href="#错误页面" class="headerlink" title="错误页面"></a>错误页面</h3><p>与 app.vue 同级增加一个 error.vue，当项目找不到目标页面、或者页面出现错误就会跳转到该文件的页面</p>
+<h3 id="路由重定向"><a href="#路由重定向" class="headerlink" title="路由重定向"></a>路由重定向</h3><p>如果项目里包含有 pc 和 wap 的页面，可以在项目内部进行重定向（当然对部署域名做 ng 配置也是可以的）<br>重定向的方法是在中间件文件夹 middleware 下添加一个全局中间件 xxx.global.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineNuxtRouteMiddleware</span>(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-keyword">from</span>, to</span>) =&gt;</span> &#123;<br>  <span class="hljs-comment">// skip middleware on client side entirely</span><br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">import</span>.<span class="hljs-property">meta</span>.<span class="hljs-property">client</span>) <span class="hljs-keyword">return</span>;<br>  <span class="hljs-keyword">const</span> userAgent = <span class="hljs-title function_">useRequestHeaders</span>()[<span class="hljs-string">&quot;user-agent&quot;</span>] || <span class="hljs-string">&quot;&quot;</span>;<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">isMobile</span> = (<span class="hljs-params">ua</span>) =&gt; &#123;<br>    ua = ua.<span class="hljs-title function_">toLowerCase</span>();<br>    <span class="hljs-keyword">return</span> !!(<br>      ua.<span class="hljs-title function_">match</span>(<span class="hljs-regexp">/AppleWebKit.*Mobile.*/</span>) || <span class="hljs-regexp">/iphone|ipad|ipod|android/</span>.<span class="hljs-title function_">test</span>(ua)<br>    );<br>  &#125;;<br><br>  <span class="hljs-keyword">if</span> (<span class="hljs-title function_">isMobile</span>(userAgent) &amp;&amp; to.<span class="hljs-property">path</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&quot;/pc/&quot;</span>)) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">from</span>.<span class="hljs-property">fullPath</span> === to.<span class="hljs-property">fullPath</span>.<span class="hljs-title function_">replace</span>(<span class="hljs-string">&quot;/pc/&quot;</span>, <span class="hljs-string">&quot;/wap/&quot;</span>)) &#123;<br>      <span class="hljs-keyword">return</span>; <span class="hljs-comment">// 避免重定向回来的死循环</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">navigateTo</span>(to.<span class="hljs-property">fullPath</span>.<span class="hljs-title function_">replace</span>(<span class="hljs-string">&quot;/pc/&quot;</span>, <span class="hljs-string">&quot;/wap/&quot;</span>));<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!<span class="hljs-title function_">isMobile</span>(userAgent) &amp;&amp; to.<span class="hljs-property">path</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&quot;/wap/&quot;</span>)) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">from</span>.<span class="hljs-property">fullPath</span> === to.<span class="hljs-property">fullPath</span>.<span class="hljs-title function_">replace</span>(<span class="hljs-string">&quot;/wap/&quot;</span>, <span class="hljs-string">&quot;/pc/&quot;</span>)) &#123;<br>      <span class="hljs-keyword">return</span>; <span class="hljs-comment">// 避免重定向回来的死循环</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">navigateTo</span>(to.<span class="hljs-property">fullPath</span>.<span class="hljs-title function_">replace</span>(<span class="hljs-string">&quot;/wap/&quot;</span>, <span class="hljs-string">&quot;/pc/&quot;</span>));<br>  &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>需要注意的点是重定向的条件判断没有针对所有可能性做返回，vue router 检验逻辑会认为有隐患；因此需要对所有可能性做条件处理</p>
+<h3 id="server-端接口书写"><a href="#server-端接口书写" class="headerlink" title="server 端接口书写"></a>server 端接口书写</h3><p>接口命名两种方式：<br>1）server&#x2F;api 文件夹下命名文件，在此文件夹下的文件都会被 nuxt 扫描并自动加载<br>2）server&#x2F;routes 下命名文件，在此文件夹下的文件接口访问路径名为&#x2F;[文件名]<br>其他书写方式不会形成对外可访问的接口</p>
+<h4 id="接口跨域处理"><a href="#接口跨域处理" class="headerlink" title="接口跨域处理"></a>接口跨域处理</h4><p>浏览器在发送跨域请求时，会先发送一个 OPTIONS 请求（预检请求）来检查服务器是否允许跨域。所以要针对 options 请求作正确的返回。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;<br>  defineEventHandler,<br>  createError,<br>  readBody,<br>  setResponseHeaders,<br>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;h3&quot;</span>;<br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineEventHandler</span>(<span class="hljs-keyword">async</span> (event) =&gt; &#123;<br>  <span class="hljs-comment">// 设置 CORS 头</span><br>  <span class="hljs-title function_">setResponseHeaders</span>(event, &#123;<br>    <span class="hljs-string">&quot;Access-Control-Allow-Origin&quot;</span>: <span class="hljs-string">&quot;*&quot;</span>, <span class="hljs-comment">// 允许所有来源</span><br>    <span class="hljs-string">&quot;Access-Control-Allow-Methods&quot;</span>: <span class="hljs-string">&quot;GET, POST, PUT, DELETE, OPTIONS&quot;</span>, <span class="hljs-comment">// 允许的 HTTP 方法</span><br>    <span class="hljs-string">&quot;Access-Control-Allow-Headers&quot;</span>: <span class="hljs-string">&quot;Content-Type, Authorization&quot;</span>, <span class="hljs-comment">// 允许的请求头</span><br>  &#125;);<br><br>  <span class="hljs-comment">// 如果是预检请求（OPTIONS），直接返回</span><br>  <span class="hljs-keyword">if</span> (event.<span class="hljs-property">node</span>.<span class="hljs-property">req</span>.<span class="hljs-property">method</span> === <span class="hljs-string">&quot;OPTIONS&quot;</span>) &#123;<br>    event.<span class="hljs-property">node</span>.<span class="hljs-property">res</span>.<span class="hljs-property">statusCode</span> = <span class="hljs-number">204</span>; <span class="hljs-comment">// No Content</span><br>    event.<span class="hljs-property">node</span>.<span class="hljs-property">res</span>.<span class="hljs-title function_">end</span>();<br>    <span class="hljs-keyword">return</span>;<br>  &#125;<br><br>  <span class="hljs-comment">// 处理实际的 POST 请求</span><br>  <span class="hljs-keyword">const</span> body = <span class="hljs-keyword">await</span> <span class="hljs-title function_">readBody</span>(event).<span class="hljs-title function_">catch</span>(<span class="hljs-function">() =&gt;</span> &#123;&#125;);<br>  <span class="hljs-keyword">const</span> &#123; routeName &#125; = body;<br>  <span class="hljs-keyword">const</span> target = schemaList.<span class="hljs-title function_">find</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> item.<span class="hljs-property">path</span> === routeName);<br>  <span class="hljs-keyword">if</span> (target) &#123;<br>    <span class="hljs-keyword">return</span> &#123; ...target &#125;;<br>  &#125;<br>  <span class="hljs-keyword">throw</span> <span class="hljs-title function_">createError</span>(&#123;<br>    <span class="hljs-attr">status</span>: <span class="hljs-number">400</span>,<br>    <span class="hljs-attr">statusMessage</span>: <span class="hljs-string">&quot;Bad Request&quot;</span>,<br>    <span class="hljs-attr">message</span>: <span class="hljs-string">&quot;Invalid route&quot;</span>,<br>  &#125;);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h2 id="项目部署"><a href="#项目部署" class="headerlink" title="项目部署"></a>项目部署</h2><h3 id="镜像打包"><a href="#镜像打包" class="headerlink" title="镜像打包"></a>镜像打包</h3><p>因为对 docker 镜像文件编写不熟，所以就不分阶段写了，实现还是可以比较简单的：<br>1）选择合适版本的 node 源<br>2）添加文件夹&#x2F;opt&#x2F;project、设置文件夹为工作目录<br>3）选择 npm 源（如果项目使用了私有源）执行指令 npm install 安装依赖<br>4）执行指令 npm run build:test 打包<br>5）设置必要的环境变量<br>6）暴露容器端口 3000（nuxt 默认端口）<br>7）启动服务器</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs dockerFile"><span class="hljs-keyword">FROM</span> node:<span class="hljs-number">20</span>-alpine<br><br><span class="hljs-keyword">ADD</span><span class="language-bash"> . /opt/project</span><br><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /opt/project</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> npm config <span class="hljs-built_in">set</span> registry  http://verdaccio.privacy.com/ &amp;&amp; npm install</span><br><span class="hljs-comment"># 不缓存安装包</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apk add --no-cache curl</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> npm run build:<span class="hljs-built_in">test</span></span><br><br><span class="hljs-keyword">ENV</span> NODE_ENV production<br><span class="hljs-comment"># 暴露容器端口</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">3000</span><br><br><span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;node&quot;</span>,<span class="hljs-string">&quot;./.output/server/index.mjs&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<p>因为打包完后 nuxt 的入口文件为.output&#x2F;server&#x2F;index.mjs，直接用 node 指令运行就能看到结果。<br>之后使用容器服务、拉取打包好的镜像即可。</p>
+<p>一般部署到这里就结束了，然而如果项目通过 ng 配置、放在一个和其他项目共用的域名下可能会有问题，因为打包后.output&#x2F;public 文件夹下存有静态文件，项目访问这些文件时会通过域名+文件夹的路径访问，可能会出现因域名 ng 配置规则无法命中导致静态资源请求 404。如果要解决这个问题，需要将 public 文件夹下的内容上传至 cdn，同时将 nuxt.config.ts 添加配置：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css">app: &#123;<br>    cdnURL: <span class="hljs-built_in">getPublicPath</span>(),<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>镜像打包文件增加一行上传 cdn 指令：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs dockerFile"><span class="hljs-keyword">FROM</span> node:<span class="hljs-number">20</span>-alpine<br><br><span class="hljs-keyword">ADD</span><span class="language-bash"> . /opt/project</span><br><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /opt/project</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> npm config <span class="hljs-built_in">set</span> registry  http://verdaccio.privacy.com/ &amp;&amp; npm install</span><br><span class="hljs-comment"># 不缓存安装包</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apk add --no-cache curl</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> npm run build:<span class="hljs-built_in">test</span></span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> npm run upload:<span class="hljs-built_in">test</span></span><br><br><span class="hljs-keyword">ENV</span> NODE_ENV production<br><span class="hljs-comment"># 暴露容器端口</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">3000</span><br><br><span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;node&quot;</span>,<span class="hljs-string">&quot;./.output/server/index.mjs&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="日志服务"><a href="#日志服务" class="headerlink" title="日志服务"></a>日志服务</h3><p>为了偷懒不研究 pm2 的用法，使用了 nuxt3-winston-log，是官方推荐的插件。配置可参考 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/nuxt3-winston-log">npm 说明</a><br>nuxt3-winston-log 会收集代码中所有的 console 打印语句，日志内容可通过登录容器服务器，在项目根目录的 logs 文件夹下查看 info 和 error 的打印情况</p>
+<h2 id="附录：踩坑记录"><a href="#附录：踩坑记录" class="headerlink" title="附录：踩坑记录"></a>附录：踩坑记录</h2><ol>
+<li>选项式文件有概率无法实现 ssr<br>原因不明，debug 时能看到请求在后端已经发出，但 html 文件里没有请求渲染的结果；最后只能借 ai 转成组合式了</li>
+<li>服务端判断 iPad 有问题<br>原来的判断方法<code>UA.match(/(iPad)/) || (UA.match(/(Macintosh)/) &amp;&amp; navigator.maxTouchPoints &gt;= 1)</code>前一个判断条件太宽泛，容易命中，后一个依赖浏览器。目前没想到好办法，因此服务端渲染的页面无法适配 iPad</li>
+<li>element-plus 样式改写不生效<br>原因：Vue 2 语法&#x2F;deep&#x2F;无法生效，element-plus 和 element-ui 在一些组件的 class 命名方式也有所改变，需要注意<br>解决方法：全局将&#x2F;deep&#x2F;替换为::v-deep，虽然这个语法也不是 Vue 3 的标准语法，但生效了，所以就这么无赖的写了</li>
+<li>element-plus 不支持 i 标签 class 引入 icon 方式。<br>解决方法：如下代码</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;el-icon<br>      v-<span class="hljs-keyword">if</span>=<span class="hljs-string">&quot;isLogin &amp;&amp; userInfo&quot;</span><br>      <span class="hljs-keyword">class</span>=<span class="hljs-string">&quot;el-icon-switch-button logout-icon&quot;</span><br>      @click.<span class="hljs-property">stop</span>=<span class="hljs-string">&quot;handleLogout&quot;</span><br>   &gt;<br>   <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ElIconSwitchButton</span>/&gt;</span></span><br>&lt;/el-icon&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7379521155285843980">Nuxt3 项目工程化、环境变量、SEO 配置</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7236635191379509308?searchId=202412031133081B66D928AF3CC959C84B">超完整的 Nuxt3 踩坑实录，那真是泰裤辣！</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7224435010072346683?searchId=20241215213456642157F15B260AB6947E">nuxt3 项目打包部署上线</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7197214505347137592">使用 Docker 部署 Nuxt 3 的专家技术</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/Nuxt/">#Nuxt</a>
+      
+        <a href="/unknown404.github.io/tags/ssr/">#ssr</a>
+      
+        <a href="/unknown404.github.io/tags/Vue/">#Vue</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Nuxt3项目实践踩坑</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2024/12/08/nuxt3/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年12月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2025/03/12/amis/" title="amis初探">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">amis初探</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2024/11/20/electron/" title="electron初步调研">
+                        <span class="hidden-mobile">electron初步调研</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

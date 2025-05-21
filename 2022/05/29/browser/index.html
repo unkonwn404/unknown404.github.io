@@ -24,7 +24,7 @@
 <meta property="og:description" content="浏览器相关知识点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-29T13:04:09.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.744Z">
+<meta property="article:modified_time" content="2024-11-26T03:32:02.080Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4k 字
+          4.1k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          34 分钟
+          35 分钟
         
       </span>
     
@@ -328,12 +328,16 @@
 </ol>
 <h3 id="缓存策略"><a href="#缓存策略" class="headerlink" title="缓存策略"></a>缓存策略</h3><h4 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h4><ol>
 <li>expires：http1.0 产物，格林威治时间</li>
-<li>cache-control：http1.1 产物，max-age 单位 s</li>
+<li>cache-control：http1.1 产物，max-age 单位 s<br>cache-control其他属性：</li>
 </ol>
+<ul>
+<li>no-cache：浏览器会存储资源，但在下一次访问时会向服务器发起验证请求</li>
+<li>no-store：完全不缓存资源</li>
+</ul>
 <h4 id="协商缓存"><a href="#协商缓存" class="headerlink" title="协商缓存"></a>协商缓存</h4><ol>
 <li><p>Last-Modified&#x2F;If-Modified-Since：Last-Modified 表示本地文件最后修改日期，If-Modified-Since 会将 Last-Modified 的值发送给服务器，询问服务器在该日期后资源是否有更新，有更新的话就会将新的资源发送回来。但是如果本地文件被打开，会导致 Last-Modified 被修改</p>
 </li>
-<li><p>ETag&#x2F;If-None-Matched：ETag 类似于文件指纹，If-None-Match 会将当前 ETag 发送给服务器，询问该资源 ETag 是否变动，有变动的话就将新的资源发送回来。并且 ETag 优先级比 Last-Modified 高。适用文件周期查看、内容没变的情况</p>
+<li><p>ETag&#x2F;If-None-Matched：ETag 类似于文件指纹，If-None-Match 会将当前 ETag 发送给服务器，询问该资源 ETag 是否变动，有变动的话就将新的资源发送回来。并且 ETag 优先级比 Last-Modified 高。适用文件周期查看、内容没变的情况或者资源频繁更新超过秒级情况</p>
 </li>
 </ol>
 <h4 id="刷新操作对缓存内容影响"><a href="#刷新操作对缓存内容影响" class="headerlink" title="刷新操作对缓存内容影响"></a>刷新操作对缓存内容影响</h4><p>正常操作（地址栏输入 url，跳转链接，前进后退等）：强制缓存有效，协商缓存有效。<br>手动刷新（f5，点击刷新按钮，右键菜单刷新）：强制缓存失效，协商缓存有效。<br>强制刷新（ctrl + f5，shift+command+r）：强制缓存失效，协商缓存失效。</p>

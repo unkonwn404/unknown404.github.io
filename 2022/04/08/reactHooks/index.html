@@ -24,7 +24,7 @@
 <meta property="og:description" content="记录常用的 React 钩子的使用方法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-04-08T06:47:53.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.825Z">
+<meta property="article:modified_time" content="2024-11-27T02:46:11.862Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.7k 字
+          7.4k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          57 分钟
+          63 分钟
         
       </span>
     
@@ -282,7 +282,9 @@
 <h2 id="useState"><a href="#useState" class="headerlink" title="useState"></a>useState</h2><p>使用示例：</p>
 <figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pf">[<span class="hljs-literal">self</span>State,<span class="hljs-built_in">set</span>SelfState]=useState(initialState)<br></code></pre></td></tr></table></figure>
 
-<p>输入参数：初始状态 initialState。如果 initialState 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。<br>返回参数：当前状态名 selfState 和更新状态函数名 setSelfState<br>setSelfState 可以传入新值来变更状态 setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数 setSelfState(prevState &#x3D;&gt; newState)<br>注意点：<br>（1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。<br>（2）initialState 可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。<br>（3）过时状态问题：class 和 hooks 的写法里，异步操作的过程中如何改变 state 的值，最后打印的时候都是最初的值或者说异步操作开始定义的时候的 state 的值。如下面的函数组件中 setTimeout 取到的都是旧值，是因为 react 中一直遵循一个原则，即 state 指向的内容是不可变的，所以每一次 state 的更新都是指向变了。因为闭包的原因，setTimeout 中依然指向的原来的对象，所以旧的 state 没有释放，所以会取到旧值。</p>
+<p>输入参数：初始状态 initialState。如果 initialState 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。<br>返回参数：当前状态名 selfState 和更新状态函数名 setSelfState<br>setSelfState 可以传入新值来变更状态 setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数 setSelfState(prevState &#x3D;&gt; newState)</p>
+<p><strong>辨析</strong>：setSelfState 直接传值和传函数的区别：<br>1）直接传值更新为指定值，传函数更新与当前状态值相关<br>2）传函数可处理多次调用的累加场景，直接传值不行<br>3）传函数可避免闭包</p>
+<p>注意点：<br>（1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。<br>（2）initialState 可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。<br>（3）过时状态问题：class 和 hooks 的写法里，异步操作的过程中如何改变 state 的值，最后打印的时候都是最初的值或者说异步操作开始定义的时候的 state 的值。如下面的函数组件中 setTimeout 取到的都是旧值，是因为 react 中一直遵循一个原则，即 state 指向的内容是不可变的，所以每一次 state 的更新都是指向变了。因为闭包的原因，setTimeout 中依然指向的原来的对象，所以旧的 state 没有释放，所以会取到旧值。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">DelayedCount</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);<br><br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleClickAsync</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span> <span class="hljs-title function_">delay</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-title function_">setCount</span>(count + <span class="hljs-number">1</span>);<br>    &#125;, <span class="hljs-number">3000</span>);<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      &#123;count&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;handleClickAsync&#125;</span>&gt;</span>Increase async<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>以上代码点击多次时不能正确记录点击次数。解决方法是使用 setCount(count &#x3D;&gt; count + 1)，这样不依赖外部变量、确保将最新状态值作为参数提供给更新状态函数，过时闭包的问题解决了。</p>
@@ -298,6 +300,7 @@
 <p>reducer 的计算逻辑如下所示，当传入的 action 是函数时，每次调用 reducer(newState, action)都会传入上一次计算得到的新的 newState 进去调用 action(state)返回新的结果;而如果传值的话则 newState 的结果只会是最后一个 update 对象的 action 的值。所以如果 setInterval 内部使用 setCount(count + 1)的话读取到的 count 都是本次 render 的值 0</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">basicStateReducer</span>(<span class="hljs-params">state, action</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> action === <span class="hljs-string">&quot;function&quot;</span> ? <span class="hljs-title function_">action</span>(state) : action;<br>&#125;<br></code></pre></td></tr></table></figure>
 
+<p>总结：函数式组件每次渲染都会生成新的函数和新的状态值，但闭包函数会捕获当时的状态。</p>
 <h4 id="闭包的解决方法"><a href="#闭包的解决方法" class="headerlink" title="闭包的解决方法"></a>闭包的解决方法</h4><ol>
 <li><p>useEffect 添加依赖，保证每次更新时替换 hook 缓存的函数，读取到的是最新的 state.</p>
 </li>
@@ -342,6 +345,44 @@
 <figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">const refContainer <span class="hljs-operator">=</span> useRef(initialValue)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
 
 <p>输入参数 initialValue 将赋给 ref 的 current 属性。ref 作用于 HTML 元素时 ref 接收底层 DOM 元素作为其 current 属性；作用于组件时，ref 对象接收组件的挂载实例作为其 current 属性。<br>useRef() 和自建一个 {current: …} 对象的唯一区别是，useRef 会在每次渲染时返回同一个 ref 对象。<br>适用场景：<br>（1）引用如 input 等有参数频繁变动更新的 dom 元素。<br>（2）解决闭包问题，见 react 闭包的内容介绍<br>（3）自定义组件时提供了传入函数的入参、为防止自定义组件依赖入参函数的情况使用 useRef 包裹</p>
+<h2 id="useReducer"><a href="#useReducer" class="headerlink" title="useReducer"></a>useReducer</h2><p>使用示例：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pf"><span class="hljs-keyword">const</span> initialState = &#123; count: <span class="hljs-number">0</span> &#125;;<br><br>function reducer(<span class="hljs-keyword">state</span>, action) &#123;<br>  switch (action.type) &#123;<br>    case &#x27;increment&#x27;:<br>      return &#123; count: <span class="hljs-keyword">state</span>.count + <span class="hljs-number">1</span> &#125;;<br>    case &#x27;decrement&#x27;:<br>      return &#123; count: <span class="hljs-keyword">state</span>.count - <span class="hljs-number">1</span> &#125;;<br>    <span class="hljs-keyword">default</span>:<br>      return <span class="hljs-keyword">state</span>;<br>  &#125;<br>&#125;<br><span class="hljs-keyword">const</span> [<span class="hljs-keyword">state</span>, dispatch] = useReducer(reducer, initialState);<br></code></pre></td></tr></table></figure>
+
+<p>适用场景：<br>包含多个子状态、单组件小范围使用</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>useReducer</th>
+<th>Redux</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td>React 内部的局部状态管理工具</td>
+<td>独立于 React 的全局状态管理工具</td>
+</tr>
+<tr>
+<td>适用范围</td>
+<td>组件树的局部状态，主要在单个组件或小范围内使用</td>
+<td>跨组件树的全局状态，适合大型应用的状态管理</td>
+</tr>
+<tr>
+<td>状态存储位置</td>
+<td>状态存储在组件内，随组件生命周期销毁</td>
+<td>状态存储在全局的 Redux Store 中</td>
+</tr>
+<tr>
+<td>中间件支持</td>
+<td>无内置中间件支持</td>
+<td>支持如 redux-thunk、redux-saga 等中间件</td>
+</tr>
+<tr>
+<td>异步操作</td>
+<td>无内置机制，需要结合自定义逻辑处理</td>
+<td>支持中间件优雅处理异步操作</td>
+</tr>
+</tbody></table>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6952509261519781918#heading-0">useEffect 你真的会用吗？</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7053695602370019335">React Hooks 及其性能优化之 React.memo,useCallBack,useMemo</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7090820276547485709">解读 useMemo, useCallback 和 React.memo，不再盲目做优化</a><br>（4）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7239584269894189115?searchId=20230907171414B7126D9CD38D0536A22D">React 系列- 图解：React Hook 闭包问题</a><br>（5）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6952509261519781918#heading-0">useEffect 你真的会用吗？</a></p>
 
                 
