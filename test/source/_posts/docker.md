@@ -192,6 +192,96 @@ server {
 4. 使用指令`docker build -t vue-init .`构建镜像
 5. 使用指令`docker run -d -p 8136:80 --name vue-init-container vue-init`创建容器、运行。此时打开浏览器输入 服务器 ip/域名 端口号:8136，就能看到前端页面了
 
+### 多前端项目 ng 转发说明
+
+多前端项目最好让所有构建好的项目全部在一个文件夹下，再将这个文件夹下内容全部拷贝到 html 文件夹下。由于不同路径对应不同项目，要求前端项目本身的路由basename包括转发的路径。
+
+```dockerFile
+FROM nginx
+# 新增log文件夹
+RUN mkdir -p /opt/logs/nginx
+
+# 复制 nginx 配置文件
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# 复制各个项目的 dist 目录
+COPY app/ /usr/share/nginx/html/
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+### SSR 项目部署说明
+
+如果是 SSR 项目，不需要配 ng，dockerfile 直接启动服务器就好。这里以 nuxt 为例：代码首先新建了个文件夹，然后以该文件夹为工作区域，执行安装依赖、打包生产包、启动服务器的操作。
+
+```dockerFile
+FROM node:20-alpine
+
+ADD . /opt/project
+
+WORKDIR /opt/project
+
+RUN npm config set registry  http://verdaccio.privacy.com/ && npm install
+# 不缓存安装包
+RUN apk add --no-cache curl
+
+RUN npm run build:test
+
+ENV NODE_ENV production
+# 暴露容器端口
+EXPOSE 3000
+
+ENTRYPOINT ["node","./.output/server/index.mjs"]
+```
+在ng配置方面需要注意以下几点：
+- 让access log和error log都放到新建文件夹下，默认的var文件夹不知道为什么很难用sh指令访问。
+- 为了防止每新增一个项目就要新增一个location配置，这里使用了正则表达式，提取出 项目名称 和 路径剩余部分。设置root，告诉ng从这个位置开始拼接文件路径，try_files 或 rewrite 的前置路径名
+- 为了防止重定向的一些问题，需要注意以下配置：absolute_redirect off: 防止 Nginx 生成绝对路径的重定向；port_in_redirect off: 防止在重定向时改变端口号
+```nginx
+http {
+  log_format main '$remote_addr $remote_user [$time_local] $request_uri '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" $hostname $request_time $http_host';
+    access_log /opt/logs/nginx/access.log main;
+    error_log /opt/logs/nginx/error.log;
+    include /etc/nginx/mime.types;
+    
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    default_type application/octet-stream;
+    
+    gzip on;
+    server {
+      listen       80;
+      server_name  localhost;
+      # 关闭自动添加斜杠
+      absolute_redirect off;
+      port_in_redirect off;
+
+      location ~ ^/newsnap/([^/]+)(/.*)?$ {
+          set $proj $1;
+          set $rest $2;
+          root /usr/share/nginx/html;
+
+          # 清晰地指定路径结构
+          try_files /$proj$rest /dist_$proj/index.html =404;
+      }
+
+      # 错误页面配置
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+          root   /usr/share/nginx/html;
+      }
+  }
+}
+```
+
 ### 部署优化说明
 
 以上只是部署的一个大致流程，实际公司项目的部署应该会考虑很多优化点，例如：

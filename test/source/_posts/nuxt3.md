@@ -61,7 +61,7 @@ export default defineNuxtConfig({
 } as NuxtConfig);
 ```
 
-同时将 app.vue、pages 文件等移到 src 目录下，变更为以下目录结构
+同时将 app.vue、pages、server 文件等移到 src 目录下，变更为以下目录结构
 
 ```
 -| /
@@ -305,6 +305,54 @@ export default defineNuxtRouteMiddleware((from, to) => {
 
 需要注意的点是重定向的条件判断没有针对所有可能性做返回，vue router 检验逻辑会认为有隐患；因此需要对所有可能性做条件处理
 
+### server 端接口书写
+
+接口命名两种方式：
+1）server/api 文件夹下命名文件，在此文件夹下的文件都会被 nuxt 扫描并自动加载
+2）server/routes 下命名文件，在此文件夹下的文件接口访问路径名为/[文件名]
+其他书写方式不会形成对外可访问的接口
+
+#### 接口跨域处理
+
+浏览器在发送跨域请求时，会先发送一个 OPTIONS 请求（预检请求）来检查服务器是否允许跨域。所以要针对 options 请求作正确的返回。
+
+```js
+import {
+  defineEventHandler,
+  createError,
+  readBody,
+  setResponseHeaders,
+} from "h3";
+export default defineEventHandler(async (event) => {
+  // 设置 CORS 头
+  setResponseHeaders(event, {
+    "Access-Control-Allow-Origin": "*", // 允许所有来源
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS", // 允许的 HTTP 方法
+    "Access-Control-Allow-Headers": "Content-Type, Authorization", // 允许的请求头
+  });
+
+  // 如果是预检请求（OPTIONS），直接返回
+  if (event.node.req.method === "OPTIONS") {
+    event.node.res.statusCode = 204; // No Content
+    event.node.res.end();
+    return;
+  }
+
+  // 处理实际的 POST 请求
+  const body = await readBody(event).catch(() => {});
+  const { routeName } = body;
+  const target = schemaList.find((item) => item.path === routeName);
+  if (target) {
+    return { ...target };
+  }
+  throw createError({
+    status: 400,
+    statusMessage: "Bad Request",
+    message: "Invalid route",
+  });
+});
+```
+
 ## 项目部署
 
 ### 镜像打包
@@ -378,9 +426,31 @@ ENTRYPOINT ["node","./.output/server/index.mjs"]
 为了偷懒不研究 pm2 的用法，使用了 nuxt3-winston-log，是官方推荐的插件。配置可参考 [npm 说明](https://www.npmjs.com/package/nuxt3-winston-log)
 nuxt3-winston-log 会收集代码中所有的 console 打印语句，日志内容可通过登录容器服务器，在项目根目录的 logs 文件夹下查看 info 和 error 的打印情况
 
+## 附录：踩坑记录
+
+1. 选项式文件有概率无法实现 ssr
+   原因不明，debug 时能看到请求在后端已经发出，但 html 文件里没有请求渲染的结果；最后只能借 ai 转成组合式了
+2. 服务端判断 iPad 有问题
+   原来的判断方法`UA.match(/(iPad)/) || (UA.match(/(Macintosh)/) && navigator.maxTouchPoints >= 1)`前一个判断条件太宽泛，容易命中，后一个依赖浏览器。目前没想到好办法，因此服务端渲染的页面无法适配 iPad
+3. element-plus 样式改写不生效
+   原因：Vue 2 语法/deep/无法生效，element-plus 和 element-ui 在一些组件的 class 命名方式也有所改变，需要注意
+   解决方法：全局将/deep/替换为::v-deep，虽然这个语法也不是 Vue 3 的标准语法，但生效了，所以就这么无赖的写了
+4. element-plus 不支持 i 标签 class 引入 icon 方式。
+   解决方法：如下代码
+
+```js
+<el-icon
+      v-if="isLogin && userInfo"
+      class="el-icon-switch-button logout-icon"
+      @click.stop="handleLogout"
+   >
+   <ElIconSwitchButton/>
+</el-icon>
+```
+
 ## 参考文献
 
 1. [Nuxt3 项目工程化、环境变量、SEO 配置](https://juejin.cn/post/7379521155285843980)
 2. [超完整的 Nuxt3 踩坑实录，那真是泰裤辣！](https://juejin.cn/post/7236635191379509308?searchId=202412031133081B66D928AF3CC959C84B)
-3. [nuxt3 项目打包部署上线](https://juejin.cn/post/7224435010072346683?searchId=20241215213456642157F15B260AB6947E) 
+3. [nuxt3 项目打包部署上线](https://juejin.cn/post/7224435010072346683?searchId=20241215213456642157F15B260AB6947E)
 4. [使用 Docker 部署 Nuxt 3 的专家技术](https://juejin.cn/post/7197214505347137592)

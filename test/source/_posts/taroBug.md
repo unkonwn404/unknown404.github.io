@@ -190,3 +190,23 @@ watch: {
 原因：
 1）其实不是 Taro 的问题，根据[这篇文章](https://blog.51cto.com/u_16175487/6665743)，onNetworkStatusChange 方法是通过监听设备的网络状态来判断网络是否可用。在真实的移动设备上，网络状态的变化是由设备的网络模块来控制，并且设备会及时通知应用程序。但是，在自己电脑上测试时，我们通常会使用模拟器或者浏览器来模拟移动设备的环境，这就导致了一些问题，例如模拟器或者浏览器本身没有真实的网络模块，它们无法真实地模拟设备的网络状态变化。
 2）onNetworkStatusChange 设置的位置不对，最好的是在页面的 onShow，app 的 onShow 也可以
+
+## 12. h5 的图片上传请求一直报 500
+
+原因：似乎是浏览器本身的问题，图片上传的请求头部是`'Content-Type': 'multipart/form-data'`，但不能在接口中设置这个请求头（axios 例外），Content-Type 需要让浏览器自己识别添加。所以不要使用 Taro.uploadFile，而应该使用 request 函数，大概配置如下：
+
+```js
+Taro.request({
+  url: `${imgDomain}/image/upload`,
+  header: {
+    authorization: Taro.getStorageSync("access_token"),
+    requestId: getRequestId(),
+  },
+  data: file,
+  withCredentials: true,
+});
+```
+
+## 13. 小程序 requestTask.abort()不生效
+
+原因：不明。看网上说法这个函数是在请求未发出时实现的，无法像 axios 一样直接阻止请求连接？？
