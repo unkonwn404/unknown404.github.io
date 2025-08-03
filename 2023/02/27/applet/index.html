@@ -24,7 +24,7 @@
 <meta property="og:description" content="小程序基础知识汇总。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-27T13:42:19.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.743Z">
+<meta property="article:modified_time" content="2025-06-30T09:31:22.647Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="小程序">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          929 字
+          1.2k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          8 分钟
+          11 分钟
         
       </span>
     
@@ -279,6 +279,18 @@
 <span id="more"></span>
 
 <h2 id="微信小程序结构"><a href="#微信小程序结构" class="headerlink" title="微信小程序结构"></a>微信小程序结构</h2><p>小程序的运行环境分成渲染层和逻辑层，其中 WXML 模板和 WXSS 样式工作在渲染层，JS 脚本工作在逻辑层。视图层和逻辑层通过 Native 层进行进行通信，并且通过 Native 层获得原生能力。<br>逻辑层和视图层之间的工作方式为：数据变更通过 setData 驱动视图更新；视图层交互触发事件，然后触发逻辑层的事件响应函数，函数中修改数据再次触发视图更新。</p>
+<p><strong>特点</strong></p>
+<ul>
+<li>渲染线程、逻辑线程并行处理</li>
+<li>JS 不能直接操作 DOM</li>
+</ul>
+<h2 id="微信小程序与-H5-的区别"><a href="#微信小程序与-H5-的区别" class="headerlink" title="微信小程序与 H5 的区别"></a>微信小程序与 H5 的区别</h2><ul>
+<li>运行环境：小程序运行在微信客户端，H5 运行在浏览器</li>
+<li>开发语言：小程序使用 WXML 和 WXSS，H5 使用 HTML 和 CSS</li>
+<li>能力差异：小程序可调用微信原生 API，如扫码、支付等</li>
+<li>性能：小程序采用双线程模式（渲染线程和逻辑线程分离），性能更好</li>
+<li>发布方式：小程序需审核上线，H5 可直接发布</li>
+</ul>
 <h2 id="小程序框架"><a href="#小程序框架" class="headerlink" title="小程序框架"></a>小程序框架</h2><p>常见框架：mpvue、taro、uni-app<br>实现流程：</p>
 <ul>
 <li>编译阶段：将其他 DSL（domain-specific language） 转换为符合小程序语法的 WXML、WXSS、JS、JSON；</li>
@@ -299,6 +311,14 @@
 <p>onLaunch() 监听小程序初始化 当小程序初始化完成时，会触发 onLaunch（全局只触发一次）<br>onShow() 监听小程序显示 当小程序启动，或从后台进入前台显示，会触发 onShow<br>onHide() 监听小程序隐藏 当小程序从前台进入后台，会触发 onHide</p>
 <p>这是每个 page 页面的周期函数</p>
 <p>onLoad() 页面加载时触发，全局只会调用一次，在该周期内可获取当前页面路径的参数<br>onShow() 页面显示时触发或者切入前台时触发，也就是在该周期内可以获取请求数据<br>onReady() 页面初次渲染完成时触发，只会调用一次，代表页面已经可以和视图层进行交互<br>onHide() 页面隐藏或者切入后台时触发，如底部 tab 切换到其他页面或小程序切入后台时触发。<br>onUnload() 页面卸载时触发</p>
+<h2 id="小程序优化"><a href="#小程序优化" class="headerlink" title="小程序优化"></a>小程序优化</h2><ul>
+<li>分包加载：将非首页功能放入子包</li>
+<li>组件按需引入：避免全局注册</li>
+<li>减少视图层初始数据：首屏关键数据优先</li>
+<li>开启 Tree-shaking：移除无用代码</li>
+<li>静态资源优化：图片压缩、CDN 加速</li>
+</ul>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7517906186265657370">前端面试题之小程序篇</a></p>
 
                 
               </div>

@@ -24,7 +24,7 @@
 <meta property="og:description" content="自 chatgpt 面世以来，ai 相关的产品层出不穷，如何用好 ai、让它更好的为自己服务也是一大新课题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-09-11T09:08:59.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.742Z">
+<meta property="article:modified_time" content="2025-05-21T04:10:47.041Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="AGI">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          1.6k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          12 分钟
+          13 分钟
         
       </span>
     
@@ -286,11 +286,13 @@
 <h4 id="规划"><a href="#规划" class="headerlink" title="规划"></a>规划</h4><p>LLM 具备逻辑推理能力，但对于复杂的问题难以给出正确的答案，因为用户使用的 prompt（提示语）不合适，导致大模型直接给出了关联度高的字词。一项复杂的任务往往涉及许多步骤。AI Agent 需要首先拆解这些步骤，进行多步推理。<br>当下普遍的技术模式包括思维链和思维树。</p>
 <h4 id="记忆"><a href="#记忆" class="headerlink" title="记忆"></a>记忆</h4><p>记忆模块负责存储信息，包括过去的交互、学习到的知识，甚至是临时的任务信息。<br>在 LLM 中，记忆模块仿照了人类的记忆模式：短期记忆指 transformer 架构限制的上下文窗口内的输入信息；长期记忆类似于外部向量存储</p>
 <h4 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h4><p>AI Agent 与大模型的一大区别在于能够使用外部工具拓展模型能力。LLM 本身虽然强大，但也会有局限。因此，Agent 通常会与外部工具和 API 进行集成。插件系统允许 Agent 调用各种外部服务，如数据库查询、调用 Web API，甚至是与物理设备交互（如 IoT 设备）。<br>以 openAI 的 chatgpt 为例，其训练数据只截止到了 2021 年底，对于更新一些的知识内容它无法直接做出回答。后来 openAI 发布了 FunctionCall 模式，大概就是写一份规则，让 chatgpt 知道什么时候去调用外部工具。</p>
-<h3 id="Agent-应用"><a href="#Agent-应用" class="headerlink" title="Agent 应用"></a>Agent 应用</h3><p>目前各大企业都提供了制作 agent 的平台，比较有名的有字节的 coze、钉钉的AI助理、Dify等，主要可以分为以下几类</p>
+<h3 id="Agent-应用"><a href="#Agent-应用" class="headerlink" title="Agent 应用"></a>Agent 应用</h3><p>目前各大企业都提供了制作 agent 的平台，比较有名的有字节的 coze、钉钉的 AI 助理、Dify 等，主要可以分为以下几类</p>
 <h4 id="AI-插件"><a href="#AI-插件" class="headerlink" title="AI+插件"></a>AI+插件</h4><p>特点：提供为模型写人设（即 prompt）的功能，可替换模型、添加插件、数据库，以及配置好后的对话调试</p>
 <h4 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h4><p>特点：可以设置节点，处理一些复杂的任务：例如实现跳转和循环、根据多次输入的内容进行作答的场景；对不同类问题的回答有不同的输出格式要求的场景</p>
 <h2 id="prompt"><a href="#prompt" class="headerlink" title="prompt"></a>prompt</h2><h3 id="什么是-prompt（提示词）？"><a href="#什么是-prompt（提示词）？" class="headerlink" title="什么是 prompt（提示词）？"></a>什么是 prompt（提示词）？</h3><p>提示词在人工智能领域是一种特定的输入，用于激发 AI 系统进行特定的思考或行为。它们可以是问题、指令或描述，旨在引导 AI 理解用户的意图并作出相应的反应。提示词的设计需要考虑到 AI 的理解和生成能力，确保它们能够激发出期望的输出</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7359119142786154546">全面讲解基于大型语言模型的智能 Agent：发展历程、架构与基于 Langchain 的实现 demo</a><br>（2）<a target="_blank" rel="noopener" href="https://agijuejin.feishu.cn/wiki/F1jPwKffhiXedTkp26bcFuQInQb">十种 agent 工具，多种思路</a></p>
+<h2 id="MCP"><a href="#MCP" class="headerlink" title="MCP"></a>MCP</h2><p>MCP（模型上下文协议）是由 Anthropic 公司提出的一种新技术，通过标准化接口，确保 AI 模型（如 Claude）与外部工具、数据源之间可以无缝协作，解决了传统数据孤岛带来的限制，提升了 AI 模型的性能与响应的准确性。</p>
+<h3 id="MCP-结构"><a href="#MCP-结构" class="headerlink" title="MCP 结构"></a>MCP 结构</h3><p>MCP Server：提供特定功能的服务器。<br>MCP Client：通过 MCP 协议与服务器进行通讯的客户端。<br>数据源：包括文件、数据库记录、API 响应等。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7359119142786154546">全面讲解基于大型语言模型的智能 Agent：发展历程、架构与基于 Langchain 的实现 demo</a><br>（2）<a target="_blank" rel="noopener" href="https://agijuejin.feishu.cn/wiki/F1jPwKffhiXedTkp26bcFuQInQb">十种 agent 工具，多种思路</a><br>（3）<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/IKxC-bkC_6znhn9aHeVwBw">让 AI 写出靠谱代码：一套提示词模板设计实践</a></p>
 
                 
               </div>
