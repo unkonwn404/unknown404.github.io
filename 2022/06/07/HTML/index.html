@@ -1,255 +1,283 @@
 
+
 <!DOCTYPE html>
-<html lang="zh-cn">
-    
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="小白的文件整理箱">
-    <title>HTML/CSS - 小白的文件整理箱</title>
-    <meta name="author" content="小白的文件整理箱">
-    
-    
-    
-        
-            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
-        
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"前端HTML&#x2F;CSS方面知识整理。\n\n\n\nHTMLhtml5.0 新特性\n语义化标签\n拖拽释放 API\n媒体标签\n表单控件\n数据存储 localStorage、sessionStorage\n\nhtml5.0 移除特性\n纯表现标签\n产生负面影响标签\n\n语义化标签特点\n对机器友好，有利于 SEO 和堵屏软件解析\n对开发者友好增加可读型\n\nHTML 元素行内元素：多个行内元素可占一行，只能设置 padding、margin 左右块元素：一个块元素占一行，可设置宽高\nsrc 和 href 区别\n资源类型：src 是资源引用，href 是超文本引用\n解析资源方式：浏览器解析 src 资源时会暂停其他资源下载，直至该资源下载执行完毕；href 时浏览器会并行下载资源，不停止文档解析\n\nscript 标签中 defer 和 async 的区别defer：script 下载不会打断 html 解析，在 html 解析完成之后 script 会按顺序执行async：script 下载会打断 html 解析，先加载完先执行\nCSScss 新特性\n圆角、文字特效、渐变、动画\n选择器 eg. last-child\n媒体查询\n多栏布局\nflex 布局\n\ncss 选择器选择器优先级!important &gt; 内联 &gt; id &gt; class &gt; tag &gt; *\n伪元素 vs 伪类伪元素（eg. ::after）：该元素在 dom 树下不存在，仅在 css 下渲染伪类（eg. :hover）：为已存在的元素设置样式\ncss 属性相关position 属性static：默认absolute：脱离文档流，相对非 static 父元素fixed：脱离文档流，相对浏览器窗口relative：相对原位置定位sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relative，之后是 fixedline-height 属性子元素如何继承父元素 line-height 属性？\n\n父元素的 line-height 写了具体数值，比如 30px，则子元素 line-height 继承该值。\n父元素的 line-height 写了比例，比如 1.5 或 2，则子元素 line-height 也是继承该比例。\n父元素的 line-height 写了百分比，比如 200%，则子元素 line-height 继承的是父元素 font-size * 200% 计算出来的值。\n\ncss 布局flex 布局容器属性\n\nflex-direction：主轴方向，默认 row\nflex-wrap：换行方式\nflex-flow：flex-direction 属性和 flex-wrap 属性的简写形式\njustify-content：主轴对齐方式\nalign-items：交叉轴对齐方式\nalign-content：多轴对齐方式item 属性\norder：项目的排列顺序。数值越小，排列越靠前，默认为 0。\nflex-grow：项目的放大比例，默认为 0，即如果存在剩余空间，也不放大。属性都为 1，则它们将等分剩余空间（如果有的话）\nflex-shrink：属性定义了项目的缩小比例，默认为 1，即如果空间不足，该项目将缩小。为 0 时即使空间不足也不缩小\nflex-basis：在分配多余空间之前，项目占据的主轴空间（main size）。浏览器根据这个属性，计算主轴是否有多余空间。它的默认值为 auto，即项目的本来大小。\nflex：flex 属性是 flex-grow, flex-shrink 和 flex-basis 的简写，默认值为 0 1 auto。flex 为 1 时对应 3 个值 1 1 0\nalign-self：单个项目有与其他项目不一样的对齐方式\n\n流式布局宽高用百分比表示子元素属性的百分比相对于父元素的宽：width,margin,padding,left,right子元素属性的百分比相对于父元素的高：height,top,bottom\n响应式布局利用媒体查询获取屏幕宽高再设置宽度区间\n自适应布局根据分辨率创建多个静态布局\n弹性布局以 rem 为单位（rem 相对于根元素 font-size，em 相对于父元素 font-size）\nvw 布局使用 vw、vh 作为单位\n块级格式化上下文（BFC）特点：有独立渲染的区域，子元素不会影响到区域外；2 个块元素在区域内垂直分布；计算高度时浮动元素的高度也代入计算；不与浮动元素重叠触发条件：\n\n根元素\noverflow 不为 visible\ndisplay 为 inline-block 或 table\nposition 为 absolute 或 fixed\nfloat 不为 none\n\n清除浮动存在问题：父元素未设置高度且子元素浮动时父元素高度会坍塌解决方法：\n\n父元素加高度\n父元素加 float\n父元素 overflow：hidden\n增加 clear：both 空元素\n父元素加伪元素\n\n12345678910.clearfix&#123;    zoom:1;&#125;.clearfix::after&#123;    content:&#x27;&#x27;;    display:block;    height:0;    clear:both;    visibility:hidden;&#125;\n\n外部引入 css 方式：link vs @import\nlink 是 html 标签，@import 是 css 属性\nlink 可设置 rel，@import 只能引入 css\nlink 在页面加载时加载，@import 在加载完页面后加载\nlink 无兼容问题，@import 支持 IE5 以上\nlink 支持 js 控制 dom 改样式，@import 不支持\n\ncss 场景应用画一个三角形&#x2F;扇形思路：div 的宽高设置为 0，border 的宽度设置大一点，除一边外其余边颜色透明；扇形需要有 border-radius\n宽高自适应的正方形width：30vw；height：30vw；\n多行文本溢出overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;\n居中方式水平居中1）行内元素：text-align：center；2）块元素：margin：0 auto；3）position：absolute；left：50%；transform：translateX（-50%）；4）display：flex；justify-content：center；\n垂直居中1）单行文本：line-height&#x3D;height2）display：table-cell；vertical-align：middle；3）position：absolute；top：50%；transform：translateY（-50%）；4）display：flex；align-items：center；\n水平垂直居中1）margin：auto；left：0；right：0；top：0；bottom：0；2）position：absolute；left：50%；top：50%；transform：translate（-50%，-50%）；3）display：flex；align-items：center；justify-content：center；\n两栏布局1）float+margin2）float+overflow3）grid-template-columns4）flex5）absolute*2\n三栏布局双飞翼布局1234#wrapper&#123;float:left;width:100%;height:50px;&#125; #center&#123;margin:0 100px 0 200px;&#125;#left&#123;float:left;margin-left:-100%;width:200px;height:50px;&#125;#right&#123;float:left;margin-left:-100px;width:100px;height:50px;&#125;\n\n圣杯布局1234#parent&#123;height:50px;padding:0 100px 0 200px;&#125; #center&#123;float:left;width:100%;height:50px;&#125; #left&#123;float:left;margin-left:-100%;width:200px;height:50px;position:relative;left:-200px;&#125; #right&#123;float:left;margin-left:-100px;width:100px;height:50px;position:relative;right:100px;&#125;\n","dateCreated":"2022-06-07T23:42:01+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-06-07T23:42:01+08:00","description":"前端HTML&#x2F;CSS方面知识整理。","headline":"HTML/CSS","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/","keywords":"HTML, CSS"}</script>
-    <meta name="description" content="前端HTML&#x2F;CSS方面知识整理。">
-<meta property="og:type" content="blog">
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前端 HTML&#x2F;CSS 方面知识整理。">
+<meta property="og:type" content="article">
 <meta property="og:title" content="HTML&#x2F;CSS">
-<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/06/07/HTML/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
-<meta property="og:description" content="前端HTML&#x2F;CSS方面知识整理。">
+<meta property="og:description" content="前端 HTML&#x2F;CSS 方面知识整理。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-07T15:42:01.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:27:34.413Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.673Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="HTML">
 <meta property="article:tag" content="CSS">
-<meta name="twitter:card" content="summary">
-    
-    
-        
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
-    
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>HTML/CSS - 小白的文件整理箱</title>
 
-    <!--STYLES END-->
-    
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    
 
-    
-        
-    
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
 
+<body>
+  
 
-    
-        
-            
-        
+  <header>
     
 
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/unknown_404/"
-            aria-label=""
-        >
-            小白的文件整理箱
-        </a>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="打开链接: /unknown_404/#about"
-            >
-        
-        
-            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-
-        
-    
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-            <div class="sidebar-profile">
-                <a
-                    href="/unknown_404/#about"
-                    aria-label="阅读有关作者的更多信息"
-                >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-                </a>
-                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
-                
-                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
-</h5>
-                
-            </div>
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/"
-                            
-                            rel="noopener"
-                            title="首页"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">首页</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-categories"
-                            
-                            rel="noopener"
-                            title="分类"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">分类</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-tags"
-                            
-                            rel="noopener"
-                            title="标签"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">标签</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-archives"
-                            
-                            rel="noopener"
-                            title="归档"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">归档</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="搜索"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">搜索</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="关于"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
+  </div>
 </nav>
 
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            HTML/CSS
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2022-06-07T23:42:01+08:00">
-	
-		    6月 07, 2022
-    	
-    </time>
-    
-        <span>发布在 </span>
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HTML/CSS"></span>
+          
+        </div>
+
         
-    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/">前端基础</a>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-06-07 23:42" pubdate>
+          2022年6月7日 晚上
+        </time>
+      </span>
+    
+  </div>
 
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.3k 字
+        
+      </span>
+    
 
     
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
 </div>
 
-    
 </div>
 
+  </header>
+
+  <main>
     
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <p>前端HTML&#x2F;CSS方面知识整理。</p>
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">HTML/CSS</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>前端 HTML&#x2F;CSS 方面知识整理。</p>
 <span id="more"></span>
-<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#HTML"><span class="toc-text">HTML</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#html5-0-%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-text">html5.0 新特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#html5-0-%E7%A7%BB%E9%99%A4%E7%89%B9%E6%80%A7"><span class="toc-text">html5.0 移除特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E4%B9%89%E5%8C%96%E6%A0%87%E7%AD%BE%E7%89%B9%E7%82%B9"><span class="toc-text">语义化标签特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTML-%E5%85%83%E7%B4%A0"><span class="toc-text">HTML 元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#src-%E5%92%8C-href-%E5%8C%BA%E5%88%AB"><span class="toc-text">src 和 href 区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#script-%E6%A0%87%E7%AD%BE%E4%B8%AD-defer-%E5%92%8C-async-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">script 标签中 defer 和 async 的区别</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CSS"><span class="toc-text">CSS</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#css-%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-text">css 新特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#css-%E9%80%89%E6%8B%A9%E5%99%A8"><span class="toc-text">css 选择器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E5%99%A8%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-text">选择器优先级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%AA%E5%85%83%E7%B4%A0-vs-%E4%BC%AA%E7%B1%BB"><span class="toc-text">伪元素 vs 伪类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#css-%E5%B1%9E%E6%80%A7%E7%9B%B8%E5%85%B3"><span class="toc-text">css 属性相关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#css-%E5%B8%83%E5%B1%80"><span class="toc-text">css 布局</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-%E5%B8%83%E5%B1%80"><span class="toc-text">flex 布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80"><span class="toc-text">流式布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E5%BC%8F%E5%B8%83%E5%B1%80"><span class="toc-text">响应式布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E9%80%82%E5%BA%94%E5%B8%83%E5%B1%80"><span class="toc-text">自适应布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%B9%E6%80%A7%E5%B8%83%E5%B1%80"><span class="toc-text">弹性布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vw-%E5%B8%83%E5%B1%80"><span class="toc-text">vw 布局</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%97%E7%BA%A7%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%88BFC%EF%BC%89"><span class="toc-text">块级格式化上下文（BFC）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%85%E9%99%A4%E6%B5%AE%E5%8A%A8"><span class="toc-text">清除浮动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E5%BC%95%E5%85%A5-css-%E6%96%B9%E5%BC%8F%EF%BC%9Alink-vs-import"><span class="toc-text">外部引入 css 方式：link vs @import</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#css-%E5%9C%BA%E6%99%AF%E5%BA%94%E7%94%A8"><span class="toc-text">css 场景应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%BB%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2-x2F-%E6%89%87%E5%BD%A2"><span class="toc-text">画一个三角形&#x2F;扇形</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%BD%E9%AB%98%E8%87%AA%E9%80%82%E5%BA%94%E7%9A%84%E6%AD%A3%E6%96%B9%E5%BD%A2"><span class="toc-text">宽高自适应的正方形</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%A1%8C%E6%96%87%E6%9C%AC%E6%BA%A2%E5%87%BA"><span class="toc-text">多行文本溢出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%85%E4%B8%AD%E6%96%B9%E5%BC%8F"><span class="toc-text">居中方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">水平居中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">垂直居中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">水平垂直居中</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E6%A0%8F%E5%B8%83%E5%B1%80"><span class="toc-text">两栏布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E6%A0%8F%E5%B8%83%E5%B1%80"><span class="toc-text">三栏布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E9%A3%9E%E7%BF%BC%E5%B8%83%E5%B1%80"><span class="toc-text">双飞翼布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A3%E6%9D%AF%E5%B8%83%E5%B1%80"><span class="toc-text">圣杯布局</span></a></li></ol></li></ol></li></ol>
 
 <h1 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h1><h2 id="html5-0-新特性"><a href="#html5-0-新特性" class="headerlink" title="html5.0 新特性"></a>html5.0 新特性</h2><ol>
 <li>语义化标签</li>
@@ -263,8 +291,8 @@
 <li>产生负面影响标签</li>
 </ol>
 <h2 id="语义化标签特点"><a href="#语义化标签特点" class="headerlink" title="语义化标签特点"></a>语义化标签特点</h2><ol>
-<li>对机器友好，有利于 SEO 和堵屏软件解析</li>
-<li>对开发者友好增加可读型</li>
+<li>对机器友好，有利于 SEO 和读屏软件解析</li>
+<li>对开发者友好增加可读性</li>
 </ol>
 <h2 id="HTML-元素"><a href="#HTML-元素" class="headerlink" title="HTML 元素"></a>HTML 元素</h2><p>行内元素：多个行内元素可占一行，只能设置 padding、margin 左右<br>块元素：一个块元素占一行，可设置宽高</p>
 <h2 id="src-和-href-区别"><a href="#src-和-href-区别" class="headerlink" title="src 和 href 区别"></a>src 和 href 区别</h2><ol>
@@ -281,12 +309,17 @@
 </ol>
 <h2 id="css-选择器"><a href="#css-选择器" class="headerlink" title="css 选择器"></a>css 选择器</h2><h3 id="选择器优先级"><a href="#选择器优先级" class="headerlink" title="选择器优先级"></a>选择器优先级</h3><p>!important &gt; 内联 &gt; id &gt; class &gt; tag &gt; *</p>
 <h3 id="伪元素-vs-伪类"><a href="#伪元素-vs-伪类" class="headerlink" title="伪元素 vs 伪类"></a>伪元素 vs 伪类</h3><p>伪元素（eg. ::after）：该元素在 dom 树下不存在，仅在 css 下渲染<br>伪类（eg. :hover）：为已存在的元素设置样式</p>
-<h2 id="css-属性相关"><a href="#css-属性相关" class="headerlink" title="css 属性相关"></a>css 属性相关</h2><p><strong>position 属性</strong><br>static：默认<br>absolute：脱离文档流，相对非 static 父元素<br>fixed：脱离文档流，相对浏览器窗口<br>relative：相对原位置定位<br>sticky：须指定 top、left、right、bottom，跨域特定阈值前是 relative，之后是 fixed<br><strong>line-height 属性</strong><br>子元素如何继承父元素 line-height 属性？</p>
+<h2 id="css-属性相关"><a href="#css-属性相关" class="headerlink" title="css 属性相关"></a>css 属性相关</h2><p><strong>position 属性</strong><br>static：默认<br>absolute：脱离文档流，相对非 static 父元素<br>fixed：脱离文档流，相对浏览器窗口<br>relative：相对原位置定位<br>sticky：须指定 top、left、right、bottom，跨越特定阈值前是 relative，之后是 fixed<br><strong>line-height 属性</strong><br>子元素如何继承父元素 line-height 属性？</p>
 <ol>
 <li>父元素的 line-height 写了具体数值，比如 30px，则子元素 line-height 继承该值。</li>
 <li>父元素的 line-height 写了比例，比如 1.5 或 2，则子元素 line-height 也是继承该比例。</li>
 <li>父元素的 line-height 写了百分比，比如 200%，则子元素 line-height 继承的是父元素 font-size * 200% 计算出来的值。</li>
 </ol>
+<h3 id="animation-和-transition-的区别"><a href="#animation-和-transition-的区别" class="headerlink" title="animation 和 transition 的区别"></a>animation 和 transition 的区别</h3><ul>
+<li>实现方式：<br>transition 是过渡属性，强调过渡，它的实现需要触发一个事件（比如鼠标移动上去，焦点，点击等）才执行动画。<br>animation 是动画属性，它的实现不需要触发事件，设定好时间之后可以自己执行，且可以循环一个动画。</li>
+<li>应用场景：<br>transition 用于实现简单的动态效果，例如鼠标悬停在一个元素上时，该元素背景色或透明度的变化。<br>animation 用于实现复杂的动态效果，例如元素的旋转、缩放、平移等复杂变换，以及多个动画状态之间的切换。</li>
+<li>性能：<br>transition 在改变文档流的属性时，会引起页面的回流和重绘，对性能影响比较大。<br>animation 可以结合 keyframe 设置每一帧，但是 transition 只有两帧。</li>
+</ul>
 <h2 id="css-布局"><a href="#css-布局" class="headerlink" title="css 布局"></a>css 布局</h2><h3 id="flex-布局"><a href="#flex-布局" class="headerlink" title="flex 布局"></a>flex 布局</h3><p><strong>容器属性</strong></p>
 <ul>
 <li>flex-direction：主轴方向，默认 row</li>
@@ -294,7 +327,10 @@
 <li>flex-flow：flex-direction 属性和 flex-wrap 属性的简写形式</li>
 <li>justify-content：主轴对齐方式</li>
 <li>align-items：交叉轴对齐方式</li>
-<li>align-content：多轴对齐方式<br><strong>item 属性</strong></li>
+<li>align-content：多轴对齐方式</li>
+</ul>
+<p><strong>item 属性</strong></p>
+<ul>
 <li>order：项目的排列顺序。数值越小，排列越靠前，默认为 0。</li>
 <li>flex-grow：项目的放大比例，默认为 0，即如果存在剩余空间，也不放大。属性都为 1，则它们将等分剩余空间（如果有的话）</li>
 <li>flex-shrink：属性定义了项目的缩小比例，默认为 1，即如果空间不足，该项目将缩小。为 0 时即使空间不足也不缩小</li>
@@ -305,13 +341,13 @@
 <h3 id="流式布局"><a href="#流式布局" class="headerlink" title="流式布局"></a>流式布局</h3><p>宽高用百分比表示<br>子元素属性的百分比相对于父元素的宽：width,margin,padding,left,right<br>子元素属性的百分比相对于父元素的高：height,top,bottom</p>
 <h3 id="响应式布局"><a href="#响应式布局" class="headerlink" title="响应式布局"></a>响应式布局</h3><p>利用媒体查询获取屏幕宽高再设置宽度区间</p>
 <h3 id="自适应布局"><a href="#自适应布局" class="headerlink" title="自适应布局"></a>自适应布局</h3><p>根据分辨率创建多个静态布局</p>
-<h3 id="弹性布局"><a href="#弹性布局" class="headerlink" title="弹性布局"></a>弹性布局</h3><p>以 rem 为单位（rem 相对于根元素 font-size，em 相对于父元素 font-size）</p>
+<h3 id="弹性布局"><a href="#弹性布局" class="headerlink" title="弹性布局"></a>弹性布局</h3><p>以 rem 为单位（rem 相对于根元素<code>html</code> font-size，em 相对于父元素 font-size）</p>
 <h3 id="vw-布局"><a href="#vw-布局" class="headerlink" title="vw 布局"></a>vw 布局</h3><p>使用 vw、vh 作为单位</p>
 <h2 id="块级格式化上下文（BFC）"><a href="#块级格式化上下文（BFC）" class="headerlink" title="块级格式化上下文（BFC）"></a>块级格式化上下文（BFC）</h2><p>特点：有独立渲染的区域，子元素不会影响到区域外；2 个块元素在区域内垂直分布；计算高度时浮动元素的高度也代入计算；不与浮动元素重叠<br>触发条件：</p>
 <ol>
 <li>根元素</li>
 <li>overflow 不为 visible</li>
-<li>display 为 inline-block 或 table</li>
+<li>display 为 inline-block 或 table、flex</li>
 <li>position 为 absolute 或 fixed</li>
 <li>float 不为 none</li>
 </ol>
@@ -323,7 +359,7 @@
 <li>增加 clear：both 空元素</li>
 <li>父元素加伪元素</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.clearfix&#123;</span><br><span class="line">    zoom:1;</span><br><span class="line">&#125;</span><br><span class="line">.clearfix::after&#123;</span><br><span class="line">    content:&#x27;&#x27;;</span><br><span class="line">    display:block;</span><br><span class="line">    height:0;</span><br><span class="line">    clear:both;</span><br><span class="line">    visibility:hidden;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-class">.clearfix</span>&#123;<br>    zoom:<span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-selector-class">.clearfix</span><span class="hljs-selector-pseudo">::after</span>&#123;<br>    <span class="hljs-attribute">content</span>:<span class="hljs-string">&#x27;&#x27;</span>;<br>    <span class="hljs-attribute">display</span>:block;<br>    <span class="hljs-attribute">height</span>:<span class="hljs-number">0</span>;<br>    <span class="hljs-attribute">clear</span>:both;<br>    <span class="hljs-attribute">visibility</span>:hidden;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h2 id="外部引入-css-方式：link-vs-import"><a href="#外部引入-css-方式：link-vs-import" class="headerlink" title="外部引入 css 方式：link vs @import"></a>外部引入 css 方式：link vs @import</h2><ol>
 <li>link 是 html 标签，@import 是 css 属性</li>
@@ -332,347 +368,400 @@
 <li>link 无兼容问题，@import 支持 IE5 以上</li>
 <li>link 支持 js 控制 dom 改样式，@import 不支持</li>
 </ol>
-<h2 id="css-场景应用"><a href="#css-场景应用" class="headerlink" title="css 场景应用"></a>css 场景应用</h2><h3 id="画一个三角形-x2F-扇形"><a href="#画一个三角形-x2F-扇形" class="headerlink" title="画一个三角形&#x2F;扇形"></a>画一个三角形&#x2F;扇形</h3><p>思路：div 的宽高设置为 0，border 的宽度设置大一点，除一边外其余边颜色透明；扇形需要有 border-radius</p>
+<h2 id="css-场景应用"><a href="#css-场景应用" class="headerlink" title="css 场景应用"></a>css 场景应用</h2><h3 id="样式文件内部-px-转-vw"><a href="#样式文件内部-px-转-vw" class="headerlink" title="样式文件内部 px 转 vw"></a>样式文件内部 px 转 vw</h3><ul>
+<li>sass 文件：定义函数，接收参数并且返回计算值<br>eg.将 375px 宽度的设计稿转换成适应屏幕宽度的样式</li>
+</ul>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scss"><span class="hljs-keyword">@function</span> pxToVW(<span class="hljs-variable">$px</span>) &#123;<br>  <span class="hljs-keyword">@return</span> (<span class="hljs-variable">$px</span>/<span class="hljs-number">375</span>) + vw;<br>&#125;<br><span class="hljs-comment">// 使用示例</span><br><span class="hljs-selector-class">.box</span> &#123;<br>  <span class="hljs-attribute">width</span>: pxToVW(<span class="hljs-number">36</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>less 文件：</li>
+</ul>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-variable">@windowWidth:</span> <span class="hljs-number">100vw</span>;<br><span class="hljs-selector-class">.rpxToVW</span>(<span class="hljs-variable">@name</span>,<span class="hljs-variable">@rpx</span>) &#123;<br>  <span class="hljs-comment">//传入不带单位的rpx数值，将rpx转为vw</span><br>  @&#123;name&#125;: <span class="hljs-selector-tag">unit</span>(<span class="hljs-variable">@rpx</span> / <span class="hljs-number">750</span> * <span class="hljs-variable">@windowWidth</span>, vw);<br>&#125;<br><span class="hljs-selector-class">.box</span> &#123;<br>  <span class="hljs-selector-class">.rpxToVW</span>(margin,<span class="hljs-number">20</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="画一个三角形-x2F-扇形"><a href="#画一个三角形-x2F-扇形" class="headerlink" title="画一个三角形&#x2F;扇形"></a>画一个三角形&#x2F;扇形</h3><p>思路：div 的宽高设置为 0，border 的宽度设置大一点，除一边外其余边颜色透明；扇形需要有 border-radius</p>
 <h3 id="宽高自适应的正方形"><a href="#宽高自适应的正方形" class="headerlink" title="宽高自适应的正方形"></a>宽高自适应的正方形</h3><p>width：30vw；height：30vw；</p>
 <h3 id="多行文本溢出"><a href="#多行文本溢出" class="headerlink" title="多行文本溢出"></a>多行文本溢出</h3><p>overflow:hidden;<br>text-overflow:ellipsis;<br>display:-webkit-box;<br>-webkit-box-orient:vertical;<br>-webkit-line-clamp:3;</p>
 <h3 id="居中方式"><a href="#居中方式" class="headerlink" title="居中方式"></a>居中方式</h3><h4 id="水平居中"><a href="#水平居中" class="headerlink" title="水平居中"></a>水平居中</h4><p>1）行内元素：text-align：center；<br>2）块元素：margin：0 auto；<br>3）position：absolute；left：50%；transform：translateX（-50%）；<br>4）display：flex；justify-content：center；</p>
 <h4 id="垂直居中"><a href="#垂直居中" class="headerlink" title="垂直居中"></a>垂直居中</h4><p>1）单行文本：line-height&#x3D;height<br>2）display：table-cell；vertical-align：middle；<br>3）position：absolute；top：50%；transform：translateY（-50%）；<br>4）display：flex；align-items：center；</p>
-<h4 id="水平垂直居中"><a href="#水平垂直居中" class="headerlink" title="水平垂直居中"></a>水平垂直居中</h4><p>1）margin：auto；left：0；right：0；top：0；bottom：0；<br>2）position：absolute；left：50%；top：50%；transform：translate（-50%，-50%）；<br>3）display：flex；align-items：center；justify-content：center；</p>
-<h3 id="两栏布局"><a href="#两栏布局" class="headerlink" title="两栏布局"></a>两栏布局</h3><p>1）float+margin<br>2）float+overflow<br>3）grid-template-columns<br>4）flex<br>5）absolute*2</p>
-<h3 id="三栏布局"><a href="#三栏布局" class="headerlink" title="三栏布局"></a>三栏布局</h3><h3 id="双飞翼布局"><a href="#双飞翼布局" class="headerlink" title="双飞翼布局"></a>双飞翼布局</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#wrapper&#123;float:left;width:100%;height:50px;&#125;</span><br><span class="line"> #center&#123;margin:0 100px 0 200px;&#125;</span><br><span class="line">#left&#123;float:left;margin-left:-100%;width:200px;height:50px;&#125;</span><br><span class="line">#right&#123;float:left;margin-left:-100px;width:100px;height:50px;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="水平垂直居中"><a href="#水平垂直居中" class="headerlink" title="水平垂直居中"></a>水平垂直居中</h4><p>1）position: absolute; margin：auto；left：0；right：0；top：0；bottom：0；<br>2）position：absolute；left：50%；top：50%；transform：translate（-50%，-50%）；<br>3）display：flex；align-items：center；justify-content：center；</p>
+<h3 id="两栏布局"><a href="#两栏布局" class="headerlink" title="两栏布局"></a>两栏布局</h3><p>1）float+margin<br>2）float+overflow<br>3）grid-template-columns<br>4）flex<br>5）absolute+margin</p>
+<h3 id="三栏布局"><a href="#三栏布局" class="headerlink" title="三栏布局"></a>三栏布局</h3><h3 id="双飞翼布局"><a href="#双飞翼布局" class="headerlink" title="双飞翼布局"></a>双飞翼布局</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#wrapper</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100%</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br> <span class="hljs-selector-id">#center</span>&#123;<span class="hljs-attribute">margin</span>:<span class="hljs-number">0</span> <span class="hljs-number">100px</span> <span class="hljs-number">0</span> <span class="hljs-number">200px</span>;&#125;<br> <span class="hljs-selector-id">#left</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100%</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br> <span class="hljs-selector-id">#right</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100px</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br></code></pre></td></tr></table></figure>
 
-<h3 id="圣杯布局"><a href="#圣杯布局" class="headerlink" title="圣杯布局"></a>圣杯布局</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#parent&#123;height:50px;padding:0 100px 0 200px;&#125;</span><br><span class="line"> #center&#123;float:left;width:100%;height:50px;&#125;</span><br><span class="line"> #left&#123;float:left;margin-left:-100%;width:200px;height:50px;position:relative;left:-200px;&#125;</span><br><span class="line"> #right&#123;float:left;margin-left:-100px;width:100px;height:50px;position:relative;right:100px;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="圣杯布局"><a href="#圣杯布局" class="headerlink" title="圣杯布局"></a>圣杯布局</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#parent</span>&#123;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;<span class="hljs-attribute">padding</span>:<span class="hljs-number">0</span> <span class="hljs-number">100px</span> <span class="hljs-number">0</span> <span class="hljs-number">200px</span>;&#125;<br> <span class="hljs-selector-id">#center</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100%</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;&#125;<br> <span class="hljs-selector-id">#left</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100%</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;<span class="hljs-attribute">position</span>:relative;<span class="hljs-attribute">left</span>:-<span class="hljs-number">200px</span>;&#125;<br> <span class="hljs-selector-id">#right</span>&#123;<span class="hljs-attribute">float</span><span class="hljs-selector-pseudo">:left</span>;<span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100px</span>;<span class="hljs-attribute">width</span>:<span class="hljs-number">100px</span>;<span class="hljs-attribute">height</span>:<span class="hljs-number">50px</span>;<span class="hljs-attribute">position</span>:relative;<span class="hljs-attribute">right</span>:<span class="hljs-number">100px</span>;&#125;<br></code></pre></td></tr></table></figure>
 
+<h2 id="less-vs-sass"><a href="#less-vs-sass" class="headerlink" title="less vs sass"></a>less vs sass</h2><ul>
+<li>变量定义方式不同：less 使用 @开头，sass 使用 $开头</li>
+<li>循环和条件语句：sass 支持的内容更完整</li>
+</ul>
+
+                
+              </div>
             
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" class="category-chain-item">前端基础</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/HTML/">#HTML</a>
+      
+        <a href="/unknown404.github.io/tags/CSS/">#CSS</a>
+      
+    </div>
+  
+</div>
 
 
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HTML/CSS</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/06/07/HTML/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
         </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年6月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-            <div class="post-footer-tags">
-                <span class="text-color-light text-small">标签</span><br/>
-                
-    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/CSS/" rel="tag">CSS</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/HTML/" rel="tag">HTML</a>
+    <div class="license-icon iconfont"></div>
+  </div>
 
-            </div>
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/06/09/React/"
-                    data-tooltip="React"
-                    aria-label="上一篇: React"
-                >
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
+                      <a href="/unknown404.github.io/2022/06/09/React/" title="React">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">React</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/06/05/formSubmit/"
-                    data-tooltip="表单提交功能的注意事项"
-                    aria-label="下一篇: 表单提交功能的注意事项"
-                >
+                  </article>
+                  <article class="post-next col-6">
                     
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
-    </span>
-</footer>
-
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/06/09/React/"
-                    data-tooltip="React"
-                    aria-label="上一篇: React"
-                >
+                      <a href="/unknown404.github.io/2022/06/05/formSubmit/" title="表单提交功能的注意事项">
+                        <span class="hidden-mobile">表单提交功能的注意事项</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/06/05/formSubmit/"
-                    data-tooltip="表单提交功能的注意事项"
-                    aria-label="下一篇: 表单提交功能的注意事项"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
+                  </article>
                 </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
+              
+            </div>
+
             
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                        aria-label="分享到 Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                        aria-label="分享到 Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/07/HTML/"
-                        aria-label="分享到 Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
-
-            
-        </div>
-        
-
-
-    
-        
-    
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
-        </div>
-        
-            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-            <h4 id="about-card-name">小白的文件整理箱</h4>
-        
-            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>菜鸟级摸鱼工程师</p>
 
-            </div>
-        
-        
-            <div id="about-card-location">
-                <i class="fa fa-map-marker-alt"></i>
-                <br/>
-                Shadow Border
-            </div>
-        
+
+
+  </aside>
+
+
     </div>
+  </div>
 </div>
 
-        
-        
-<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
 
-<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
 
-<!--SCRIPTS END-->
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
 
 
     
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
-    </body>
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
 </html>

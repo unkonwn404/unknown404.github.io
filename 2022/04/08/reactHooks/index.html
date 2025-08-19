@@ -1,628 +1,756 @@
 
+
 <!DOCTYPE html>
-<html lang="zh-cn">
-    
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="小白的文件整理箱">
-    <title>React Hooks学习笔记 - 小白的文件整理箱</title>
-    <meta name="author" content="小白的文件整理箱">
-    
-    
-    
-        
-            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
-        
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"记录常用的 React 钩子的使用方法。\n\n\n\nReact Hook 规则（1）只在最顶层使用 Hook：不要在循环，条件或嵌套函数中调用 Hook（2）只在 React 函数中调用 Hook：可以在 React 组件或自定义钩子中调用\nuseState使用示例：\n1[selfState,setSelfState]=useState(initialState)\n\n输入参数：初始状态 initialState。如果 initialState 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。返回参数：当前状态名 selfState 和更新状态函数名 setSelfStatesetSelfState 可以传入新值来变更状态 setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数 setSelfState(prevState &#x3D;&gt; newState)注意点：（1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。（2）initialState 可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。（3）过时状态问题：class 和 hooks 的写法里，异步操作的过程中如何改变 state 的值，最后打印的时候都是最初的值或者说异步操作开始定义的时候的 state 的值。如下面的函数组件中 setTimeout 取到的都是旧值，是因为 react 中一直遵循一个原则，即 state 指向的内容是不可变的，所以每一次 state 的更新都是指向变了。因为闭包的原因，setTimeout 中依然指向的原来的对象，所以旧的 state 没有释放，所以会取到旧值。\n12345678910111213141516function DelayedCount() &#123;  const [count, setCount] = useState(0);  const handleClickAsync = () =&gt; &#123;    setTimeout(function delay() &#123;      setCount(count + 1);    &#125;, 3000);  &#125;  return (    &lt;div&gt;      &#123;count&#125;      &lt;button onClick=&#123;handleClickAsync&#125;&gt;Increase async&lt;/button&gt;    &lt;/div&gt;  );&#125;\n\n以上代码点击多次时不能正确记录点击次数。解决方法是使用 setCount(count &#x3D;&gt; count + 1)，这样不依赖外部变量、确保将最新状态值作为参数提供给更新状态函数，过时闭包的问题解决了。\nuseEffect使用示例：\n1234useEffect(()=&gt;&#123;    ...    return ()=&gt;&#123;&#125;&#125;,[variable])\n\n第一参数的回调函数函数可以没有返回值，第二参数的书写不是必要的，如果设置了变量 variable，当且仅当 variable 改变时才会触发第一参数回调\nuseEffect 与生命周期关系useEffect 实现 componentDidMountuseEffect 的第二个参数设置为一个空数组时，初始化调用一次之后不再执行回调，相当于周期 componentDidMount\n123useEffect(() =&gt; &#123;    console.log(&#x27;hello world&#x27;)&#125;, [])\n\nuseEffect 实现 componentDidMount 和 componentDidUpdate当 useEffect 没有第二个参数时,组件的初始化和更新都会执行。当 useEffect 有第二个参数时,组件的更新仅当 variable 改变时会执行。\nuseEffect 实现 componentDidMount 和 componentWillMountuseEffect 设置返回一个函数，这个函数在组件卸载时会执行。\n12345678910useEffect(() =&gt; &#123;    function handleStatusChange(status) &#123;      setIsOnline(status.isOnline);    &#125;    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);    // Specify how to clean up after this effect:    return function cleanup() &#123;      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);    &#125;;&#125;,[]);\n\nuseEffect 无限循环陷阱1234567891011121314151617181920212223242526import React, &#123; useState, useEffect &#125; from &#x27;react&#x27;;import axios from &#x27;axios&#x27;;function App() &#123;  const [data, setData] = useState(&#123; hits: [] &#125;);  useEffect(async () =&gt; &#123;    const result = await axios(      &#x27;http://localhost/api/v1/search?query=redux&#x27;,    );    setData(result.data);  &#125;);  return (    &lt;ul&gt;      &#123;data.hits.map(item =&gt; (        &lt;li key=&#123;item.objectID&#125;&gt;          &lt;a href=&#123;item.url&#125;&gt;&#123;item.title&#125;&lt;/a&gt;        &lt;/li&gt;      ))&#125;    &lt;/ul&gt;  );&#125;export default App;\n\n以该组件为例，初次渲染执行 useEffect 内部请求、返回数据后，由于使用了 setData 组件 state 改变，引起重新渲染，同时由于 useEffect 没有依赖项，再次渲染时仍然会触发内部的回调，因此出现了无限循环的问题。\n解决方式：如果只希望在组件 mount 时执行请求，可以传递一个空数组作为 useEffect 的第二个参数\nuseEffect 与 async 同时使用时的报错async 函数会返回 promise，但 useEffect 只允许返回一个清除函数，所以在控制台可以看到警告提醒\nWarning: useEffect function must return a cleanup function or nothing. Promises and useEffect(async () &#x3D;&gt; …) are not supported, but you can call an async function inside an effect\n\n解决方式：async 函数的定义分离出 useEffect 回调函数，回调函数内部执行 async 函数。\nuseEffect vs useLayoutEffect执行时期：useEffect 在全部渲染完毕后才会执行，useLayoutEffect 会在浏览器布局之后，绘制之前执行执行方式：useEffect 异步，useLayoutEffect 同步\nuseMemo使用示例：\n1234const memo=useMemo(()=&gt;&#123;    ...    return compute(props.v)&#125;,[variable])\n\n传入 useMemo 的函数会在渲染期间执行。如果没有设置第二参数依赖变量，则每次渲染都会执行第一参数的函数来计算。类比生命周期就是 shouldComponentUpdate适用场景：（1）父组件将某个值传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，子组件同样也会重新渲染。因此可以使用 useMemo、将依赖设置为父组件传递的值，只有当其发生变化时子组件才更新。（2）组件内部计算成本比较高的逻辑。需要通过控制依赖来减少不必要的计算。注意点：（1）useMemo 内部不要使用 setState 相关操作，会导致无限循环（2）包括后面的 useCallback，如果是用在父子组件传值的场景，子组件通常用高阶函数 React.memo 包裹辨析：React.memo 和 useMemoReact.memo：高阶组件，基础思想：props 没有改变则无需渲染组件。使用方法：React.memo(Component, [areEqual])其中 areEqual 函数不是必须要有的，当 props 浅比较无法实现预计的更新逻辑时才需要传入自己手写的比较逻辑。\nuseMemo：组件初次渲染时，执行一次包裹的函数，把函数返回值缓存起来。当组件重新渲染时，通过浅比较检查依赖数组 dependencies 有没有变化。如果没有直接返回之前缓存的结果。\nuseCallback使用示例：\n1234const fn=useCallback(()=&gt;&#123;    ...    doSomething(variable)&#125;,[variable])\n\nuseCallback(fn, deps) 相当于 useMemo(() &#x3D;&gt; fn, deps)。类似生命周期 shouldComponentUpdate适用场景：（1）父组件将某个函数传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，由于函数重新创建等原因子组件同样也会重新渲染。\nuseRef使用示例：\n1const refContainer = useRef(initialValue);\n\n输入参数 initialValue 将赋给 ref 的 current 属性。ref 作用于 HTML 元素时 ref 接收底层 DOM 元素作为其 current 属性；作用于组件时，ref 对象接收组件的挂载实例作为其 current 属性。useRef() 和自建一个 {current: …} 对象的唯一区别是，useRef 会在每次渲染时返回同一个 ref 对象。适用场景：（1）引用如 input 等有参数频繁变动更新的 dom 元素。\n参考文献（1）useEffect 你真的会用吗？（2）React Hooks 及其性能优化之 React.memo,useCallBack,useMemo（3）解读 useMemo, useCallback 和 React.memo，不再盲目做优化\n","dateCreated":"2022-04-08T14:47:53+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-04-08T14:47:53+08:00","description":"记录常用的 React 钩子的使用方法。","headline":"React Hooks学习笔记","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/","keywords":"React"}</script>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
     <meta name="description" content="记录常用的 React 钩子的使用方法。">
-<meta property="og:type" content="blog">
+<meta property="og:type" content="article">
 <meta property="og:title" content="React Hooks学习笔记">
-<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/04/08/reactHooks/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="记录常用的 React 钩子的使用方法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-04-08T06:47:53.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:27:34.463Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.732Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
-<meta name="twitter:card" content="summary">
-    
-    
-        
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
-    
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>React Hooks学习笔记 - 小白的文件整理箱</title>
 
-    <!--STYLES END-->
-    
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    
 
-    
-        
-    
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
 
+<body>
+  
 
-    
-        
-            
-        
+  <header>
     
 
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/unknown_404/"
-            aria-label=""
-        >
-            小白的文件整理箱
-        </a>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="打开链接: /unknown_404/#about"
-            >
-        
-        
-            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-
-        
-    
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-            <div class="sidebar-profile">
-                <a
-                    href="/unknown_404/#about"
-                    aria-label="阅读有关作者的更多信息"
-                >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-                </a>
-                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
-                
-                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
-</h5>
-                
-            </div>
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/"
-                            
-                            rel="noopener"
-                            title="首页"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">首页</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-categories"
-                            
-                            rel="noopener"
-                            title="分类"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">分类</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-tags"
-                            
-                            rel="noopener"
-                            title="标签"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">标签</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-archives"
-                            
-                            rel="noopener"
-                            title="归档"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">归档</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="搜索"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">搜索</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="关于"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
+  </div>
 </nav>
 
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            React Hooks学习笔记
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2022-04-08T14:47:53+08:00">
-	
-		    4月 08, 2022
-    	
-    </time>
-    
-        <span>发布在 </span>
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="React Hooks学习笔记"></span>
+          
+        </div>
+
         
-    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/">前端技术体系</a>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-04-08 14:47" pubdate>
+          2022年4月8日 下午
+        </time>
+      </span>
+    
+  </div>
 
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.4k 字
+        
+      </span>
+    
 
     
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
 </div>
 
-    
 </div>
 
+  </header>
+
+  <main>
     
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <p>记录常用的 React 钩子的使用方法。</p>
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">React Hooks学习笔记</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>记录常用的 React 钩子的使用方法。</p>
 <span id="more"></span>
-<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hook-%E8%A7%84%E5%88%99"><span class="toc-text">React Hook 规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useState"><span class="toc-text">useState</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useEffect"><span class="toc-text">useEffect</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect-%E4%B8%8E%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%85%B3%E7%B3%BB"><span class="toc-text">useEffect 与生命周期关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#useEffect-%E5%AE%9E%E7%8E%B0-componentDidMount"><span class="toc-text">useEffect 实现 componentDidMount</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#useEffect-%E5%AE%9E%E7%8E%B0-componentDidMount-%E5%92%8C-componentDidUpdate"><span class="toc-text">useEffect 实现 componentDidMount 和 componentDidUpdate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#useEffect-%E5%AE%9E%E7%8E%B0-componentDidMount-%E5%92%8C-componentWillMount"><span class="toc-text">useEffect 实现 componentDidMount 和 componentWillMount</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect-%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E9%99%B7%E9%98%B1"><span class="toc-text">useEffect 无限循环陷阱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect-%E4%B8%8E-async-%E5%90%8C%E6%97%B6%E4%BD%BF%E7%94%A8%E6%97%B6%E7%9A%84%E6%8A%A5%E9%94%99"><span class="toc-text">useEffect 与 async 同时使用时的报错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#useEffect-vs-useLayoutEffect"><span class="toc-text">useEffect vs useLayoutEffect</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useMemo"><span class="toc-text">useMemo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useCallback"><span class="toc-text">useCallback</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useRef"><span class="toc-text">useRef</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
 
 <h2 id="React-Hook-规则"><a href="#React-Hook-规则" class="headerlink" title="React Hook 规则"></a>React Hook 规则</h2><p>（1）只在最顶层使用 Hook：不要在循环，条件或嵌套函数中调用 Hook<br>（2）只在 React 函数中调用 Hook：可以在 React 组件或自定义钩子中调用</p>
 <h2 id="useState"><a href="#useState" class="headerlink" title="useState"></a>useState</h2><p>使用示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[selfState,setSelfState]=useState(initialState)</span><br></pre></td></tr></table></figure>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pf">[<span class="hljs-literal">self</span>State,<span class="hljs-built_in">set</span>SelfState]=useState(initialState)<br></code></pre></td></tr></table></figure>
 
-<p>输入参数：初始状态 initialState。如果 initialState 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。<br>返回参数：当前状态名 selfState 和更新状态函数名 setSelfState<br>setSelfState 可以传入新值来变更状态 setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数 setSelfState(prevState &#x3D;&gt; newState)<br>注意点：<br>（1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。<br>（2）initialState 可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。<br>（3）过时状态问题：class 和 hooks 的写法里，异步操作的过程中如何改变 state 的值，最后打印的时候都是最初的值或者说异步操作开始定义的时候的 state 的值。如下面的函数组件中 setTimeout 取到的都是旧值，是因为 react 中一直遵循一个原则，即 state 指向的内容是不可变的，所以每一次 state 的更新都是指向变了。因为闭包的原因，setTimeout 中依然指向的原来的对象，所以旧的 state 没有释放，所以会取到旧值。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function DelayedCount() &#123;</span><br><span class="line">  const [count, setCount] = useState(0);</span><br><span class="line"></span><br><span class="line">  const handleClickAsync = () =&gt; &#123;</span><br><span class="line">    setTimeout(function delay() &#123;</span><br><span class="line">      setCount(count + 1);</span><br><span class="line">    &#125;, 3000);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &#123;count&#125;</span><br><span class="line">      &lt;button onClick=&#123;handleClickAsync&#125;&gt;Increase async&lt;/button&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输入参数：初始状态 initialState。如果 initialState 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用。<br>返回参数：当前状态名 selfState 和更新状态函数名 setSelfState<br>setSelfState 可以传入新值来变更状态 setSelfState(newState)；如果需要根据先前的状态更新状态，也可以使用回调函数 setSelfState(prevState &#x3D;&gt; newState)</p>
+<p><strong>辨析</strong>：setSelfState 直接传值和传函数的区别：<br>1）直接传值更新为指定值，传函数更新与当前状态值相关<br>2）传函数可处理多次调用的累加场景，直接传值不行<br>3）传函数可避免闭包</p>
+<p>注意点：<br>（1）因为 state 只在组件首次渲染的时候被创建。在下一次重新渲染时，useState 返回给我们当前的 state。<br>（2）initialState 可以是数组或对象，不像 class 中的 this.setState，更新 state 变量总是替换它而不是合并它。<br>（3）过时状态问题：class 和 hooks 的写法里，异步操作的过程中如何改变 state 的值，最后打印的时候都是最初的值或者说异步操作开始定义的时候的 state 的值。如下面的函数组件中 setTimeout 取到的都是旧值，是因为 react 中一直遵循一个原则，即 state 指向的内容是不可变的，所以每一次 state 的更新都是指向变了。因为闭包的原因，setTimeout 中依然指向的原来的对象，所以旧的 state 没有释放，所以会取到旧值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">DelayedCount</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);<br><br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleClickAsync</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span> <span class="hljs-title function_">delay</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-title function_">setCount</span>(count + <span class="hljs-number">1</span>);<br>    &#125;, <span class="hljs-number">3000</span>);<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      &#123;count&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;handleClickAsync&#125;</span>&gt;</span>Increase async<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>以上代码点击多次时不能正确记录点击次数。解决方法是使用 setCount(count &#x3D;&gt; count + 1)，这样不依赖外部变量、确保将最新状态值作为参数提供给更新状态函数，过时闭包的问题解决了。</p>
-<h2 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h2><p>使用示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">useEffect(()=&gt;&#123;</span><br><span class="line">    ...</span><br><span class="line">    return ()=&gt;&#123;&#125;</span><br><span class="line">&#125;,[variable])</span><br></pre></td></tr></table></figure>
+<h3 id="备注：React-闭包"><a href="#备注：React-闭包" class="headerlink" title="备注：React 闭包"></a>备注：React 闭包</h3><p>react hook 的存储结构为链表结构，react 组件的 hooks 会按照顺序存储在下面的链表结构中。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">Hook</span> = &#123;<br>  <span class="hljs-attr">memoizedState</span>: <span class="hljs-built_in">any</span>;<br>  <span class="hljs-attr">baseState</span>: <span class="hljs-built_in">any</span>;<br>  <span class="hljs-attr">baseQueue</span>: <span class="hljs-title class_">Update</span>&lt;<span class="hljs-built_in">any</span>, <span class="hljs-built_in">any</span>&gt; | <span class="hljs-literal">null</span>;<br>  <span class="hljs-attr">queue</span>: <span class="hljs-built_in">any</span>;<br>  <span class="hljs-attr">next</span>: <span class="hljs-title class_">Hook</span> | <span class="hljs-literal">null</span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>在下面这段代码中，尽管渲染出的 count 值在变化，但是控制台打印出来的却没有。组件的工作流程大致是：useEffect 函数在第一次渲染完成后触发内部函数，创建计时器、react 组件状态改变发生重渲染、计时器持续工作改变 count 的内容、渲染内容不断更新。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; useState, useEffect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> () =&gt; &#123;<br>  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);<br><br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">const</span> interval = <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>      <span class="hljs-title function_">setCount</span>(<span class="hljs-function">(<span class="hljs-params">count</span>) =&gt;</span> count + <span class="hljs-number">1</span>);<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(count, <span class="hljs-string">&quot;count&quot;</span>);<br>    &#125;, <span class="hljs-number">1000</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">clearInterval</span>(interval);<br>  &#125;, []);<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>count: &#123;count&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/&gt;</span></span><br>  );<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>然而在更新过程中，对于 useEffect 来说，因为它的依赖是空数组，只在组件初始化时执行，可以理解为 useEffect 对应的 hook 节点不需要更新，直接复用旧的 useEffect 对应的 hook 节点；在旧节点中 setInterval 里的回调函数对于 count 变量的使用也还是保持原样，所以形成了闭包。而 setCount 传入的是更新函数，可以自动获取 preState、没有使用闭包的变量 count，所以不影响渲染。这是因为 react 在 render 阶段会遍历 hook 上的 hook.queue 链表上保存的 update，调用 reducer 方法计算 newState</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> newState = current.<span class="hljs-property">baseState</span>;<span class="hljs-comment">//取上一次更新的state</span><br><span class="hljs-keyword">do</span> &#123;<br>    ...<span class="hljs-comment">//省略细节</span><br>    <span class="hljs-keyword">const</span> action = update.<span class="hljs-property">action</span>;<br>    newState = <span class="hljs-title function_">reducer</span>(newState, action);<br>    update = update.<span class="hljs-property">next</span>;<br>&#125; <span class="hljs-keyword">while</span> (update !== <span class="hljs-literal">null</span> &amp;&amp; update !== first);<br><span class="hljs-comment">//计算完成后更新memoizedState并返回</span><br>hook.<span class="hljs-property">memoizedState</span> = newState;<br>hook.<span class="hljs-property">baseState</span> = newBaseState;<br><span class="hljs-keyword">return</span> [hook.<span class="hljs-property">memoizedState</span>, dispatch];<br></code></pre></td></tr></table></figure>
+
+<p>reducer 的计算逻辑如下所示，当传入的 action 是函数时，每次调用 reducer(newState, action)都会传入上一次计算得到的新的 newState 进去调用 action(state)返回新的结果;而如果传值的话则 newState 的结果只会是最后一个 update 对象的 action 的值。所以如果 setInterval 内部使用 setCount(count + 1)的话读取到的 count 都是本次 render 的值 0</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">basicStateReducer</span>(<span class="hljs-params">state, action</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> action === <span class="hljs-string">&quot;function&quot;</span> ? <span class="hljs-title function_">action</span>(state) : action;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>总结：函数式组件每次渲染都会生成新的函数和新的状态值，但闭包函数会捕获当时的状态。</p>
+<h4 id="闭包的解决方法"><a href="#闭包的解决方法" class="headerlink" title="闭包的解决方法"></a>闭包的解决方法</h4><ol>
+<li><p>useEffect 添加依赖，保证每次更新时替换 hook 缓存的函数，读取到的是最新的 state.</p>
+</li>
+<li><p>使用 useRef 存储最新的 count。useRef 返回的始终是同一个 ref 对象，在组件的整个生命周期中是不变的，也就是地址是没变的；既然地址没变，通过 ref 对象的 current 属性存储最新的 state，就可以保证每次通过 ref.current 拿到的值就是最新的</p>
+</li>
+</ol>
+<p>组件库 ahook 的 useLatest 就是利用 useRef 这一特性。其源码为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useRef &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;<br><br><span class="hljs-comment">// 通过 useRef，保持每次获取到的都是最新的值</span><br><span class="hljs-keyword">function</span> useLatest&lt;T&gt;(<span class="hljs-attr">value</span>: T) &#123;<br>  <span class="hljs-keyword">const</span> ref = <span class="hljs-title function_">useRef</span>(value);<br>  ref.<span class="hljs-property">current</span> = value;<br>  <span class="hljs-keyword">return</span> ref;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> useLatest;<br></code></pre></td></tr></table></figure>
+
+<h2 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h2><p>允许你在函数组件中执行一些副作用操作，比如数据获取、订阅事件、手动修改 DOM 等。</p>
+<p>使用示例：</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs arcade">useEffect(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;<br>    ...<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;<br>&#125;,[variable])<br></code></pre></td></tr></table></figure>
 
 <p>第一参数的回调函数函数可以没有返回值，第二参数的书写不是必要的，如果设置了变量 variable，当且仅当 variable 改变时才会触发第一参数回调</p>
 <h3 id="useEffect-与生命周期关系"><a href="#useEffect-与生命周期关系" class="headerlink" title="useEffect 与生命周期关系"></a>useEffect 与生命周期关系</h3><h4 id="useEffect-实现-componentDidMount"><a href="#useEffect-实现-componentDidMount" class="headerlink" title="useEffect 实现 componentDidMount"></a>useEffect 实现 componentDidMount</h4><p>useEffect 的第二个参数设置为一个空数组时，初始化调用一次之后不再执行回调，相当于周期 componentDidMount</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">    console.log(&#x27;hello world&#x27;)</span><br><span class="line">&#125;, [])</span><br></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">useEffect</span><span class="hljs-params">(()</span></span> =&gt; &#123;<br>    console<span class="hljs-selector-class">.log</span>(<span class="hljs-string">&#x27;hello world&#x27;</span>)<br>&#125;, <span class="hljs-selector-attr">[]</span>)<br></code></pre></td></tr></table></figure>
 
 <h4 id="useEffect-实现-componentDidMount-和-componentDidUpdate"><a href="#useEffect-实现-componentDidMount-和-componentDidUpdate" class="headerlink" title="useEffect 实现 componentDidMount 和 componentDidUpdate"></a>useEffect 实现 componentDidMount 和 componentDidUpdate</h4><p>当 useEffect 没有第二个参数时,组件的初始化和更新都会执行。<br>当 useEffect 有第二个参数时,组件的更新仅当 variable 改变时会执行。</p>
 <h4 id="useEffect-实现-componentDidMount-和-componentWillMount"><a href="#useEffect-实现-componentDidMount-和-componentWillMount" class="headerlink" title="useEffect 实现 componentDidMount 和 componentWillMount"></a>useEffect 实现 componentDidMount 和 componentWillMount</h4><p>useEffect 设置返回一个函数，这个函数在组件卸载时会执行。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">    function handleStatusChange(status) &#123;</span><br><span class="line">      setIsOnline(status.isOnline);</span><br><span class="line">    &#125;</span><br><span class="line">    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    // Specify how to clean up after this effect:</span><br><span class="line">    return function cleanup() &#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;,[]);</span><br></pre></td></tr></table></figure>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">use<span class="hljs-constructor">Effect(()</span> =&gt; &#123;<br>    <span class="hljs-keyword">function</span> handle<span class="hljs-constructor">StatusChange(<span class="hljs-params">status</span>)</span> &#123;<br>      set<span class="hljs-constructor">IsOnline(<span class="hljs-params">status</span>.<span class="hljs-params">isOnline</span>)</span>;<br>    &#125;<br>    <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">ChatAPI</span>.</span></span>subscribe<span class="hljs-constructor">ToFriendStatus(<span class="hljs-params">props</span>.<span class="hljs-params">friend</span>.<span class="hljs-params">id</span>, <span class="hljs-params">handleStatusChange</span>)</span>;<br>    <span class="hljs-comment">// Specify how to clean up after this effect:</span><br>    return <span class="hljs-keyword">function</span> cleanup<span class="hljs-literal">()</span> &#123;<br>      <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">ChatAPI</span>.</span></span>unsubscribe<span class="hljs-constructor">FromFriendStatus(<span class="hljs-params">props</span>.<span class="hljs-params">friend</span>.<span class="hljs-params">id</span>, <span class="hljs-params">handleStatusChange</span>)</span>;<br>    &#125;;<br>&#125;,<span class="hljs-literal">[]</span>);<br></code></pre></td></tr></table></figure>
 
-<h3 id="useEffect-无限循环陷阱"><a href="#useEffect-无限循环陷阱" class="headerlink" title="useEffect 无限循环陷阱"></a>useEffect 无限循环陷阱</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">import React, &#123; useState, useEffect &#125; from &#x27;react&#x27;;</span><br><span class="line">import axios from &#x27;axios&#x27;;</span><br><span class="line"></span><br><span class="line">function App() &#123;</span><br><span class="line">  const [data, setData] = useState(&#123; hits: [] &#125;);</span><br><span class="line"></span><br><span class="line">  useEffect(async () =&gt; &#123;</span><br><span class="line">    const result = await axios(</span><br><span class="line">      &#x27;http://localhost/api/v1/search?query=redux&#x27;,</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    setData(result.data);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">      &#123;data.hits.map(item =&gt; (</span><br><span class="line">        &lt;li key=&#123;item.objectID&#125;&gt;</span><br><span class="line">          &lt;a href=&#123;item.url&#125;&gt;&#123;item.title&#125;&lt;/a&gt;</span><br><span class="line">        &lt;/li&gt;</span><br><span class="line">      ))&#125;</span><br><span class="line">    &lt;/ul&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">export default App;</span><br></pre></td></tr></table></figure>
+<h3 id="useEffect-无限循环陷阱"><a href="#useEffect-无限循环陷阱" class="headerlink" title="useEffect 无限循环陷阱"></a>useEffect 无限循环陷阱</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; useState, useEffect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [data, setData] = <span class="hljs-title function_">useState</span>(&#123; <span class="hljs-attr">hits</span>: [] &#125;);<br><br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-keyword">async</span> () =&gt; &#123;<br>    <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> <span class="hljs-title function_">axios</span>(<br>      <span class="hljs-string">&#x27;http://localhost/api/v1/search?query=redux&#x27;</span>,<br>    );<br><br>    <span class="hljs-title function_">setData</span>(result.<span class="hljs-property">data</span>);<br>  &#125;);<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span></span><br><span class="language-xml">      &#123;data.hits.map(item =&gt; (</span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;item.objectID&#125;</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&#123;item.url&#125;</span>&gt;</span>&#123;item.title&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span><br><span class="language-xml">      ))&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span><br>  );<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">App</span>;<br></code></pre></td></tr></table></figure>
 
 <p>以该组件为例，初次渲染执行 useEffect 内部请求、返回数据后，由于使用了 setData 组件 state 改变，引起重新渲染，同时由于 useEffect 没有依赖项，再次渲染时仍然会触发内部的回调，因此出现了无限循环的问题。</p>
 <p>解决方式：如果只希望在组件 mount 时执行请求，可以传递一个空数组作为 useEffect 的第二个参数</p>
 <h3 id="useEffect-与-async-同时使用时的报错"><a href="#useEffect-与-async-同时使用时的报错" class="headerlink" title="useEffect 与 async 同时使用时的报错"></a>useEffect 与 async 同时使用时的报错</h3><p>async 函数会返回 promise，但 useEffect 只允许返回一个清除函数，所以在控制台可以看到警告提醒</p>
-<div class="alert info"><p>Warning: useEffect function must return a cleanup function or nothing. Promises and useEffect(async () &#x3D;&gt; …) are not supported, but you can call an async function inside an effect</p>
-</div>
+<div class="note note-info">
+            <p>Warning: useEffect function must return a cleanup function or nothing. Promises and useEffect(async () &#x3D;&gt; …) are not supported, but you can call an async function inside an effect</p>
+          </div>
 <p>解决方式：async 函数的定义分离出 useEffect 回调函数，回调函数内部执行 async 函数。</p>
 <h3 id="useEffect-vs-useLayoutEffect"><a href="#useEffect-vs-useLayoutEffect" class="headerlink" title="useEffect vs useLayoutEffect"></a>useEffect vs useLayoutEffect</h3><p>执行时期：useEffect 在全部渲染完毕后才会执行，useLayoutEffect 会在浏览器布局之后，绘制之前执行<br>执行方式：useEffect 异步，useLayoutEffect 同步</p>
 <h2 id="useMemo"><a href="#useMemo" class="headerlink" title="useMemo"></a>useMemo</h2><p>使用示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const memo=useMemo(()=&gt;&#123;</span><br><span class="line">    ...</span><br><span class="line">    return compute(props.v)</span><br><span class="line">&#125;,[variable])</span><br></pre></td></tr></table></figure>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript">const memo=useMemo(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;<br>    ...<br>    <span class="hljs-keyword">return</span> compute(props.v)<br>&#125;,[variable])<br></code></pre></td></tr></table></figure>
 
 <p>传入 useMemo 的函数会在渲染期间执行。如果没有设置第二参数依赖变量，则每次渲染都会执行第一参数的函数来计算。类比生命周期就是 shouldComponentUpdate<br>适用场景：<br>（1）父组件将某个值传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，子组件同样也会重新渲染。因此可以使用 useMemo、将依赖设置为父组件传递的值，只有当其发生变化时子组件才更新。<br>（2）组件内部计算成本比较高的逻辑。需要通过控制依赖来减少不必要的计算。<br>注意点：<br>（1）useMemo 内部不要使用 setState 相关操作，会导致无限循环<br>（2）包括后面的 useCallback，如果是用在父子组件传值的场景，子组件通常用高阶函数 React.memo 包裹<br><strong>辨析：React.memo 和 useMemo</strong><br>React.memo：高阶组件，基础思想：props 没有改变则无需渲染组件。使用方法：<code>React.memo(Component, [areEqual])</code>其中 areEqual 函数不是必须要有的，当 props 浅比较无法实现预计的更新逻辑时才需要传入自己手写的比较逻辑。</p>
 <p>useMemo：组件初次渲染时，执行一次包裹的函数，把函数返回值缓存起来。当组件重新渲染时，通过浅比较检查依赖数组 dependencies 有没有变化。如果没有直接返回之前缓存的结果。</p>
 <h2 id="useCallback"><a href="#useCallback" class="headerlink" title="useCallback"></a>useCallback</h2><p>使用示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const fn=useCallback(()=&gt;&#123;</span><br><span class="line">    ...</span><br><span class="line">    doSomething(variable)</span><br><span class="line">&#125;,[variable])</span><br></pre></td></tr></table></figure>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs zephir"><span class="hljs-keyword">const</span> <span class="hljs-function"><span class="hljs-keyword">fn</span>=<span class="hljs-title">useCallback</span><span class="hljs-params">(<span class="hljs-params">()</span>=&gt;&#123;</span></span><br><span class="hljs-params"><span class="hljs-function">    ...</span></span><br><span class="hljs-params"><span class="hljs-function">    doSomething<span class="hljs-params">(variable)</span></span></span><br><span class="hljs-params"><span class="hljs-function">&#125;,[variable])</span></span><br></code></pre></td></tr></table></figure>
 
-<p>useCallback(fn, deps) 相当于 useMemo(() &#x3D;&gt; fn, deps)。类似生命周期 shouldComponentUpdate<br>适用场景：<br>（1）父组件将某个函数传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，由于函数重新创建等原因子组件同样也会重新渲染。</p>
+<p>useCallback(fn, deps) 相当于 useMemo(() &#x3D;&gt; fn, deps)。类似生命周期 shouldComponentUpdate<br>适用场景：<br>（1）父组件将某个函数传给子组件、且父组件有频繁更新的情况。父组件其他值变化时，由于函数重新创建等原因子组件同样也会重新渲染。<br>（2）useEffect 中可能会有依赖函数的场景，需要使用 useCallback 缓存函数，避免 useEffect 的无限调用</p>
 <h2 id="useRef"><a href="#useRef" class="headerlink" title="useRef"></a>useRef</h2><p>使用示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const refContainer = useRef(initialValue);</span><br></pre></td></tr></table></figure>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">const refContainer <span class="hljs-operator">=</span> useRef(initialValue)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
 
-<p>输入参数 initialValue 将赋给 ref 的 current 属性。ref 作用于 HTML 元素时 ref 接收底层 DOM 元素作为其 current 属性；作用于组件时，ref 对象接收组件的挂载实例作为其 current 属性。<br>useRef() 和自建一个 {current: …} 对象的唯一区别是，useRef 会在每次渲染时返回同一个 ref 对象。<br>适用场景：<br>（1）引用如 input 等有参数频繁变动更新的 dom 元素。</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6952509261519781918#heading-0">useEffect 你真的会用吗？</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7053695602370019335">React Hooks 及其性能优化之 React.memo,useCallBack,useMemo</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7090820276547485709">解读 useMemo, useCallback 和 React.memo，不再盲目做优化</a></p>
+<p>输入参数 initialValue 将赋给 ref 的 current 属性。ref 作用于 HTML 元素时 ref 接收底层 DOM 元素作为其 current 属性；作用于组件时，ref 对象接收组件的挂载实例作为其 current 属性。<br>useRef() 和自建一个 {current: …} 对象的唯一区别是，useRef 会在每次渲染时返回同一个 ref 对象。<br>适用场景：<br>（1）引用如 input 等有参数频繁变动更新的 dom 元素。<br>（2）解决闭包问题，见 react 闭包的内容介绍<br>（3）自定义组件时提供了传入函数的入参、为防止自定义组件依赖入参函数的情况使用 useRef 包裹</p>
+<h2 id="useReducer"><a href="#useReducer" class="headerlink" title="useReducer"></a>useReducer</h2><p>使用示例：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pf"><span class="hljs-keyword">const</span> initialState = &#123; count: <span class="hljs-number">0</span> &#125;;<br><br>function reducer(<span class="hljs-keyword">state</span>, action) &#123;<br>  switch (action.type) &#123;<br>    case &#x27;increment&#x27;:<br>      return &#123; count: <span class="hljs-keyword">state</span>.count + <span class="hljs-number">1</span> &#125;;<br>    case &#x27;decrement&#x27;:<br>      return &#123; count: <span class="hljs-keyword">state</span>.count - <span class="hljs-number">1</span> &#125;;<br>    <span class="hljs-keyword">default</span>:<br>      return <span class="hljs-keyword">state</span>;<br>  &#125;<br>&#125;<br><span class="hljs-keyword">const</span> [<span class="hljs-keyword">state</span>, dispatch] = useReducer(reducer, initialState);<br></code></pre></td></tr></table></figure>
 
+<p>适用场景：<br>包含多个子状态、单组件小范围使用</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>useReducer</th>
+<th>Redux</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td>React 内部的局部状态管理工具</td>
+<td>独立于 React 的全局状态管理工具</td>
+</tr>
+<tr>
+<td>适用范围</td>
+<td>组件树的局部状态，主要在单个组件或小范围内使用</td>
+<td>跨组件树的全局状态，适合大型应用的状态管理</td>
+</tr>
+<tr>
+<td>状态存储位置</td>
+<td>状态存储在组件内，随组件生命周期销毁</td>
+<td>状态存储在全局的 Redux Store 中</td>
+</tr>
+<tr>
+<td>中间件支持</td>
+<td>无内置中间件支持</td>
+<td>支持如 redux-thunk、redux-saga 等中间件</td>
+</tr>
+<tr>
+<td>异步操作</td>
+<td>无内置机制，需要结合自定义逻辑处理</td>
+<td>支持中间件优雅处理异步操作</td>
+</tr>
+</tbody></table>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6952509261519781918#heading-0">useEffect 你真的会用吗？</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7053695602370019335">React Hooks 及其性能优化之 React.memo,useCallBack,useMemo</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7090820276547485709">解读 useMemo, useCallback 和 React.memo，不再盲目做优化</a><br>（4）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7239584269894189115?searchId=20230907171414B7126D9CD38D0536A22D">React 系列- 图解：React Hook 闭包问题</a><br>（5）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6952509261519781918#heading-0">useEffect 你真的会用吗？</a></p>
+
+                
+              </div>
             
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/" class="category-chain-item">前端技术体系</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/React/">#React</a>
+      
+    </div>
+  
+</div>
 
 
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>React Hooks学习笔记</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/04/08/reactHooks/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
         </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年4月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-            <div class="post-footer-tags">
-                <span class="text-color-light text-small">标签</span><br/>
-                
-    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/React/" rel="tag">React</a>
+    <div class="license-icon iconfont"></div>
+  </div>
 
-            </div>
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/04/27/gitCommand/"
-                    data-tooltip="git指令回顾"
-                    aria-label="上一篇: git指令回顾"
-                >
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
+                      <a href="/unknown404.github.io/2022/04/27/gitCommand/" title="git指令回顾">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">git指令回顾</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/04/05/regexp/"
-                    data-tooltip="正则表达式"
-                    aria-label="下一篇: 正则表达式"
-                >
+                  </article>
+                  <article class="post-next col-6">
                     
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
-    </span>
-</footer>
-
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/04/27/gitCommand/"
-                    data-tooltip="git指令回顾"
-                    aria-label="上一篇: git指令回顾"
-                >
+                      <a href="/unknown404.github.io/2022/04/05/regexp/" title="正则表达式">
+                        <span class="hidden-mobile">正则表达式</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/04/05/regexp/"
-                    data-tooltip="正则表达式"
-                    aria-label="下一篇: 正则表达式"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
+                  </article>
                 </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
+              
+            </div>
+
             
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                        aria-label="分享到 Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                        aria-label="分享到 Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/04/08/reactHooks/"
-                        aria-label="分享到 Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
-
-            
-        </div>
-        
-
-
-    
-        
-    
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
-        </div>
-        
-            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-            <h4 id="about-card-name">小白的文件整理箱</h4>
-        
-            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>菜鸟级摸鱼工程师</p>
 
-            </div>
-        
-        
-            <div id="about-card-location">
-                <i class="fa fa-map-marker-alt"></i>
-                <br/>
-                Shadow Border
-            </div>
-        
+
+
+  </aside>
+
+
     </div>
+  </div>
 </div>
 
-        
-        
-<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
 
-<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
 
-<!--SCRIPTS END-->
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
 
 
     
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
-    </body>
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
 </html>

@@ -1,0 +1,734 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="想针对一直在使用的 nodeJs 框架做一个梳理归纳。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodeJs网络框架简介">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2023/05/04/BFF/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="想针对一直在使用的 nodeJs 框架做一个梳理归纳。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-04T03:44:16.000Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.671Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="node.js">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>nodeJs网络框架简介 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="nodeJs网络框架简介"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-04 11:44" pubdate>
+          2023年5月4日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          49 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">nodeJs网络框架简介</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>想针对一直在使用的 nodeJs 框架做一个梳理归纳。</p>
+<span id="more"></span>
+
+<p>根据我的个人理解，目前常见的 nodeJS 框架可以分为基础框架和企业级框架。<br>所谓基础框架就是将 nodeJs 的 http 模块的方法进行了包装，提供了中间件、路由设置、模版渲染等方法。代表性的框架有 express、koa、fastify<br>而企业级框架则是在基础框架的基础上进一步架构，规定了代码组织复用的规则，集成了数据库、模板引擎的使用方案等，使后端的开发更加轻松，也更贴近业务需求。</p>
+<h2 id="基础框架"><a href="#基础框架" class="headerlink" title="基础框架"></a>基础框架</h2><h3 id="express"><a href="#express" class="headerlink" title="express"></a>express</h3><p>express 是 2010 年提出的框架，目前与其他框架相比更加成熟和稳定，具有更广泛的社区支持和生态系统。<br>特点：</p>
+<ul>
+<li>请求处理对象：Node 的 req 和 res 对象</li>
+<li>异步代码风格：依赖于回调函数和 Promise</li>
+<li>中间件模式：通过调用 next 函数来链式传递</li>
+<li>路由处理：express 框架已经集成，不需要额外引入插件</li>
+</ul>
+<h3 id="KOA"><a href="#KOA" class="headerlink" title="KOA"></a>KOA</h3><p>由 express 团队开发的，基于 ES6 新特性<br>特点：</p>
+<ul>
+<li>请求处理对象：Koa 框架自己封装的对象 ctx.request 和 ctx.response</li>
+<li>异步代码风格：使用 async 和 await 语言的特性</li>
+<li>中间件模式：洋葱模型，中间件可以直接返回 promise 对象</li>
+<li>路由处理：需要中间件如 koa-route</li>
+</ul>
+<h3 id="fastify"><a href="#fastify" class="headerlink" title="fastify"></a>fastify</h3><p>号称是快速且低开销的 Web 框架。社区插件丰富，可扩展性强。内置 logger，可以用于代码分析调试。<br>特点：</p>
+<ul>
+<li>请求处理对象：Node 的 req 和 res 对象</li>
+<li>异步代码风格：可使用 async 和 await 语言的特性，也可使用回调函数和 Promise 的书写方式</li>
+<li>中间件模式：可以直接返回处理结果，也可以使用 next 回调函数来调用下一个中间件</li>
+<li>路由处理：框架已经集成，不需要额外引入插件</li>
+</ul>
+<h2 id="企业级框架"><a href="#企业级框架" class="headerlink" title="企业级框架"></a>企业级框架</h2><h3 id="eggJs"><a href="#eggJs" class="headerlink" title="eggJs"></a>eggJs</h3><p>Egg.js 是一个基于 koa2 的开源框架。框架本身并没有集成如数据库、模板引擎、前端框架等功能，而是需要引入对应功能的插件（个人认为对于使用者来说这并不是一个非常好的选择，因为如果社区活跃度低，插件的丰富度和质量都会成为问题，最终只能自己花时间去开发）</p>
+<h4 id="有明确的约定规范"><a href="#有明确的约定规范" class="headerlink" title="有明确的约定规范"></a>有明确的约定规范</h4><p>eggJs 的目录结构大致如下所示，这里相对说明文档做了简化</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs stata">egg-project<br>├── package.json<br>├── <span class="hljs-keyword">app</span>.js (可选)<br>├── agent.js (可选)<br>├── <span class="hljs-keyword">app</span><br>|   ├── router.js<br>│   ├── controller<br>│   ├── service (可选)<br>│   ├── middleware (可选)<br>│   ├── schedule (可选)<br>│   ├── <span class="hljs-keyword">view</span> (可选)<br>│   └── extend (可选)<br>├── config<br>└── <span class="hljs-keyword">test</span><br></code></pre></td></tr></table></figure>
+
+<p>目录文件的作用：</p>
+<ul>
+<li>app.js 和 agent.js 用于自定义启动时的初始化工作</li>
+<li>app&#x2F;router.js 用于配置 URL 路由规则，将符合规则的路由请求发送给对应的目标控制器或模板</li>
+<li>app&#x2F;controller&#x2F;** 用于解析用户请求传入的参数，处理后返回相应的结果</li>
+<li>app&#x2F;service&#x2F;** 用于编写接口的业务逻辑，内容可以直接写在 controller 文件内部，但分离出来文件逻辑更清晰</li>
+<li>app&#x2F;middleware&#x2F;** 用于编写中间件</li>
+<li>app&#x2F;schedule&#x2F;** 用于定时任务</li>
+<li>app&#x2F;view&#x2F;** 用于放置模板文件</li>
+<li>app&#x2F;extend&#x2F;** 用于框架的扩展</li>
+</ul>
+<p>eggJs 约定了这些文件后，使用者只需要将实现的代码逻辑放在对应的文件夹下。在框架内部 egg-core 的 loader 会自动去读取对应文件夹下的文件，获取文件名、并将逻辑挂到指定的全局变量中。这里以 service 为例，在<a target="_blank" rel="noopener" href="https://github.com/eggjs/egg-core/blob/2920f6eade07959d25f5c4f96b154d3fbae877db/lib/loader/mixin/service.js">egg-core 的代码中</a>读取了 app&#x2F;service 目录下的文件，将文件名称作为一个作为属性，挂载在 context 上下文上，然后将对应的 js 文件，暴露的方法赋值在这个属性上。例如 service 文件夹下有一个 alertRule 的 js 文件，内部有 getWarning 方法。在运行项目时 alertRule 就会挂在 ctx.service 下，在 controller 中就可以通过 ctx.service.alertRule.getWarning()调用 service 里的逻辑代码<br>更详细的内容可以参考<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903716777099278">这篇文章</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-meta">&quot;use strict&quot;</span>;<br><br><span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;path&quot;</span>);<br><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-comment">/**</span><br><span class="hljs-comment">   * Load app/service</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@function</span> EggLoader#loadService</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type">Object</span>&#125; <span class="hljs-variable">opt</span> - LoaderOptions</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@since</span> 1.0.0</span><br><span class="hljs-comment">   */</span><br>  <span class="hljs-title function_">loadService</span>(<span class="hljs-params">opt</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">timing</span>.<span class="hljs-title function_">start</span>(<span class="hljs-string">&quot;Load Service&quot;</span>);<br>    <span class="hljs-comment">// 载入到 app.serviceClasses</span><br>    opt = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(<br>      &#123;<br>        <span class="hljs-attr">call</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">caseStyle</span>: <span class="hljs-string">&quot;lower&quot;</span>,<br>        <span class="hljs-attr">fieldClass</span>: <span class="hljs-string">&quot;serviceClasses&quot;</span>,<br>        <span class="hljs-attr">directory</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getLoadUnits</span>().<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">unit</span>) =&gt;</span><br>          path.<span class="hljs-title function_">join</span>(unit.<span class="hljs-property">path</span>, <span class="hljs-string">&quot;app/service&quot;</span>)<br>        ),<br>      &#125;,<br>      opt<br>    );<br>    <span class="hljs-keyword">const</span> servicePaths = opt.<span class="hljs-property">directory</span>;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">loadToContext</span>(servicePaths, <span class="hljs-string">&quot;service&quot;</span>, opt);<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">timing</span>.<span class="hljs-title function_">end</span>(<span class="hljs-string">&quot;Load Service&quot;</span>);<br>  &#125;,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h4 id="插件机制"><a href="#插件机制" class="headerlink" title="插件机制"></a>插件机制</h4><p>模板引擎、数据库连接都需要下载对应的 plugin；插件的配置需要在 config 文件夹下进行声明</p>
+<h4 id="多线程管理"><a href="#多线程管理" class="headerlink" title="多线程管理"></a>多线程管理</h4><p>eggJs 的进程模型如下</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">                +--------+          +-------+<br>                |<span class="hljs-string"> Master </span>|<span class="hljs-string">&lt;--------&gt;</span>|<span class="hljs-string"> Agent </span>|<br>                +--------+          +-------+<br>                ^   ^    ^<br>               /    |<span class="hljs-string">     \</span><br><span class="hljs-string">             /      </span>|<span class="hljs-string">       \</span><br><span class="hljs-string">           /        </span>|<span class="hljs-string">         \</span><br><span class="hljs-string">         v          v          v</span><br><span class="hljs-string">+----------+   +----------+   +----------+</span><br><span class="hljs-string"></span>|<span class="hljs-string"> Worker 1 </span>|<span class="hljs-string">   </span>|<span class="hljs-string"> Worker 2 </span>|<span class="hljs-string">   </span>|<span class="hljs-string"> Worker 3 </span>|<br>+----------+   +----------+   +----------+<br></code></pre></td></tr></table></figure>
+
+<p>Master 作为主线程，启动 Agent 作为秘书进程协助 Worker 处理一些公共事务（日志之类），同时启动 Worker 进程执行真正的业务代码。</p>
+<h3 id="nestJs"><a href="#nestJs" class="headerlink" title="nestJs"></a>nestJs</h3><p>nestJs 是基于 express 的开源框架，目录的结构据说和 Spring 有异曲同工之妙(但我没学过)。对 ts 的支持比较好。nestJs 的构建思路和 eggJs 几乎大相径庭。它具有以下特点</p>
+<h4 id="去中心化路由"><a href="#去中心化路由" class="headerlink" title="去中心化路由"></a>去中心化路由</h4><p>nest 项目没有 router.js 文件，所有的路由通过装饰器与 Controller 绑定。</p>
+<h4 id="依赖注入（DI-Dependency-Injection）思想"><a href="#依赖注入（DI-Dependency-Injection）思想" class="headerlink" title="依赖注入（DI, Dependency Injection）思想"></a>依赖注入（DI, Dependency Injection）思想</h4><p>依赖注入是控制反转（IOC，Inversion of Control）的一种应用形式。可以用于解决一个类依赖于另外一个类的情况。</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs haxe"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Dog</span> </span>&#123;&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> </span>&#123;<br>  <span class="hljs-keyword">private</span> _pet<br><br>  constructor () &#123;<br>    <span class="hljs-built_in">this</span>._pet = <span class="hljs-keyword">new</span> <span class="hljs-type">Dog</span>()<br>  &#125;<br>&#125;<br><br>const xiaoming = <span class="hljs-keyword">new</span> <span class="hljs-type">Person</span>()<br></code></pre></td></tr></table></figure>
+
+<p>例如上面这段代码，存在着两个问题：</p>
+<ul>
+<li>Person 类固定依赖于 Dog 类，如果后续 Person 想要依赖于其他宠物类，是无法轻易修改的。</li>
+<li>Dog 类有所变化，比如其属性颜色染成了黑色，Person 类也会直接受到影响。</li>
+</ul>
+<p>而如果将 Dog 的实例注入到 Person 类中，则 pet 属性不再强依赖 Dog 类。</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs axapta"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Dog</span> &#123;&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> &#123;<br>  <span class="hljs-keyword">private</span> _pet<br><br>  constructor (pet) &#123;<br>    <span class="hljs-keyword">this</span>._pet = pet<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">const</span> doggy = <span class="hljs-keyword">new</span> Dog()<br><span class="hljs-keyword">const</span> xiaoming = <span class="hljs-keyword">new</span> Person(doggy) <span class="hljs-comment">// 将实例化的 dog 传入 person 类</span><br></code></pre></td></tr></table></figure>
+
+<p>在 nestJs 框架中就承担了这样一个任务：一个容器来维护各个对象实例，当用户需要使用实例时，容器会自动将对象实例化给用户。<br>以初始化的 app 文件为例，在 app.controller.ts 中就是在构造器函数部分注入了 AppService 模块的实例 appService，controller 方法中就可以直接用 this.appService 访问 service 内部的方法，实例化的操作在框架内实现</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Controller</span>, <span class="hljs-title class_">Get</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/common&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">AppService</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./app.service&#x27;</span>;<br><br><span class="hljs-meta">@Controller</span>()<br><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AppController</span> &#123;<br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> appService: AppService</span>) &#123;&#125;<br><br>  <span class="hljs-meta">@Get</span>()<br>  <span class="hljs-title function_">getHello</span>(): <span class="hljs-built_in">string</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">appService</span>.<span class="hljs-title function_">getHello</span>();<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="模块化思想"><a href="#模块化思想" class="headerlink" title="模块化思想"></a>模块化思想</h4><p>Nest.js 应用程序都是由一个或多个模块组成的。每个模块都是一个独立的、封闭的功能单元，负责处理某个具体的业务逻辑或功能。使用指令<code>nest g resource xxx</code>就会生成以 xxx 命名的文件夹，内部包括了 controller、service、module 的文件,同时在 app.module.ts 也进行了自动导入，模块加入 imports 中。具体文件结构如下所示</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs stylus">test<br>├── test<span class="hljs-selector-class">.controller</span><span class="hljs-selector-class">.ts</span><br>├── test<span class="hljs-selector-class">.service</span><span class="hljs-selector-class">.ts</span><br>├── test<span class="hljs-selector-class">.controller</span><span class="hljs-selector-class">.spec</span><span class="hljs-selector-class">.ts</span><br>├── test<span class="hljs-selector-class">.service</span><span class="hljs-selector-class">.spec</span><span class="hljs-selector-class">.ts</span><br>├── test<span class="hljs-selector-class">.module</span><span class="hljs-selector-class">.ts</span><br>└── dto<br>    ├── create-test<span class="hljs-selector-class">.dto</span><span class="hljs-selector-class">.ts</span><br>    └── update-test<span class="hljs-selector-class">.dto</span>.ts<br></code></pre></td></tr></table></figure>
+
+<p>其中 test.controller.spec.ts 和 test.service.spec.ts 为测试文件。如果不想生成测试文件,可以在 nest-cli.json 中配置</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;generateOptions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>   <span class="hljs-attr">&quot;spec&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">false</span><br> <span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>test.controller.ts 用于处理路由传来的数据<br>test.service.ts 用于写业务相关的逻辑<br>test.module.ts 相当于一个应用程序的根模块，可以看到它将 TestController 和 TestService 都通过@Module 进行了一个注入<br>@Module 主要包括以下属性：</p>
+<ul>
+<li>providers：由 Nest 注入器实例化的 provider，并且可以至少在整个模块中共享</li>
+<li>controllers：在这个模块内定义的 controller</li>
+<li>imports：可以注入 其他 module 或者 provider</li>
+<li>exports：引入该模块时可以自动使用的 provider</li>
+</ul>
+<p>这里需要注明 provider 其实就是不仅仅是 Service 层，还包括：Sql 的 Dao 层、工具方法等提供</p>
+<h4 id="面向切面编程（AOP，Aspect-Oriented-Programming）"><a href="#面向切面编程（AOP，Aspect-Oriented-Programming）" class="headerlink" title="面向切面编程（AOP，Aspect Oriented Programming）"></a>面向切面编程（AOP，Aspect Oriented Programming）</h4><p>当一个请求打过来时，一般会经过 Controller（控制器）、Service（服务）、Repository（数据库访问） 的链路。如果想在这个调用链路里加入日志记录、权限控制、异常处理等设置时，在调用 Controller 之前和之后加入一个执行通用逻辑的阶段，这个切面的逻辑编程就是 AOP。具体到 nest 中就是 Middleware、Guard、Pipe、Interceptor、ExceptionFilter 的实现<br>关于这些模块怎么使用，官方文档大致有写，这里只辨析一下 Middleware 和 Interceptor 区别</p>
+<ul>
+<li>Middleware：调用时机发生在路由处理前；书写方式和 express 的中间件相似，回调函数接收 req、res、next 参数</li>
+<li>Interceptor：基于 AOP（面向切面编程）的概念实现的，它可以在请求处理管道的不同阶段中插入逻辑，例如在调用控制器方法之前或之后；Interceptor 内部实现了 intercept 函数，接收了 context 和 next 两个参数，context 是请求上下文，next 是调用链接的切面对象，执行 next.handle() 就会调用目标 Controller，不调用就不会执行</li>
+</ul>
+<h4 id="不特别依赖于平台"><a href="#不特别依赖于平台" class="headerlink" title="不特别依赖于平台"></a>不特别依赖于平台</h4><p>nest 虽然基于 express，但可以灵活的切换 http 框架和 socket 框架<br>它采用了适配器模式，express 或者别的平台比如 fastify 只要继承这个适配器的类，实现其中的抽象方法，就能接入到 Nest.js 里。在项目的 main.ts 中调整 NestFactory.create 的入参，增加 serverOrOptions 参数即可实现</p>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>文末的碎碎念吧。其实个人感觉框架本身的使用并不是很难，一些日常开发照着开发文档抄基本上都能出来。但是对框架的架构去理解就感觉很难：规范内部的代码是怎么整合的？为什么要这么做？这些的理解就很难，如果不涉及深层的开发，读源码也觉得有点浪费时间，毕竟阅历及惯性思维等限制很难去快速理解开发者的思路，而如果没有做架构师、只是开发的话，这个时间的必要性感觉实在是。。。</p>
+<p>现在记录下的内容说实话感觉还是很浅层次的内容，也许意义不是很大。但也许当我很久没开发 egg 项目再改写时，不会因为找不到 ctx 上的一些对象名感到疑惑（也许吧。。。）</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7192528039945699386">浅谈 NestJS 设计思想（分层、IOC、AOP）</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903716777099278">Egg.js 源码分析-项目启动</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7070377945553977357">Nest.js 基于 Express 但也不是完全基于</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" class="category-chain-item">前端基础</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/node-js/">#node.js</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>nodeJs网络框架简介</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2023/05/04/BFF/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2023/06/30/feedFix/" title="小程序踩坑经历--feed乱流">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">小程序踩坑经历--feed乱流</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2023/04/25/eventTracking/" title="页面埋点基础概念">
+                        <span class="hidden-mobile">页面埋点基础概念</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,269 +1,298 @@
 
+
 <!DOCTYPE html>
-<html lang="zh-cn">
-    
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="小白的文件整理箱">
-    <title>代码样式调整 - 小白的文件整理箱</title>
-    <meta name="author" content="小白的文件整理箱">
-    
-    
-    
-        
-            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
-        
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"为了使代码风格统一，更有利于阅读，可以借助一些工具进行优化。\n\n\n\nprettier代码格式化工具。\n安装指令123npm install --save-dev prettieroryarn add prettier -D\n\n配置方式在根目录新建 .prettierrc.json，配置自己所需要的参数：\n123456789&#123;  &quot;singleQuote&quot;: true,  // 使用单引号  &quot;semi&quot;: false,  // 不使用分号  &quot;bracketSpacing&quot;: true,  // 在对象,数组括号与文字之间加空格  &quot;htmlWhitespaceSensitivity&quot;: &quot;ignore&quot;,  // 对html的空格不敏感  &quot;endOfLine&quot;: &quot;auto&quot;,  // 行结尾统一样式，保持现有的行尾  &quot;trailingComma&quot;: &quot;none&quot;, // 对象，数组等末尾不加逗号  &quot;tabWidth&quot;: 2 //  水平缩进的空格数为2&#125;\n\nlint-staged本地暂存代码检查工具。只检测 git add . 中暂存区的文件，对过滤出的文件执行脚本。\n安装指令123npm install lint-staged --save-devoryarn add lint-staged -D\n\n配置方式lint-staged 从 v3.1 开始可以使用不同的方式进行配置：\n\npackage.json示例：\n\n1234567&quot;lint-staged&quot;: &#123;    // 匹配暂存区所有的js，vue文件，并执行命令  &quot;*.&#123;js,vue,jsx,tsx&#125;&quot;: [    &quot;prettier --write&quot;,    &quot;eslint --cache --fix&quot;  ]&#125;\n\n配置对象的 key 值为匹配的文件，右侧 value 对应执行指令。lint-staged 指令自动在最后包含了 git add 的操作，所以可以不用专门去写\n\n.lintstagedrc JSON 或 YML 格式的文件\nlint-staged.config.js 格式的文件\n\nhuskyGit hooks 工具，对 git 执行的一些命令，通过对应的 hooks 钩子触发，执行自定义的脚本程序。常用的 gitHooks 包括：\n\npre-commit：每次 commit 之前会执行的操作，常用于触发时进行代码格式验证\ncommit-msg：启动提交信息编辑器，常用于对 commit 消息和用户进行校验\npre-push：远程推代码前执行，常用于推代码前做单元测试和 e2e\n\n安装指令123npm install husky@4.3 --save-devoryarn add husky@4.3 -D\n\n配置方式husky 版本在 6 以下时可以直接在 package.json 配置，例如：\n12345&quot;husky&quot;: &#123;    &quot;hooks&quot;: &#123;      &quot;pre-commit&quot;: &quot;lint-staged&quot;    &#125;&#125;,\n\n6 版本以上的 husky 把的配置提取到了根目录，package.json 中的配置在 husky 升级后无效了。需要执行指令：\n1npx husky add .husky/pre-commit &quot;npx lint-staged&quot;\n\n指令执行后会在根目录创建 .husky 文件夹，文件夹内部有一个 pre-commit 文件，包含指令 npx lint-staged\n参考文献（1）lint-staged 官方文档（2）prettier 官方文档（3）GitHook 工具 —— husky（格式化代码）\n","dateCreated":"2022-12-15T22:25:36+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-12-15T22:25:36+08:00","description":"为了使代码风格统一，更有利于阅读，可以借助一些工具进行优化。","headline":"代码样式调整","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/","keywords":"代码规范"}</script>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
     <meta name="description" content="为了使代码风格统一，更有利于阅读，可以借助一些工具进行优化。">
-<meta property="og:type" content="blog">
+<meta property="og:type" content="article">
 <meta property="og:title" content="代码样式调整">
-<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/12/15/codeFormat/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="为了使代码风格统一，更有利于阅读，可以借助一些工具进行优化。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-15T14:25:36.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:27:34.424Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.685Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="代码规范">
-<meta name="twitter:card" content="summary">
-    
-    
-        
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
-    
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>代码样式调整 - 小白的文件整理箱</title>
 
-    <!--STYLES END-->
-    
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    
 
-    
-        
-    
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
 
+<body>
+  
 
-    
-        
-            
-        
+  <header>
     
 
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/unknown_404/"
-            aria-label=""
-        >
-            小白的文件整理箱
-        </a>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="打开链接: /unknown_404/#about"
-            >
-        
-        
-            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-
-        
-    
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-            <div class="sidebar-profile">
-                <a
-                    href="/unknown_404/#about"
-                    aria-label="阅读有关作者的更多信息"
-                >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-                </a>
-                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
-                
-                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
-</h5>
-                
-            </div>
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/"
-                            
-                            rel="noopener"
-                            title="首页"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">首页</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-categories"
-                            
-                            rel="noopener"
-                            title="分类"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">分类</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-tags"
-                            
-                            rel="noopener"
-                            title="标签"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">标签</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-archives"
-                            
-                            rel="noopener"
-                            title="归档"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">归档</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="搜索"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">搜索</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="关于"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
+  </div>
 </nav>
 
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            代码样式调整
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2022-12-15T22:25:36+08:00">
-	
-		    12月 15, 2022
-    	
-    </time>
-    
-        <span>发布在 </span>
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="代码样式调整"></span>
+          
+        </div>
+
         
-    <a class="category-link" href="/unknown_404/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/">工作技巧</a>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-15 22:25" pubdate>
+          2022年12月15日 晚上
+        </time>
+      </span>
+    
+  </div>
 
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.6k 字
+        
+      </span>
+    
 
     
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
 </div>
 
-    
 </div>
 
+  </header>
+
+  <main>
     
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <p>为了使代码风格统一，更有利于阅读，可以借助一些工具进行优化。</p>
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">代码样式调整</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>为了使代码风格统一，更有利于阅读，可以借助一些工具进行优化。</p>
 <span id="more"></span>
-<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#prettier"><span class="toc-text">prettier</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-text">配置方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lint-staged"><span class="toc-text">lint-staged</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4-1"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F-1"><span class="toc-text">配置方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#husky"><span class="toc-text">husky</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4-2"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F-2"><span class="toc-text">配置方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+
 
 <h2 id="prettier"><a href="#prettier" class="headerlink" title="prettier"></a>prettier</h2><p>代码格式化工具。</p>
-<h3 id="安装指令"><a href="#安装指令" class="headerlink" title="安装指令"></a>安装指令</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install --save-dev prettier</span><br><span class="line">or</span><br><span class="line">yarn add prettier -D</span><br></pre></td></tr></table></figure>
+<h3 id="安装指令"><a href="#安装指令" class="headerlink" title="安装指令"></a>安装指令</h3><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">npm <span class="hljs-keyword">install </span>--save-dev prettier<br><span class="hljs-keyword">or</span><br><span class="hljs-keyword"></span>yarn <span class="hljs-keyword">add </span>prettier -D<br></code></pre></td></tr></table></figure>
 
 <h3 id="配置方式"><a href="#配置方式" class="headerlink" title="配置方式"></a>配置方式</h3><p>在根目录新建 .prettierrc.json，配置自己所需要的参数：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;singleQuote&quot;: true,  // 使用单引号</span><br><span class="line">  &quot;semi&quot;: false,  // 不使用分号</span><br><span class="line">  &quot;bracketSpacing&quot;: true,  // 在对象,数组括号与文字之间加空格</span><br><span class="line">  &quot;htmlWhitespaceSensitivity&quot;: &quot;ignore&quot;,  // 对html的空格不敏感</span><br><span class="line">  &quot;endOfLine&quot;: &quot;auto&quot;,  // 行结尾统一样式，保持现有的行尾</span><br><span class="line">  &quot;trailingComma&quot;: &quot;none&quot;, // 对象，数组等末尾不加逗号</span><br><span class="line">  &quot;tabWidth&quot;: 2 //  水平缩进的空格数为2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk">&#123;<br>  <span class="hljs-string">&quot;singleQuote&quot;</span>: true,  <span class="hljs-regexp">//</span> 使用单引号<br>  <span class="hljs-string">&quot;semi&quot;</span>: false,  <span class="hljs-regexp">//</span> 不使用分号<br>  <span class="hljs-string">&quot;bracketSpacing&quot;</span>: true,  <span class="hljs-regexp">//</span> 在对象,数组括号与文字之间加空格<br>  <span class="hljs-string">&quot;htmlWhitespaceSensitivity&quot;</span>: <span class="hljs-string">&quot;ignore&quot;</span>,  <span class="hljs-regexp">//</span> 对html的空格不敏感<br>  <span class="hljs-string">&quot;endOfLine&quot;</span>: <span class="hljs-string">&quot;auto&quot;</span>,  <span class="hljs-regexp">//</span> 行结尾统一样式，保持现有的行尾<br>  <span class="hljs-string">&quot;trailingComma&quot;</span>: <span class="hljs-string">&quot;none&quot;</span>, <span class="hljs-regexp">//</span> 对象，数组等末尾不加逗号<br>  <span class="hljs-string">&quot;tabWidth&quot;</span>: <span class="hljs-number">2</span> <span class="hljs-regexp">//</span>  水平缩进的空格数为<span class="hljs-number">2</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h2 id="lint-staged"><a href="#lint-staged" class="headerlink" title="lint-staged"></a>lint-staged</h2><p>本地暂存代码检查工具。只检测 git add . 中暂存区的文件，对过滤出的文件执行脚本。</p>
-<h3 id="安装指令-1"><a href="#安装指令-1" class="headerlink" title="安装指令"></a>安装指令</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install lint-staged --save-dev</span><br><span class="line">or</span><br><span class="line">yarn add lint-staged -D</span><br></pre></td></tr></table></figure>
+<h3 id="安装指令-1"><a href="#安装指令-1" class="headerlink" title="安装指令"></a>安装指令</h3><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">npm <span class="hljs-keyword">install </span>lint-staged --save-dev<br><span class="hljs-keyword">or</span><br><span class="hljs-keyword"></span>yarn <span class="hljs-keyword">add </span>lint-staged -D<br></code></pre></td></tr></table></figure>
 
 <h3 id="配置方式-1"><a href="#配置方式-1" class="headerlink" title="配置方式"></a>配置方式</h3><p>lint-staged 从 v3.1 开始可以使用不同的方式进行配置：</p>
 <ul>
 <li>package.json<br>示例：</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&quot;lint-staged&quot;: &#123;</span><br><span class="line">    // 匹配暂存区所有的js，vue文件，并执行命令</span><br><span class="line">  &quot;*.&#123;js,vue,jsx,tsx&#125;&quot;: [</span><br><span class="line">    &quot;prettier --write&quot;,</span><br><span class="line">    &quot;eslint --cache --fix&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-string">&quot;lint-staged&quot;</span>: &#123;<br>    <span class="hljs-regexp">//</span> 匹配暂存区所有的js，vue文件，并执行命令<br>  <span class="hljs-string">&quot;*.&#123;js,vue,jsx,tsx&#125;&quot;</span>: [<br>    <span class="hljs-string">&quot;prettier --write&quot;</span>,<br>    <span class="hljs-string">&quot;eslint --cache --fix&quot;</span><br>  ]<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>配置对象的 key 值为匹配的文件，右侧 value 对应执行指令。lint-staged 指令自动在最后包含了 git add 的操作，所以可以不用专门去写</p>
 <ul>
@@ -276,347 +305,383 @@
 <li>commit-msg：启动提交信息编辑器，常用于对 commit 消息和用户进行校验</li>
 <li>pre-push：远程推代码前执行，常用于推代码前做单元测试和 e2e</li>
 </ul>
-<h3 id="安装指令-2"><a href="#安装指令-2" class="headerlink" title="安装指令"></a>安装指令</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install husky@4.3 --save-dev</span><br><span class="line">or</span><br><span class="line">yarn add husky@4.3 -D</span><br></pre></td></tr></table></figure>
+<h3 id="安装指令-2"><a href="#安装指令-2" class="headerlink" title="安装指令"></a>安装指令</h3><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">npm</span> install husky@<span class="hljs-number">4</span>.<span class="hljs-number">3</span> --save-dev<br><span class="hljs-attribute">or</span><br><span class="hljs-attribute">yarn</span> add husky@<span class="hljs-number">4</span>.<span class="hljs-number">3</span> -D<br></code></pre></td></tr></table></figure>
 
 <h3 id="配置方式-2"><a href="#配置方式-2" class="headerlink" title="配置方式"></a>配置方式</h3><p>husky 版本在 6 以下时可以直接在 package.json 配置，例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&quot;husky&quot;: &#123;</span><br><span class="line">    &quot;hooks&quot;: &#123;</span><br><span class="line">      &quot;pre-commit&quot;: &quot;lint-staged&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;husky&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;hooks&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;pre-commit&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;lint-staged&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br></code></pre></td></tr></table></figure>
 
 <p>6 版本以上的 husky 把的配置提取到了根目录，package.json 中的配置在 husky 升级后无效了。需要执行指令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx husky add .husky/pre-commit &quot;npx lint-staged&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile">npx husky <span class="hljs-keyword">add</span><span class="language-bash"> .husky/pre-commit <span class="hljs-string">&quot;npx lint-staged&quot;</span></span><br></code></pre></td></tr></table></figure>
 
 <p>指令执行后会在根目录创建 .husky 文件夹，文件夹内部有一个 pre-commit 文件，包含指令 npx lint-staged</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/lint-staged#Configuration">lint-staged 官方文档</a><br>（2）<a target="_blank" rel="noopener" href="https://www.prettier.cn/docs/index.html">prettier 官方文档</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6947200436101185566">GitHook 工具 —— husky（格式化代码）</a></p>
 
+                
+              </div>
             
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/">#代码规范</a>
+      
+    </div>
+  
+</div>
 
 
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>代码样式调整</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/12/15/codeFormat/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
         </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-            <div class="post-footer-tags">
-                <span class="text-color-light text-small">标签</span><br/>
-                
-    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/" rel="tag">代码规范</a>
+    <div class="license-icon iconfont"></div>
+  </div>
 
-            </div>
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/12/16/hashAnchor/"
-                    data-tooltip="hash路由使用锚点解决方案"
-                    aria-label="上一篇: hash路由使用锚点解决方案"
-                >
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
+                      <a href="/unknown404.github.io/2022/12/16/hashAnchor/" title="hash路由使用锚点解决方案">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">hash路由使用锚点解决方案</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/12/15/packageJson/"
-                    data-tooltip="package.json分析"
-                    aria-label="下一篇: package.json分析"
-                >
+                  </article>
+                  <article class="post-next col-6">
                     
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
-    </span>
-</footer>
-
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/12/16/hashAnchor/"
-                    data-tooltip="hash路由使用锚点解决方案"
-                    aria-label="上一篇: hash路由使用锚点解决方案"
-                >
+                      <a href="/unknown404.github.io/2022/12/15/packageJson/" title="package.json分析">
+                        <span class="hidden-mobile">package.json分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/12/15/packageJson/"
-                    data-tooltip="package.json分析"
-                    aria-label="下一篇: package.json分析"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
+                  </article>
                 </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
+              
+            </div>
+
             
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                        aria-label="分享到 Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                        aria-label="分享到 Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/12/15/codeFormat/"
-                        aria-label="分享到 Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
-
-            
-        </div>
-        
-
-
-    
-        
-    
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
-        </div>
-        
-            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-            <h4 id="about-card-name">小白的文件整理箱</h4>
-        
-            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>菜鸟级摸鱼工程师</p>
 
-            </div>
-        
-        
-            <div id="about-card-location">
-                <i class="fa fa-map-marker-alt"></i>
-                <br/>
-                Shadow Border
-            </div>
-        
+
+
+  </aside>
+
+
     </div>
+  </div>
 </div>
 
-        
-        
-<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
 
-<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
 
-<!--SCRIPTS END-->
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
 
 
     
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
-    </body>
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
 </html>

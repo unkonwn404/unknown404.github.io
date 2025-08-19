@@ -1,272 +1,299 @@
 
+
 <!DOCTYPE html>
-<html lang="zh-cn">
-    
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="小白的文件整理箱">
-    <title>小程序海报绘制 - 小白的文件整理箱</title>
-    <meta name="author" content="小白的文件整理箱">
-    
-    
-    
-        
-            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
-        
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"\n\n背景小程序海报绘制目前主要的实现方法有两种：\n\n前端使用 canvas 绘图并生成\n后端使用后端绘图库进行绘制，返回给小程序端\n\n第一种方法的主要问题是 canvas 和纯 html 布局相去甚远，不同设备、不同版本的情况下绘图效果不可预期。但第二种方法开发难度也不小，且服务器压力会增大，后端未必愿意接受。所以压力又来到了前端。。。尽管目前前端已经有一些生成海报的插件，如painter，可以以 json 的格式将元素的定位及样式传给画板。但如果需求出现了较为个性化的要求，例如根据内容海报高度自适应、一行开头不可以有标点等，还是自己手写原生比较好。由于开发使用的是 Taro 框架所以关于 API 的介绍使用也主要以 Taro 为主。\n准备工作单位换算canvas 绘制使用的是 px 单位，但不同设备的 px 是需要换算的，所以在组件中统一使用 rpx 单位，这里就涉及到单位怎么换算问题。小程序默认屏幕宽度为 750rpx，通过 wx.getSystemInfoSync 获取设备屏幕尺寸宽度，就可以获得实际 px 单位与 rpx 之间的比例，以此做单位转换。\n12345678910111213141516export function rpx2px(distance) &#123;    let result = 0    if (!isNaN(distance)) &#123;        result = wx.getSystemInfoSync().windowWidth * distance / 750    &#125;    return result&#125;export function px2rpx(distance) &#123;    let result = 0;    if (!isNaN(distance)) &#123;        result = distance * 750 / wx.getSystemInfoSync().windowWidth;    &#125;    return result;&#125;\n\ncanvas 隐藏在绘制海报过程时，因为不想让用户看到 canvas，所以我们必须把 canvas 隐藏起来。实现方法为控制 canvas 的绝对定位，将其移出可视界面。\n1234.poster-canvas &#123;  position: fixed;  top: -10000rpx;&#125;\ncanvas初始化canvas的初始化操作本身并不难，在模版中添加一个canvas组件并命名，在点击生成海报按钮时拿到canvas实例并设置宽高。\n12345const ctx = Taro.createCanvasContext(&#x27;poster-canvas&#x27;)const &#123; width, height &#125; = this.state// 底版ctx.width = widthctx.height = height\n如果海报宽高固定，直接赋值即可。但如果希望完成海报高度随文字内容自适应变化的需求时，则需要多一步操作：可以先在渲染阶段制造一个DOM结构，将该DOM按照设计稿的需求绘制文字、外框间距等内容，在点击生成海报时利用createSelectorQuery获取海报中可变DOM元素(如海报正文DOM）的宽高，以及海报最外层DOM的宽高。注意该方法获取到的结果单位是px。\n12345678910111213141516Taro.nextTick(() =&gt; &#123;    const query = Taro.createSelectorQuery()    query.select(&#x27;.key-box&#x27;).boundingClientRect()    query.exec(res =&gt; &#123;        try &#123;            const height = px2rpx(res[0].height)            const width = px2rpx(res[0].width)            this.setState(&#123; width, height &#125;)            this.drawPosterCanvas()//绘制canvas        &#125; catch (e) &#123;            this.failCb()//错误处理        &#125;    &#125;)&#125;)\n使用Taro框架时需注意查询DOM属于异步内容无法立即获取只能利用nextTick函数等待下一个时间片获取，获取到以后存储到state里便于绘图时取出。这里需要注意即使将查询内容放在nextTick里，也有少数未查到DOM结果的情况，需要进行错误处理。\n图形篇绘制图片由于小程序打包的大小有限制，因此图片建议使用 CDN 保存。在绘制图片前需要对远程的图片进行下载的操作。\n123456789101112131415161718downloadSharePic = (url) =&gt; &#123;    return new Promise((resolve, reject) =&gt; &#123;        Taro.downloadFile(&#123;            url,            success(res) &#123;                if (res.statusCode === 200) &#123;                    resolve(res.tempFilePath)                &#125; else &#123;                    reject(res)                &#125;            &#125;,            fail(err) &#123;                reject(err)            &#125;        &#125;)    &#125;)&#125;\n\n下载成功后会获得一个临时文件路径，就可以调用 drawImage 函数来绘制了。注意点：下载图片属于异步操作，需要在等待返回值以后才可以绘制。ctx.drawImage 有 3 种写法：\n\ndrawImage(imageResource, dx, dy)\ndrawImage(imageResource, dx, dy, dWidth, dHeight)\ndrawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持如果无法使用第三种方案、需要自己调整图片宽高按设计比例显示在 canvas 上的话，可以采用如下函数：\n\n123456789101112131415161718192021222324252627282930313233getDrawImgParams = (src,defaultWidth,defaultHeight) =&gt; &#123;    return new Promise((resolve, reject) =&gt; &#123;        Taro.getImageInfo(&#123;            src,            success: (res) =&gt; &#123;                const &#123; width, height &#125; = res                let sx = 0                let sy = 0                let sWidth = width                let sHeight = height                const w2h = width / height                const defaultW2H = defaultWidth / defaultHeight                if (w2h &gt; defaultW2H) &#123; // 更宽                    sWidth = Math.floor(height * defaultW2H)                    sx = Math.floor((width - sWidth) / 2)                &#125; else if (w2h &lt; defaultW2H) &#123; // 更高                    sHeight = Math.floor(width / defaultW2H)                    sy = Math.floor((height - sHeight) / 2)                &#125;                resolve(&#123;                    sx,                    sWidth,                    sy,                    sHeight                &#125;)            &#125;,            fail: rej =&gt; &#123;                reject(rej)            &#125;        &#125;)    &#125;)&#125;\n\n绘制圆形需要用到的函数是 canvasContext.arc，作用是绘制一条曲线。\n1canvasContext.arc(x: number, y: number, r: number, sAngle: number, eAngle: number, counterclockwise?: boolean)\n\nx、y 对应圆心坐标，sAngle 是起始弧度，eAngle 是终止弧度。创建一个圆可以指定起始弧度为 0，终止弧度为 2 * Math.PI。如果是画线框就使用 ctx.stroke();如果是画色块就使用 ctx.fill()。\n绘制圆角矩形canvas 并没有提供绘制圆角矩形的方法，因此我们需要以另一种方法来实现它。方法的核心是将圆角矩形拆解成四个直角圆弧和四条直线连接的图形。具体的实现如下面的代码所示。圆弧的绘制除了上面提到的arc之外，还有一个叫 CanvasContext.arcTo 的方法，其特点是控制点和半径绘制圆弧路径。\n12345678910111213141516171819202122232425262728293031323334drawArcFrame = (ctx, x, y, r, w, h) =&gt; &#123;    ctx.beginPath()    ctx.fillStyle = &#x27;transparent&#x27;;    // 左上角    ctx.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5)    // border-top    ctx.moveTo(x + r, y)    ctx.lineTo(x + w - r, y)    ctx.lineTo(x + w, y + r)    // 右上角    ctx.arc(x + w - r, y + r, r, Math.PI * 1.5, Math.PI * 2)    // border-right    ctx.lineTo(x + w, y + h - r)    ctx.lineTo(x + w - r, y + h)    // 右下角    ctx.arc(x + w - r, y + h - r, r, 0, Math.PI * 0.5)    // border-bottom    ctx.lineTo(x + r, y + h)    ctx.lineTo(x, y + h - r)    // 左下角    ctx.arc(x + r, y + h - r, r, Math.PI * 0.5, Math.PI)    // border-left    ctx.lineTo(x, y + r)    ctx.lineTo(x + r, y)    // 这里是使用 fill 还是 stroke都可以，二选一即可，但是需要与上面对应    ctx.fill()    // ctx.stroke()    ctx.closePath()&#125;\n\n如果是绘制图片的外框，我们通常需要对原图进行剪切获得我们需要的样式。在我们调用 CanvasContext.clip()进行剪切时，之后的绘图都会被限制在被剪切的区域内（不能访问画布上的其他区域）。因此在使用 clip 方法前通过使用 save 方法对当前画布区域进行保存，在裁剪完图片后通过 restore 方法对其进行恢复。\n123456ctx.save()// 1)保存画布区域this.drawArcFrame(ctx, 0, 0, 12, width, height)//2)绘制圆角ctx.clip()//3）裁剪画板ctx.setFillStyle(&#x27;#F8F9FB&#x27;)ctx.fillRect(0, 0, width, height)//4）在剪切后的画板绘图ctx.restore()//5）恢复画板区域\n\n绘制阴影微信小程序本体从基础库 1.9.90 开始支持设置。\n1234567891011// 阴影的x偏移ctx.shadowOffsetX = 10;// 阴影的y偏移ctx.shadowOffsetY = 10;// 阴影颜色ctx.shadowColor = &#x27;rgba(0,0,0,0.5)&#x27;;// 阴影的模糊半径ctx.shadowBlur = 10;// 绘制图形ctx.fillStyle = &#x27;rgba(255,0,0,0.5)&#x27;ctx.fillRect(100, 100, 100, 100);\n\n阴影的设置一定要在图形绘制前。\n圆形内阴影和圆角矩形内阴影大致思路：先绘制边框和阴影，再用clip把外阴影裁掉。\n文字篇文字样式Taro 框架支持的关于字体的方法只有 setFontSize，用于修改字体大小。但微信小程序本体从基础库 1.9.90 开始支持设置字体样式 canvasContext.font。涉及到的参数如下所示：\n\n\n\n属性\n说明\n\n\n\nstyle\n字体样式。仅支持 italic, oblique, normal\n\n\nweight\n字体粗细。仅支持 normal, bold\n\n\nsize\n字体大小\n\n\nfamily\n字体族名。注意确认各平台所支持的字体\n\n\n示例：\n1ctx.font = &#x27;normal bold 40px sans-serif&#x27;;\n\n关于字体粗细的问题据说安卓手机只 400 和 700 的 font-weight，如果设置其他的权重也无法实现效果。需要注意点是如果设置了加粗属性 bold，那么在后续文字书写中 weight 的属性值必须设置为 400 而不是 normal，否则在安卓机上后续绘制的文字仍然加粗，尽管开发者工具上正常。\n单行文字需要用到的函数是 canvasContext.fillText。\n1canvasContext.fillText(text: string, x: number, y: number, maxWidth?: number)\n\nx、y 对应文字左上角坐标。需要注意的点是绘制文字前需要使用 setTextBaseline 函数确定文字竖直方向对齐方式，不设置的话似乎默认是 normal，而不同系统设备上各个基准都不太一样，绘制的效果可能达不到预期。通常设置 top 即可满足需求，如果设置了 middle 则 y 值应该为文字左上的 y 坐标+fontSize&#x2F;2。\n多行文字canvas 绘制文字时，只会一股脑的在单行上一直画下去而不会根据容器宽度自动换行。如果希望进行折行、分段，则可以使用 CanvasContext.measureText(string text)的方法，具体步骤包括：\n\n1）准备工作：去除文本里面和空格相关的字符，保留的话可能在安卓机上出现绘制异常\n2）用tempText变量存储单行字段，逐字遍历文本，用measureText测截至当前字符的文段长度是否超过限定宽度，没有则将当前字符添加到tempText；注意设置阈值时要减去一个字宽，防止遍历到接近折行的位置已经存储的字段tempText已经接近于限制宽度、此时再加一个字符超过设计宽度的情况。\n3）measureText测截至当前字符的文段长度超过限定宽度时将该字段推入数组中保存；同时清空tempText，用于下一行文字的测算。\n4）循环结束后不要忘记将最后一行的结果推入数组row中\n5）遍历行数组row，每行用fillText完成\n6）如果考虑行数限制，可以在遍历row时增加判断条件，在绘制到最后一行时将最后一个字替换为省略号\n\n123456789101112131415161718192021222324processWord = (ctx, text, width,fontSize,lineHeight,maxLine) =&gt; &#123;    text=text.replace(/\\s*/g,&quot;&quot;);    let row = []    let tempText = &#x27;&#x27;    for (let wordIndex = 0; wordIndex &lt; text.length; wordIndex++) &#123;        if (ctx.measureText(tempText).width &lt; width - fontSize) &#123;            tempText += text[wordIndex]        &#125; else &#123;            // 折行位置            wordIndex--            row.push(tempText)            tempText = &#x27;&#x27;        &#125;    &#125;    row.push(tempText)    for (let rowNum = 0; rowNum &lt; row.length&amp;&amp;rowNum&lt;maxLine; rowNum++) &#123;        let text = row[rowNum]        if (row.length &gt; maxLine &amp;&amp; rowNum == maxLine-1) &#123;            text = text.substring(0, text.length - 1) + &#x27;...&#x27;        &#125;        ctx.setTextBaseline(&#x27;top&#x27;)        ctx.fillText(text, 70, 258 + rowNum * lineHeight)    &#125;&#125;\n附加要求：标点不可以出现在首行在上述算法的基础上在折行处增加while判断，如果字符是标点就加在当前行tempText，一直到下一个是汉字\n12345678910111213for (let wordIndex = 0; wordIndex &lt; text.length; wordIndex++) &#123;    if (ctx.measureText(tempText).width &lt; width - fontSize) &#123;        tempText += text[wordIndex]    &#125; else &#123;        // 折行位置        while (/[，。”！？、：）》；]/.test(text[wordIndex])) &#123;            tempText += text[wordIndex++]        &#125;        wordIndex--        row.push(tempText)        tempText = &#x27;&#x27;    &#125;&#125;\n\n绘制展示canvas转image绘制完成后需要调用Taro.canvasToTempFilePath将canvas转为图片输出，需要注意的点包括：1）Taro.canvasToTempFilePath需要写在ctx.draw的回调中；2）draw的回调函数是异步的，canvasToTempFilePath需要在setTimeout中做一些延时，一般1s就可以了。生成的临时url传入Image组件中就可以在屏幕中显示了。\n海报预览使用 scroll-view 展示时，该组件没有显示 css 样式的圆角解决方法：在 scroll-view 元素上添加以下样式：\n123overflow: hidden;transform: translateY(0);border-radius: 16rpx;\n当海报的高度没有超过设计稿的可视高度时，scroll-view作为套在海报外层的组件也不应该有滚动条。可以在海报生成组件的state里再维护一个isScroll的变量，判断和赋值的位置可以在canvas初始化执行。\n参考文献\n在Canvas中实现矩形、圆形、圆角矩形内阴影效果  \n手把手教你用canvas绘制小程序海报（一）  \n轻松生成小程序分享海报  \n微信小程序《海报生成》\n\n","dateCreated":"2022-03-28T20:33:20+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-03-28T20:33:20+08:00","description":"记录下自己在实现海报绘制时遇到的问题及解决的方案。","headline":"小程序海报绘制","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/","keywords":"小程序, canvas"}</script>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
     <meta name="description" content="记录下自己在实现海报绘制时遇到的问题及解决的方案。">
-<meta property="og:type" content="blog">
+<meta property="og:type" content="article">
 <meta property="og:title" content="小程序海报绘制">
-<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/03/28/poster/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="记录下自己在实现海报绘制时遇到的问题及解决的方案。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-03-28T12:33:20.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:27:34.454Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.731Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="小程序">
 <meta property="article:tag" content="canvas">
-<meta name="twitter:card" content="summary">
-    
-    
-        
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
-    
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>小程序海报绘制 - 小白的文件整理箱</title>
 
-    <!--STYLES END-->
-    
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    
 
-    
-        
-    
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
 
+<body>
+  
 
-    
-        
-            
-        
+  <header>
     
 
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/unknown_404/"
-            aria-label=""
-        >
-            小白的文件整理箱
-        </a>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="打开链接: /unknown_404/#about"
-            >
-        
-        
-            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-
-        
-    
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-            <div class="sidebar-profile">
-                <a
-                    href="/unknown_404/#about"
-                    aria-label="阅读有关作者的更多信息"
-                >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-                </a>
-                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
-                
-                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
-</h5>
-                
-            </div>
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/"
-                            
-                            rel="noopener"
-                            title="首页"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">首页</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-categories"
-                            
-                            rel="noopener"
-                            title="分类"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">分类</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-tags"
-                            
-                            rel="noopener"
-                            title="标签"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">标签</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-archives"
-                            
-                            rel="noopener"
-                            title="归档"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">归档</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="搜索"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">搜索</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="关于"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
+  </div>
 </nav>
 
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            小程序海报绘制
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2022-03-28T20:33:20+08:00">
-	
-		    3月 28, 2022
-    	
-    </time>
-    
-        <span>发布在 </span>
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="小程序海报绘制"></span>
+          
+        </div>
+
         
-    <a class="category-link" href="/unknown_404/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-28 20:33" pubdate>
+          2022年3月28日 晚上
+        </time>
+      </span>
+    
+  </div>
 
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.6k 字
+        
+      </span>
+    
 
     
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          64 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
 </div>
 
-    
 </div>
 
-    
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-text">准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E4%BD%8D%E6%8D%A2%E7%AE%97"><span class="toc-text">单位换算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#canvas-%E9%9A%90%E8%97%8F"><span class="toc-text">canvas 隐藏</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#canvas%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">canvas初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E5%BD%A2%E7%AF%87"><span class="toc-text">图形篇</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%98%E5%88%B6%E5%9B%BE%E7%89%87"><span class="toc-text">绘制图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%98%E5%88%B6%E5%9C%86%E5%BD%A2"><span class="toc-text">绘制圆形</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%98%E5%88%B6%E5%9C%86%E8%A7%92%E7%9F%A9%E5%BD%A2"><span class="toc-text">绘制圆角矩形</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%98%E5%88%B6%E9%98%B4%E5%BD%B1"><span class="toc-text">绘制阴影</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%86%E5%BD%A2%E5%86%85%E9%98%B4%E5%BD%B1%E5%92%8C%E5%9C%86%E8%A7%92%E7%9F%A9%E5%BD%A2%E5%86%85%E9%98%B4%E5%BD%B1"><span class="toc-text">圆形内阴影和圆角矩形内阴影</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E5%AD%97%E7%AF%87"><span class="toc-text">文字篇</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E5%AD%97%E6%A0%B7%E5%BC%8F"><span class="toc-text">文字样式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E8%A1%8C%E6%96%87%E5%AD%97"><span class="toc-text">单行文字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%A1%8C%E6%96%87%E5%AD%97"><span class="toc-text">多行文字</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%99%84%E5%8A%A0%E8%A6%81%E6%B1%82%EF%BC%9A%E6%A0%87%E7%82%B9%E4%B8%8D%E5%8F%AF%E4%BB%A5%E5%87%BA%E7%8E%B0%E5%9C%A8%E9%A6%96%E8%A1%8C"><span class="toc-text">附加要求：标点不可以出现在首行</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%98%E5%88%B6%E5%B1%95%E7%A4%BA"><span class="toc-text">绘制展示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#canvas%E8%BD%ACimage"><span class="toc-text">canvas转image</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%B7%E6%8A%A5%E9%A2%84%E8%A7%88%E4%BD%BF%E7%94%A8-scroll-view-%E5%B1%95%E7%A4%BA%E6%97%B6%EF%BC%8C%E8%AF%A5%E7%BB%84%E4%BB%B6%E6%B2%A1%E6%9C%89%E6%98%BE%E7%A4%BA-css-%E6%A0%B7%E5%BC%8F%E7%9A%84%E5%9C%86%E8%A7%92"><span class="toc-text">海报预览使用 scroll-view 展示时，该组件没有显示 css 样式的圆角</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+  </header>
 
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>小程序海报绘制目前主要的实现方法有两种：</p>
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">小程序海报绘制</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>小程序海报绘制目前主要的实现方法有两种：</p>
 <ol>
 <li>前端使用 canvas 绘图并生成</li>
 <li>后端使用后端绘图库进行绘制，返回给小程序端</li>
 </ol>
 <p>第一种方法的主要问题是 canvas 和纯 html 布局相去甚远，不同设备、不同版本的情况下绘图效果不可预期。但第二种方法开发难度也不小，且服务器压力会增大，后端未必愿意接受。所以压力又来到了前端。。。<br>尽管目前前端已经有一些生成海报的插件，如<a target="_blank" rel="noopener" href="https://github.com/Kujiale-Mobile/Painter">painter</a>，可以以 json 的格式将元素的定位及样式传给画板。但如果需求出现了较为个性化的要求，例如根据内容海报高度自适应、一行开头不可以有标点等，还是自己手写原生比较好。<br>由于开发使用的是 Taro 框架所以关于 API 的介绍使用也主要以 Taro 为主。</p>
 <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="单位换算"><a href="#单位换算" class="headerlink" title="单位换算"></a>单位换算</h3><p>canvas 绘制使用的是 px 单位，但不同设备的 px 是需要换算的，所以在组件中统一使用 rpx 单位，这里就涉及到单位怎么换算问题。<br>小程序默认屏幕宽度为 750rpx，通过 wx.getSystemInfoSync 获取设备屏幕尺寸宽度，就可以获得实际 px 单位与 rpx 之间的比例，以此做单位转换。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">rpx2px</span>(<span class="params">distance</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> result = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">isNaN</span>(distance)) &#123;</span><br><span class="line">        result = wx.<span class="title function_">getSystemInfoSync</span>().<span class="property">windowWidth</span> * distance / <span class="number">750</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">px2rpx</span>(<span class="params">distance</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">isNaN</span>(distance)) &#123;</span><br><span class="line">        result = distance * <span class="number">750</span> / wx.<span class="title function_">getSystemInfoSync</span>().<span class="property">windowWidth</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">rpx2px</span>(<span class="hljs-params">distance</span>) &#123;<br>    <span class="hljs-keyword">let</span> result = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isNaN</span>(distance)) &#123;<br>        result = wx.<span class="hljs-title function_">getSystemInfoSync</span>().<span class="hljs-property">windowWidth</span> * distance / <span class="hljs-number">750</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> result<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">px2rpx</span>(<span class="hljs-params">distance</span>) &#123;<br>    <span class="hljs-keyword">let</span> result = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isNaN</span>(distance)) &#123;<br>        result = distance * <span class="hljs-number">750</span> / wx.<span class="hljs-title function_">getSystemInfoSync</span>().<span class="hljs-property">windowWidth</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> result;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 
 <h3 id="canvas-隐藏"><a href="#canvas-隐藏" class="headerlink" title="canvas 隐藏"></a>canvas 隐藏</h3><p>在绘制海报过程时，因为不想让用户看到 canvas，所以我们必须把 canvas 隐藏起来。实现方法为控制 canvas 的绝对定位，将其移出可视界面。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.poster-canvas</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: fixed;</span><br><span class="line">  <span class="attribute">top</span>: -<span class="number">10000</span>rpx;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-class">.poster-canvas</span> &#123;<br>  <span class="hljs-attribute">position</span>: fixed;<br>  <span class="hljs-attribute">top</span>: -<span class="hljs-number">10000</span>rpx;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="canvas初始化"><a href="#canvas初始化" class="headerlink" title="canvas初始化"></a>canvas初始化</h2><p>canvas的初始化操作本身并不难，在模版中添加一个canvas组件并命名，在点击生成海报按钮时拿到canvas实例并设置宽高。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const ctx = Taro.createCanvasContext(&#x27;poster-canvas&#x27;)</span><br><span class="line">const &#123; width, height &#125; = this.state</span><br><span class="line">// 底版</span><br><span class="line">ctx.width = width</span><br><span class="line">ctx.height = height</span><br></pre></td></tr></table></figure>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs processing"><span class="hljs-keyword">const</span> ctx = Taro.<span class="hljs-property">createCanvasContext</span>(<span class="hljs-string">&#x27;poster-canvas&#x27;</span>)<br><span class="hljs-keyword">const</span> &#123; <span class="hljs-built_in">width</span>, <span class="hljs-built_in">height</span> &#125; = <span class="hljs-variable">this</span>.<span class="hljs-property">state</span><br><span class="hljs-comment">// 底版</span><br>ctx.<span class="hljs-property">width</span> = <span class="hljs-built_in">width</span><br>ctx.<span class="hljs-property">height</span> = <span class="hljs-built_in">height</span><br></code></pre></td></tr></table></figure>
 <p>如果海报宽高固定，直接赋值即可。但如果希望完成海报高度随文字内容自适应变化的需求时，则需要多一步操作：可以先在渲染阶段制造一个DOM结构，将该DOM按照设计稿的需求绘制文字、外框间距等内容，在点击生成海报时利用createSelectorQuery获取海报中可变DOM元素(如海报正文DOM）的宽高，以及海报最外层DOM的宽高。注意该方法获取到的结果单位是px。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Taro.nextTick(() =&gt; &#123;</span><br><span class="line">    const query = Taro.createSelectorQuery()</span><br><span class="line">    query.select(&#x27;.key-box&#x27;).boundingClientRect()</span><br><span class="line">    query.exec(res =&gt; &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            const height = px2rpx(res[0].height)</span><br><span class="line">            const width = px2rpx(res[0].width)</span><br><span class="line">            this.setState(&#123; width, height &#125;)</span><br><span class="line">            this.drawPosterCanvas()//绘制canvas</span><br><span class="line">        &#125; catch (e) &#123;</span><br><span class="line">            this.failCb()//错误处理</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs kotlin">Taro.nextTick(() =&gt; &#123;<br>    <span class="hljs-keyword">const</span> query = Taro.createSelectorQuery()<br>    query.select(<span class="hljs-string">&#x27;.key-box&#x27;</span>).boundingClientRect()<br>    query.exec(res =&gt; &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">const</span> height = px2rpx(res[<span class="hljs-number">0</span>].height)<br>            <span class="hljs-keyword">const</span> width = px2rpx(res[<span class="hljs-number">0</span>].width)<br>            <span class="hljs-keyword">this</span>.setState(&#123; width, height &#125;)<br>            <span class="hljs-keyword">this</span>.drawPosterCanvas()<span class="hljs-comment">//绘制canvas</span><br>        &#125; <span class="hljs-keyword">catch</span> (e) &#123;<br>            <span class="hljs-keyword">this</span>.failCb()<span class="hljs-comment">//错误处理</span><br><br>        &#125;<br>    &#125;)<br><br>&#125;)<br></code></pre></td></tr></table></figure>
 <p>使用Taro框架时需注意查询DOM属于异步内容无法立即获取只能利用nextTick函数等待下一个时间片获取，获取到以后存储到state里便于绘图时取出。这里需要注意即使将查询内容放在nextTick里，也有少数未查到DOM结果的情况，需要进行错误处理。</p>
 <h2 id="图形篇"><a href="#图形篇" class="headerlink" title="图形篇"></a>图形篇</h2><h3 id="绘制图片"><a href="#绘制图片" class="headerlink" title="绘制图片"></a>绘制图片</h3><p>由于小程序打包的大小有限制，因此图片建议使用 CDN 保存。在绘制图片前需要对远程的图片进行下载的操作。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">downloadSharePic = <span class="function">(<span class="params">url</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="title class_">Taro</span>.<span class="title function_">downloadFile</span>(&#123;</span><br><span class="line">            url,</span><br><span class="line">            <span class="title function_">success</span>(<span class="params">res</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (res.<span class="property">statusCode</span> === <span class="number">200</span>) &#123;</span><br><span class="line">                    <span class="title function_">resolve</span>(res.<span class="property">tempFilePath</span>)</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="title function_">reject</span>(res)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="title function_">fail</span>(<span class="params">err</span>) &#123;</span><br><span class="line">                <span class="title function_">reject</span>(err)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript">downloadSharePic = <span class="hljs-function">(<span class="hljs-params">url</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>        <span class="hljs-title class_">Taro</span>.<span class="hljs-title function_">downloadFile</span>(&#123;<br>            url,<br>            <span class="hljs-title function_">success</span>(<span class="hljs-params">res</span>) &#123;<br>                <span class="hljs-keyword">if</span> (res.<span class="hljs-property">statusCode</span> === <span class="hljs-number">200</span>) &#123;<br>                    <span class="hljs-title function_">resolve</span>(res.<span class="hljs-property">tempFilePath</span>)<br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                    <span class="hljs-title function_">reject</span>(res)<br>                &#125;<br>            &#125;,<br>            <span class="hljs-title function_">fail</span>(<span class="hljs-params">err</span>) &#123;<br>                <span class="hljs-title function_">reject</span>(err)<br>            &#125;<br>        &#125;)<br>    &#125;)<br><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>下载成功后会获得一个临时文件路径，就可以调用 drawImage 函数来绘制了。注意点：下载图片属于异步操作，需要在等待返回值以后才可以绘制。<br>ctx.drawImage 有 3 种写法：</p>
 <ul>
@@ -274,20 +301,20 @@
 <li>drawImage(imageResource, dx, dy, dWidth, dHeight)</li>
 <li>drawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持<br>如果无法使用第三种方案、需要自己调整图片宽高按设计比例显示在 canvas 上的话，可以采用如下函数：</li>
 </ul>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">getDrawImgParams = <span class="function">(<span class="params">src,defaultWidth,defaultHeight</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="title class_">Taro</span>.<span class="title function_">getImageInfo</span>(&#123;</span><br><span class="line">            src,</span><br><span class="line">            <span class="attr">success</span>: <span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">const</span> &#123; width, height &#125; = res</span><br><span class="line">                <span class="keyword">let</span> sx = <span class="number">0</span></span><br><span class="line">                <span class="keyword">let</span> sy = <span class="number">0</span></span><br><span class="line">                <span class="keyword">let</span> sWidth = width</span><br><span class="line">                <span class="keyword">let</span> sHeight = height</span><br><span class="line">                <span class="keyword">const</span> w2h = width / height</span><br><span class="line">                <span class="keyword">const</span> defaultW2H = defaultWidth / defaultHeight</span><br><span class="line">                <span class="keyword">if</span> (w2h &gt; defaultW2H) &#123; <span class="comment">// 更宽</span></span><br><span class="line">                    sWidth = <span class="title class_">Math</span>.<span class="title function_">floor</span>(height * defaultW2H)</span><br><span class="line">                    sx = <span class="title class_">Math</span>.<span class="title function_">floor</span>((width - sWidth) / <span class="number">2</span>)</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (w2h &lt; defaultW2H) &#123; <span class="comment">// 更高</span></span><br><span class="line">                    sHeight = <span class="title class_">Math</span>.<span class="title function_">floor</span>(width / defaultW2H)</span><br><span class="line">                    sy = <span class="title class_">Math</span>.<span class="title function_">floor</span>((height - sHeight) / <span class="number">2</span>)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="title function_">resolve</span>(&#123;</span><br><span class="line">                    sx,</span><br><span class="line">                    sWidth,</span><br><span class="line">                    sy,</span><br><span class="line">                    sHeight</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">fail</span>: <span class="function"><span class="params">rej</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="title function_">reject</span>(rej)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript">getDrawImgParams = <span class="hljs-function">(<span class="hljs-params">src,defaultWidth,defaultHeight</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>        <span class="hljs-title class_">Taro</span>.<span class="hljs-title function_">getImageInfo</span>(&#123;<br>            src,<br>            <span class="hljs-attr">success</span>: <span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>                <span class="hljs-keyword">const</span> &#123; width, height &#125; = res<br>                <span class="hljs-keyword">let</span> sx = <span class="hljs-number">0</span><br>                <span class="hljs-keyword">let</span> sy = <span class="hljs-number">0</span><br>                <span class="hljs-keyword">let</span> sWidth = width<br>                <span class="hljs-keyword">let</span> sHeight = height<br>                <span class="hljs-keyword">const</span> w2h = width / height<br>                <span class="hljs-keyword">const</span> defaultW2H = defaultWidth / defaultHeight<br>                <span class="hljs-keyword">if</span> (w2h &gt; defaultW2H) &#123; <span class="hljs-comment">// 更宽</span><br>                    sWidth = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(height * defaultW2H)<br>                    sx = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>((width - sWidth) / <span class="hljs-number">2</span>)<br>                &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (w2h &lt; defaultW2H) &#123; <span class="hljs-comment">// 更高</span><br>                    sHeight = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(width / defaultW2H)<br>                    sy = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>((height - sHeight) / <span class="hljs-number">2</span>)<br>                &#125;<br>                <span class="hljs-title function_">resolve</span>(&#123;<br>                    sx,<br>                    sWidth,<br>                    sy,<br>                    sHeight<br>                &#125;)<br>            &#125;,<br>            <span class="hljs-attr">fail</span>: <span class="hljs-function"><span class="hljs-params">rej</span> =&gt;</span> &#123;<br>                <span class="hljs-title function_">reject</span>(rej)<br>            &#125;<br>        &#125;)<br>    &#125;)<br><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="绘制圆形"><a href="#绘制圆形" class="headerlink" title="绘制圆形"></a>绘制圆形</h3><p>需要用到的函数是 canvasContext.arc，作用是绘制一条曲线。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">canvasContext.arc(x: number, y: number, r: number, sAngle: number, eAngle: number, counterclockwise?: boolean)</span><br></pre></td></tr></table></figure>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript">canvasContext.arc(x: <span class="hljs-built_in">number</span>, y: <span class="hljs-built_in">number</span>, r: <span class="hljs-built_in">number</span>, sAngle: <span class="hljs-built_in">number</span>, eAngle: <span class="hljs-built_in">number</span>, counterclockwise?: <span class="hljs-built_in">boolean</span>)<br></code></pre></td></tr></table></figure>
 
 <p>x、y 对应圆心坐标，sAngle 是起始弧度，eAngle 是终止弧度。创建一个圆可以指定起始弧度为 0，终止弧度为 2 * Math.PI。<br>如果是画线框就使用 ctx.stroke();如果是画色块就使用 ctx.fill()。</p>
 <h3 id="绘制圆角矩形"><a href="#绘制圆角矩形" class="headerlink" title="绘制圆角矩形"></a>绘制圆角矩形</h3><p>canvas 并没有提供绘制圆角矩形的方法，因此我们需要以另一种方法来实现它。方法的核心是将圆角矩形拆解成四个直角圆弧和四条直线连接的图形。具体的实现如下面的代码所示。圆弧的绘制除了上面提到的arc之外，还有一个叫 CanvasContext.arcTo 的方法，其特点是控制点和半径绘制圆弧路径。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">drawArcFrame = <span class="function">(<span class="params">ctx, x, y, r, w, h</span>) =&gt;</span> &#123;</span><br><span class="line">    ctx.<span class="title function_">beginPath</span>()</span><br><span class="line">    ctx.<span class="property">fillStyle</span> = <span class="string">&#x27;transparent&#x27;</span>;</span><br><span class="line">    <span class="comment">// 左上角</span></span><br><span class="line">    ctx.<span class="title function_">arc</span>(x + r, y + r, r, <span class="title class_">Math</span>.<span class="property">PI</span>, <span class="title class_">Math</span>.<span class="property">PI</span> * <span class="number">1.5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// border-top</span></span><br><span class="line">    ctx.<span class="title function_">moveTo</span>(x + r, y)</span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x + w - r, y)</span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x + w, y + r)</span><br><span class="line">    <span class="comment">// 右上角</span></span><br><span class="line">    ctx.<span class="title function_">arc</span>(x + w - r, y + r, r, <span class="title class_">Math</span>.<span class="property">PI</span> * <span class="number">1.5</span>, <span class="title class_">Math</span>.<span class="property">PI</span> * <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// border-right</span></span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x + w, y + h - r)</span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x + w - r, y + h)</span><br><span class="line">    <span class="comment">// 右下角</span></span><br><span class="line">    ctx.<span class="title function_">arc</span>(x + w - r, y + h - r, r, <span class="number">0</span>, <span class="title class_">Math</span>.<span class="property">PI</span> * <span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// border-bottom</span></span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x + r, y + h)</span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x, y + h - r)</span><br><span class="line">    <span class="comment">// 左下角</span></span><br><span class="line">    ctx.<span class="title function_">arc</span>(x + r, y + h - r, r, <span class="title class_">Math</span>.<span class="property">PI</span> * <span class="number">0.5</span>, <span class="title class_">Math</span>.<span class="property">PI</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// border-left</span></span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x, y + r)</span><br><span class="line">    ctx.<span class="title function_">lineTo</span>(x + r, y)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里是使用 fill 还是 stroke都可以，二选一即可，但是需要与上面对应</span></span><br><span class="line">    ctx.<span class="title function_">fill</span>()</span><br><span class="line">    <span class="comment">// ctx.stroke()</span></span><br><span class="line">    ctx.<span class="title function_">closePath</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript">drawArcFrame = <span class="hljs-function">(<span class="hljs-params">ctx, x, y, r, w, h</span>) =&gt;</span> &#123;<br>    ctx.<span class="hljs-title function_">beginPath</span>()<br>    ctx.<span class="hljs-property">fillStyle</span> = <span class="hljs-string">&#x27;transparent&#x27;</span>;<br>    <span class="hljs-comment">// 左上角</span><br>    ctx.<span class="hljs-title function_">arc</span>(x + r, y + r, r, <span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span>, <span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> * <span class="hljs-number">1.5</span>)<br><br>    <span class="hljs-comment">// border-top</span><br>    ctx.<span class="hljs-title function_">moveTo</span>(x + r, y)<br>    ctx.<span class="hljs-title function_">lineTo</span>(x + w - r, y)<br>    ctx.<span class="hljs-title function_">lineTo</span>(x + w, y + r)<br>    <span class="hljs-comment">// 右上角</span><br>    ctx.<span class="hljs-title function_">arc</span>(x + w - r, y + r, r, <span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> * <span class="hljs-number">1.5</span>, <span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> * <span class="hljs-number">2</span>)<br><br>    <span class="hljs-comment">// border-right</span><br>    ctx.<span class="hljs-title function_">lineTo</span>(x + w, y + h - r)<br>    ctx.<span class="hljs-title function_">lineTo</span>(x + w - r, y + h)<br>    <span class="hljs-comment">// 右下角</span><br>    ctx.<span class="hljs-title function_">arc</span>(x + w - r, y + h - r, r, <span class="hljs-number">0</span>, <span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> * <span class="hljs-number">0.5</span>)<br><br>    <span class="hljs-comment">// border-bottom</span><br>    ctx.<span class="hljs-title function_">lineTo</span>(x + r, y + h)<br>    ctx.<span class="hljs-title function_">lineTo</span>(x, y + h - r)<br>    <span class="hljs-comment">// 左下角</span><br>    ctx.<span class="hljs-title function_">arc</span>(x + r, y + h - r, r, <span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> * <span class="hljs-number">0.5</span>, <span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span>)<br><br>    <span class="hljs-comment">// border-left</span><br>    ctx.<span class="hljs-title function_">lineTo</span>(x, y + r)<br>    ctx.<span class="hljs-title function_">lineTo</span>(x + r, y)<br><br>    <span class="hljs-comment">// 这里是使用 fill 还是 stroke都可以，二选一即可，但是需要与上面对应</span><br>    ctx.<span class="hljs-title function_">fill</span>()<br>    <span class="hljs-comment">// ctx.stroke()</span><br>    ctx.<span class="hljs-title function_">closePath</span>()<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>如果是绘制图片的外框，我们通常需要对原图进行剪切获得我们需要的样式。在我们调用 CanvasContext.clip()进行剪切时，之后的绘图都会被限制在被剪切的区域内（不能访问画布上的其他区域）。因此在使用 clip 方法前通过使用 save 方法对当前画布区域进行保存，在裁剪完图片后通过 restore 方法对其进行恢复。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ctx.<span class="title function_">save</span>()<span class="comment">// 1)保存画布区域</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="title function_">drawArcFrame</span>(ctx, <span class="number">0</span>, <span class="number">0</span>, <span class="number">12</span>, width, height)<span class="comment">//2)绘制圆角</span></span><br><span class="line">ctx.<span class="title function_">clip</span>()<span class="comment">//3）裁剪画板</span></span><br><span class="line">ctx.<span class="title function_">setFillStyle</span>(<span class="string">&#x27;#F8F9FB&#x27;</span>)</span><br><span class="line">ctx.<span class="title function_">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, width, height)<span class="comment">//4）在剪切后的画板绘图</span></span><br><span class="line">ctx.<span class="title function_">restore</span>()<span class="comment">//5）恢复画板区域</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript">ctx.<span class="hljs-title function_">save</span>()<span class="hljs-comment">// 1)保存画布区域</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-title function_">drawArcFrame</span>(ctx, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">12</span>, width, height)<span class="hljs-comment">//2)绘制圆角</span><br>ctx.<span class="hljs-title function_">clip</span>()<span class="hljs-comment">//3）裁剪画板</span><br>ctx.<span class="hljs-title function_">setFillStyle</span>(<span class="hljs-string">&#x27;#F8F9FB&#x27;</span>)<br>ctx.<span class="hljs-title function_">fillRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, width, height)<span class="hljs-comment">//4）在剪切后的画板绘图</span><br>ctx.<span class="hljs-title function_">restore</span>()<span class="hljs-comment">//5）恢复画板区域</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="绘制阴影"><a href="#绘制阴影" class="headerlink" title="绘制阴影"></a>绘制阴影</h3><p>微信小程序本体从基础库 1.9.90 开始支持设置。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 阴影的x偏移</span><br><span class="line">ctx.shadowOffsetX = 10;</span><br><span class="line">// 阴影的y偏移</span><br><span class="line">ctx.shadowOffsetY = 10;</span><br><span class="line">// 阴影颜色</span><br><span class="line">ctx.shadowColor = &#x27;rgba(0,0,0,0.5)&#x27;;</span><br><span class="line">// 阴影的模糊半径</span><br><span class="line">ctx.shadowBlur = 10;</span><br><span class="line">// 绘制图形</span><br><span class="line">ctx.fillStyle = &#x27;rgba(255,0,0,0.5)&#x27;</span><br><span class="line">ctx.fillRect(100, 100, 100, 100);</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span> 阴影的x偏移<br>ctx.shadowOffsetX = <span class="hljs-number">10</span>;<br><span class="hljs-regexp">//</span> 阴影的y偏移<br>ctx.shadowOffsetY = <span class="hljs-number">10</span>;<br><span class="hljs-regexp">//</span> 阴影颜色<br>ctx.shadowColor = <span class="hljs-string">&#x27;rgba(0,0,0,0.5)&#x27;</span>;<br><span class="hljs-regexp">//</span> 阴影的模糊半径<br>ctx.shadowBlur = <span class="hljs-number">10</span>;<br><span class="hljs-regexp">//</span> 绘制图形<br>ctx.fillStyle = <span class="hljs-string">&#x27;rgba(255,0,0,0.5)&#x27;</span><br>ctx.fillRect(<span class="hljs-number">100</span>, <span class="hljs-number">100</span>, <span class="hljs-number">100</span>, <span class="hljs-number">100</span>);<br></code></pre></td></tr></table></figure>
 
 <p>阴影的设置一定要在图形绘制前。</p>
 <h3 id="圆形内阴影和圆角矩形内阴影"><a href="#圆形内阴影和圆角矩形内阴影" class="headerlink" title="圆形内阴影和圆角矩形内阴影"></a>圆形内阴影和圆角矩形内阴影</h3><p>大致思路：先绘制边框和阴影，再用clip把外阴影裁掉。</p>
@@ -317,11 +344,11 @@
 </tr>
 </tbody></table>
 <p>示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctx.font = &#x27;normal bold 40px sans-serif&#x27;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">ctx.font</span> = <span class="hljs-string">&#x27;normal bold 40px sans-serif&#x27;</span><span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
 
 <p>关于字体粗细的问题据说安卓手机只 400 和 700 的 font-weight，如果设置其他的权重也无法实现效果。需要注意点是如果设置了加粗属性 bold，那么在后续文字书写中 weight 的属性值必须设置为 400 而不是 normal，否则在安卓机上后续绘制的文字仍然加粗，尽管开发者工具上正常。</p>
 <h3 id="单行文字"><a href="#单行文字" class="headerlink" title="单行文字"></a>单行文字</h3><p>需要用到的函数是 canvasContext.fillText。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">canvasContext.fillText(text: string, x: number, y: number, maxWidth?: number)</span><br></pre></td></tr></table></figure>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">canvasContext.fill<span class="hljs-constructor">Text(<span class="hljs-params">text</span>: <span class="hljs-params">string</span>, <span class="hljs-params">x</span>: <span class="hljs-params">number</span>, <span class="hljs-params">y</span>: <span class="hljs-params">number</span>, <span class="hljs-params">maxWidth</span>?: <span class="hljs-params">number</span>)</span><br></code></pre></td></tr></table></figure>
 
 <p>x、y 对应文字左上角坐标。<br>需要注意的点是绘制文字前需要使用 setTextBaseline 函数确定文字竖直方向对齐方式，不设置的话似乎默认是 normal，而不同系统设备上各个基准都不太一样，绘制的效果可能达不到预期。通常设置 top 即可满足需求，如果设置了 middle 则 y 值应该为文字左上的 y 坐标+fontSize&#x2F;2。</p>
 <h3 id="多行文字"><a href="#多行文字" class="headerlink" title="多行文字"></a>多行文字</h3><p>canvas 绘制文字时，只会一股脑的在单行上一直画下去而不会根据容器宽度自动换行。如果希望进行折行、分段，则可以使用 CanvasContext.measureText(string text)的方法，具体步骤包括：</p>
@@ -333,351 +360,389 @@
 <li>5）遍历行数组row，每行用fillText完成</li>
 <li>6）如果考虑行数限制，可以在遍历row时增加判断条件，在绘制到最后一行时将最后一个字替换为省略号</li>
 </ul>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">processWord = <span class="function">(<span class="params">ctx, text, width,fontSize,lineHeight,maxLine</span>) =&gt;</span> &#123;</span><br><span class="line">    text=text.<span class="title function_">replace</span>(<span class="regexp">/\s*/g</span>,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> row = []</span><br><span class="line">    <span class="keyword">let</span> tempText = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> wordIndex = <span class="number">0</span>; wordIndex &lt; text.<span class="property">length</span>; wordIndex++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (ctx.<span class="title function_">measureText</span>(tempText).<span class="property">width</span> &lt; width - fontSize) &#123;</span><br><span class="line">            tempText += text[wordIndex]</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 折行位置</span></span><br><span class="line">            wordIndex--</span><br><span class="line">            row.<span class="title function_">push</span>(tempText)</span><br><span class="line">            tempText = <span class="string">&#x27;&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    row.<span class="title function_">push</span>(tempText)</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> rowNum = <span class="number">0</span>; rowNum &lt; row.<span class="property">length</span>&amp;&amp;rowNum&lt;maxLine; rowNum++) &#123;</span><br><span class="line">        <span class="keyword">let</span> text = row[rowNum]</span><br><span class="line">        <span class="keyword">if</span> (row.<span class="property">length</span> &gt; maxLine &amp;&amp; rowNum == maxLine-<span class="number">1</span>) &#123;</span><br><span class="line">            text = text.<span class="title function_">substring</span>(<span class="number">0</span>, text.<span class="property">length</span> - <span class="number">1</span>) + <span class="string">&#x27;...&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        ctx.<span class="title function_">setTextBaseline</span>(<span class="string">&#x27;top&#x27;</span>)</span><br><span class="line">        ctx.<span class="title function_">fillText</span>(text, <span class="number">70</span>, <span class="number">258</span> + rowNum * lineHeight)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript">processWord = <span class="hljs-function">(<span class="hljs-params">ctx, text, width,fontSize,lineHeight,maxLine</span>) =&gt;</span> &#123;<br>    text=text.<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/\s*/g</span>,<span class="hljs-string">&quot;&quot;</span>);<br>    <span class="hljs-keyword">let</span> row = []<br>    <span class="hljs-keyword">let</span> tempText = <span class="hljs-string">&#x27;&#x27;</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> wordIndex = <span class="hljs-number">0</span>; wordIndex &lt; text.<span class="hljs-property">length</span>; wordIndex++) &#123;<br>        <span class="hljs-keyword">if</span> (ctx.<span class="hljs-title function_">measureText</span>(tempText).<span class="hljs-property">width</span> &lt; width - fontSize) &#123;<br>            tempText += text[wordIndex]<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">// 折行位置</span><br>            wordIndex--<br>            row.<span class="hljs-title function_">push</span>(tempText)<br>            tempText = <span class="hljs-string">&#x27;&#x27;</span><br>        &#125;<br>    &#125;<br>    row.<span class="hljs-title function_">push</span>(tempText)<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> rowNum = <span class="hljs-number">0</span>; rowNum &lt; row.<span class="hljs-property">length</span>&amp;&amp;rowNum&lt;maxLine; rowNum++) &#123;<br>        <span class="hljs-keyword">let</span> text = row[rowNum]<br>        <span class="hljs-keyword">if</span> (row.<span class="hljs-property">length</span> &gt; maxLine &amp;&amp; rowNum == maxLine-<span class="hljs-number">1</span>) &#123;<br>            text = text.<span class="hljs-title function_">substring</span>(<span class="hljs-number">0</span>, text.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;...&#x27;</span><br>        &#125;<br>        ctx.<span class="hljs-title function_">setTextBaseline</span>(<span class="hljs-string">&#x27;top&#x27;</span>)<br>        ctx.<span class="hljs-title function_">fillText</span>(text, <span class="hljs-number">70</span>, <span class="hljs-number">258</span> + rowNum * lineHeight)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h4 id="附加要求：标点不可以出现在首行"><a href="#附加要求：标点不可以出现在首行" class="headerlink" title="附加要求：标点不可以出现在首行"></a>附加要求：标点不可以出现在首行</h4><p>在上述算法的基础上在折行处增加while判断，如果字符是标点就加在当前行tempText，一直到下一个是汉字</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> wordIndex = <span class="number">0</span>; wordIndex &lt; text.<span class="property">length</span>; wordIndex++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (ctx.<span class="title function_">measureText</span>(tempText).<span class="property">width</span> &lt; width - fontSize) &#123;</span><br><span class="line">        tempText += text[wordIndex]</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 折行位置</span></span><br><span class="line">        <span class="keyword">while</span> (<span class="regexp">/[，。”！？、：）》；]/</span>.<span class="title function_">test</span>(text[wordIndex])) &#123;</span><br><span class="line">            tempText += text[wordIndex++]</span><br><span class="line">        &#125;</span><br><span class="line">        wordIndex--</span><br><span class="line">        row.<span class="title function_">push</span>(tempText)</span><br><span class="line">        tempText = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> wordIndex = <span class="hljs-number">0</span>; wordIndex &lt; text.<span class="hljs-property">length</span>; wordIndex++) &#123;<br>    <span class="hljs-keyword">if</span> (ctx.<span class="hljs-title function_">measureText</span>(tempText).<span class="hljs-property">width</span> &lt; width - fontSize) &#123;<br>        tempText += text[wordIndex]<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// 折行位置</span><br>        <span class="hljs-keyword">while</span> (<span class="hljs-regexp">/[，。”！？、：）》；]/</span>.<span class="hljs-title function_">test</span>(text[wordIndex])) &#123;<br>            tempText += text[wordIndex++]<br>        &#125;<br>        wordIndex--<br>        row.<span class="hljs-title function_">push</span>(tempText)<br>        tempText = <span class="hljs-string">&#x27;&#x27;</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h2 id="绘制展示"><a href="#绘制展示" class="headerlink" title="绘制展示"></a>绘制展示</h2><h3 id="canvas转image"><a href="#canvas转image" class="headerlink" title="canvas转image"></a>canvas转image</h3><p>绘制完成后需要调用Taro.canvasToTempFilePath将canvas转为图片输出，需要注意的点包括：1）Taro.canvasToTempFilePath需要写在ctx.draw的回调中；2）draw的回调函数是异步的，canvasToTempFilePath需要在setTimeout中做一些延时，一般1s就可以了。<br>生成的临时url传入Image组件中就可以在屏幕中显示了。</p>
 <h3 id="海报预览使用-scroll-view-展示时，该组件没有显示-css-样式的圆角"><a href="#海报预览使用-scroll-view-展示时，该组件没有显示-css-样式的圆角" class="headerlink" title="海报预览使用 scroll-view 展示时，该组件没有显示 css 样式的圆角"></a>海报预览使用 scroll-view 展示时，该组件没有显示 css 样式的圆角</h3><p>解决方法：在 scroll-view 元素上添加以下样式：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">overflow: hidden;</span><br><span class="line">transform: translateY(0);</span><br><span class="line">border-radius: 16rpx;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-attribute">overflow</span>: hidden;<br><span class="hljs-attribute">transform</span>: <span class="hljs-built_in">translateY</span>(<span class="hljs-number">0</span>);<br><span class="hljs-attribute">border-radius</span>: <span class="hljs-number">16</span>rpx;<br></code></pre></td></tr></table></figure>
 <p>当海报的高度没有超过设计稿的可视高度时，scroll-view作为套在海报外层的组件也不应该有滚动条。可以在海报生成组件的state里再维护一个isScroll的变量，判断和赋值的位置可以在<a href="#canvas%E5%88%9D%E5%A7%8B%E5%8C%96">canvas初始化</a>执行。</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
 <li><a target="_blank" rel="noopener" href="http://www.yanghuiqing.com/web/350">在Canvas中实现矩形、圆形、圆角矩形内阴影效果</a>  </li>
-<li><a href="hhttps://juejin.cn/post/6983574104167170061">手把手教你用canvas绘制小程序海报（一）</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6983574104167170061">手把手教你用canvas绘制小程序海报（一）</a>  </li>
 <li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903663840788493#heading-0">轻松生成小程序分享海报</a>  </li>
 <li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7039199842421178382#heading-1">微信小程序《海报生成》</a></li>
 </ol>
 
+                
+              </div>
             
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/">#小程序</a>
+      
+        <a href="/unknown404.github.io/tags/canvas/">#canvas</a>
+      
+    </div>
+  
+</div>
 
 
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>小程序海报绘制</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/03/28/poster/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
         </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-            <div class="post-footer-tags">
-                <span class="text-color-light text-small">标签</span><br/>
-                
-    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/canvas/" rel="tag">canvas</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/" rel="tag">小程序</a>
+    <div class="license-icon iconfont"></div>
+  </div>
 
-            </div>
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/31/login/"
-                    data-tooltip="关于登录拦截和history.back()的二三事"
-                    aria-label="上一篇: 关于登录拦截和history.back()的二三事"
-                >
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
+                      <a href="/unknown404.github.io/2022/03/31/login/" title="关于登录拦截和history.back()的二三事">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于登录拦截和history.back()的二三事</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/27/typescript/"
-                    data-tooltip="TypeScript"
-                    aria-label="下一篇: TypeScript"
-                >
+                  </article>
+                  <article class="post-next col-6">
                     
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
-    </span>
-</footer>
-
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/31/login/"
-                    data-tooltip="关于登录拦截和history.back()的二三事"
-                    aria-label="上一篇: 关于登录拦截和history.back()的二三事"
-                >
+                      <a href="/unknown404.github.io/2022/03/27/typescript/" title="TypeScript">
+                        <span class="hidden-mobile">TypeScript</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/27/typescript/"
-                    data-tooltip="TypeScript"
-                    aria-label="下一篇: TypeScript"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
+                  </article>
                 </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
+              
+            </div>
+
             
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                        aria-label="分享到 Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                        aria-label="分享到 Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/28/poster/"
-                        aria-label="分享到 Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
-
-            
-        </div>
-        
-
-
-    
-        
-    
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
-        </div>
-        
-            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-            <h4 id="about-card-name">小白的文件整理箱</h4>
-        
-            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>菜鸟级摸鱼工程师</p>
 
-            </div>
-        
-        
-            <div id="about-card-location">
-                <i class="fa fa-map-marker-alt"></i>
-                <br/>
-                Shadow Border
-            </div>
-        
+
+
+  </aside>
+
+
     </div>
+  </div>
 </div>
 
-        
-        
-<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
 
-<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
 
-<!--SCRIPTS END-->
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
 
 
     
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
-    </body>
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
 </html>

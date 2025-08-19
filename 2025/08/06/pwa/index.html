@@ -1,0 +1,769 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最近回看同事分享的离线化相关文档，想总结一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PWA初识">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2025/08/06/pwa/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="最近回看同事分享的离线化相关文档，想总结一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/pwa/pwa-download.png">
+<meta property="article:published_time" content="2025-08-06T03:30:32.000Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.731Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="PWA">
+<meta property="article:tag" content="离线化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://unkonwn404.github.io/unknown404.github.io/img/pwa/pwa-download.png">
+  
+  
+  
+  <title>PWA初识 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PWA初识"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-06 11:30" pubdate>
+          2025年8月6日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          83 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PWA初识</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最近回看同事分享的离线化相关文档，想总结一下。</p>
+<span id="more"></span>
+
+<h2 id="什么是-PWA？"><a href="#什么是-PWA？" class="headerlink" title="什么是 PWA？"></a>什么是 PWA？</h2><p>PWA（Progressive Web App），全称渐进式网络应用，是一种结合了网页和原生应用程序功能的新型应用程序开发方法。PWA 通过使用现代 Web 技术，例如 Service Worker 和 Web App Manifest，为用户提供了类似原生应用的体验。</p>
+<h2 id="PWA-特点"><a href="#PWA-特点" class="headerlink" title="PWA 特点"></a>PWA 特点</h2><h3 id="可安装"><a href="#可安装" class="headerlink" title="可安装"></a>可安装</h3><p>意思是可以像原生 APP 在主屏幕上留有图标。前提是提供 manifest.json，它描述了我们的图标在主屏幕上如何显示，以及图标点击进去的启动页是什么。主要格式如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;test&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;short_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;test&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;start_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;display&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fullscreen&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;theme_color&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#141416&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;background_color&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#ffffff&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;test&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;icons&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;src&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://cdn.com/img/icon.png&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;sizes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;128x128&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/png&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>start_url:设置启动网址</li>
+<li>icons: 各个分辨率下页面的图标</li>
+</ul>
+<p>之后用 link 标签引入改 json 即可</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;manifest&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;/assets/manifest.json&quot;</span> /&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>如果浏览器可以找到这个 manifest 文件及里面的 icons 链接，它就会在地址栏里给你显示个按钮，提示用户本网站可以安装为 PWA。<br><img src="/unknown404.github.io/img/pwa/pwa-download.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<h3 id="离线化"><a href="#离线化" class="headerlink" title="离线化"></a>离线化</h3><p>离线加载本质上是页面所需的各种 js、css 以及页面本身的 html，都可以缓存到本地，不再从网络上请求。这个能力是通过 Service Worker 来实现的。</p>
+<h4 id="Service-Worker"><a href="#Service-Worker" class="headerlink" title="Service Worker"></a>Service Worker</h4><p>Service Worker 其实也是一个 js 文件（我们下面简称 sw.js），拥有和其他 Web Worker 类似的隔离空间。Service Worker 受到一定的限制，无法直接访问 DOM，只能通过 postMessage() 方法与网页进行通信。</p>
+<h5 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h5><p>注册的流程如下所示：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-comment">&lt;!-- index.html --&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Service Worker 示例<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">      <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;serviceWorker&quot;</span> <span class="hljs-keyword">in</span> navigator) &#123;</span><br><span class="language-javascript">        <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;load&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">          navigator.<span class="hljs-property">serviceWorker</span></span><br><span class="language-javascript">            .<span class="hljs-title function_">register</span>(<span class="hljs-string">&quot;/service-worker.js&quot;</span>)</span><br><span class="language-javascript">            .<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">registration</span>) &#123;</span><br><span class="language-javascript">              <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Service Worker 注册成功:&quot;</span>, registration.<span class="hljs-property">scope</span>);</span><br><span class="language-javascript">            &#125;)</span><br><span class="language-javascript">            .<span class="hljs-title function_">catch</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">error</span>) &#123;</span><br><span class="language-javascript">              <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Service Worker 注册失败:&quot;</span>, error);</span><br><span class="language-javascript">            &#125;);</span><br><span class="language-javascript">        &#125;);</span><br><span class="language-javascript">      &#125;</span><br><span class="language-javascript">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="Service-Worker-处理的事件周期"><a href="#Service-Worker-处理的事件周期" class="headerlink" title="Service Worker 处理的事件周期"></a>Service Worker 处理的事件周期</h5><ul>
+<li>install 事件：当 Service Worker 首次下载并准备就绪时触发，一般在这个阶段预缓存关键资源。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js">self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;install&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) &#123;<br>  event.<span class="hljs-title function_">waitUntil</span>(<br>    caches.<span class="hljs-title function_">open</span>(<span class="hljs-string">&quot;my-cache&quot;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">cache</span>) &#123;<br>      <span class="hljs-keyword">return</span> cache.<span class="hljs-title function_">addAll</span>(filesToCache);<br>    &#125;)<br>  );<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>activate 事件：当 Service Worker 开始控制页面时触发，一般在这个事件中清理旧缓存，确保用户使用最新版本。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js">self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;activate&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) &#123;<br>  event.<span class="hljs-title function_">waitUntil</span>(<br>    caches.<span class="hljs-title function_">keys</span>().<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">cacheNames</span>) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">all</span>(<br>        cacheNames<br>          .<span class="hljs-title function_">filter</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">cacheName</span>) &#123;<br>            <span class="hljs-keyword">return</span> cacheName !== <span class="hljs-string">&quot;my-cache&quot;</span>;<br>          &#125;)<br>          .<span class="hljs-title function_">map</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">cacheName</span>) &#123;<br>            <span class="hljs-keyword">return</span> caches.<span class="hljs-title function_">delete</span>(cacheName);<br>          &#125;)<br>      );<br>    &#125;)<br>  );<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>fetch 事件：当页面发起网络请求时触发，一般在这个事件中，对网络资源做缓存策略。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js">self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;fetch&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) &#123;<br>  event.<span class="hljs-title function_">respondWith</span>(<br>    caches.<span class="hljs-title function_">match</span>(event.<span class="hljs-property">request</span>).<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">response</span>) &#123;<br>      <span class="hljs-keyword">return</span> response || <span class="hljs-title function_">fetch</span>(event.<span class="hljs-property">request</span>);<br>    &#125;)<br>  );<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>不过一般情况下我们不会直接去用 service worker 的 api 写代码，谷歌提供了一个开源 sdk，叫做 workbox，可以帮我们快速的开发 sw.js。因为实际开发中要解决的缓存问题是比较复杂且重复的，比如一个服务，里边有三个请求只能用缓存，还有十个请求要先缓存再请求，这为直接写 Service Worker 代码带来一些麻烦。</p>
+<h4 id="workbox"><a href="#workbox" class="headerlink" title="workbox"></a>workbox</h4><p>Workbox 是 Google 提供的一个库，用来简化 Service Worker 开发，本质是对 Service Worker API 的封装，提供了现成的缓存策略（CacheFirst、NetworkFirst、StaleWhileRevalidate 等），能帮你生成 service-worker.js 文件，自动注入静态资源清单（precache manifest）支持 runtime caching、缓存过期管理、资源版本控制等复杂逻辑。</p>
+<h4 id="workbox-build"><a href="#workbox-build" class="headerlink" title="workbox build"></a>workbox build</h4><p>Workbox Build 是 Google Workbox 提供的一个 Node.js 构建工具，<br>用来在打包阶段（比如 Webpack、Rollup、Gulp 或纯 Node 脚本）自动生成 Service Worker 文件或者注入预缓存清单。</p>
+<h5 id="workbox-build-主要解决的问题：手写预缓存的问题。"><a href="#workbox-build-主要解决的问题：手写预缓存的问题。" class="headerlink" title="workbox build 主要解决的问题：手写预缓存的问题。"></a>workbox build 主要解决的问题：手写预缓存的问题。</h5><p>PWA 应用有个预缓存机制，这个机制会在 PWA 应用启动的时候把网站的静态资源都后台静默下载下来，这样就能实现桌面端应用的“秒开”效果。如果不用 Workbox Build，你的 Service Worker 必须手动写 预缓存资源列表，文件一更新，你还得自己改 revision，非常麻烦。</p>
+<h5 id="workbox-build-支持两种生成模式：generateSW-和-injectManifest。"><a href="#workbox-build-支持两种生成模式：generateSW-和-injectManifest。" class="headerlink" title="workbox build 支持两种生成模式：generateSW 和 injectManifest。"></a>workbox build 支持两种生成模式：generateSW 和 injectManifest。</h5><h6 id="generateSW-模式"><a href="#generateSW-模式" class="headerlink" title="generateSW 模式"></a>generateSW 模式</h6><p>直接生成一个完整的 service-worker.js，包含 Workbox 代码和缓存逻辑。</p>
+<h6 id="injectManifest-模式"><a href="#injectManifest-模式" class="headerlink" title="injectManifest 模式"></a>injectManifest 模式</h6><p>适合想自己写 Service Worker 逻辑，但又想自动生成 precache 列表的情况。</p>
+<h5 id="workbox-打包插件"><a href="#workbox-打包插件" class="headerlink" title="workbox 打包插件"></a>workbox 打包插件</h5><p>这里的编译器指的是 webpack vite 这些工具。相关的插件包括 webpack-pwa-manifest、workbox-webpack-plugin、vite-plugin-pwa。<br>这些工具一般都会暴露 workbox build 的配置项让你来自定义，同时自己完成一些把 sw 脚本注入到 index.html 中、自动识别打包出的静态资源并生成预加载清单的功能。</p>
+<p>这里以 vite-plugin-pwa 为例，安装后在 vite.config.js 文件下增加以下配置：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineConfig</span>(&#123;<br>  <span class="hljs-comment">// 。。。</span><br>  <span class="hljs-attr">plugins</span>: [<br>    <span class="hljs-title class_">VitePWA</span>(&#123;<br>      <span class="hljs-attr">base</span>: <span class="hljs-string">&quot;/&quot;</span>,<br>      <span class="hljs-attr">scope</span>: <span class="hljs-string">&quot;/&quot;</span>,<br>      <span class="hljs-attr">registerType</span>: <span class="hljs-string">&quot;autoUpdate&quot;</span>,<br>      <span class="hljs-attr">injectRegister</span>: <span class="hljs-string">&quot;script&quot;</span>,<br>      <span class="hljs-attr">devOptions</span>: &#123;<br>        <span class="hljs-attr">enabled</span>: <span class="hljs-literal">true</span>,<br>      &#125;,<br>      <span class="hljs-attr">manifest</span>: &#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;My Awesome App&quot;</span>,<br>        <span class="hljs-attr">short_name</span>: <span class="hljs-string">&quot;MyApp&quot;</span>,<br>        <span class="hljs-attr">description</span>: <span class="hljs-string">&quot;My Awesome App description&quot;</span>,<br>        <span class="hljs-attr">theme_color</span>: <span class="hljs-string">&quot;#ffffff&quot;</span>,<br>      &#125;,<br>      <span class="hljs-attr">workbox</span>: &#123;<br>        <span class="hljs-attr">runtimeCaching</span>: [<br>          &#123;<br>            <span class="hljs-attr">urlPattern</span>: <span class="hljs-regexp">/\.(?:png|jpg|jpeg|svg|gif)$/</span>,<br>            <span class="hljs-attr">handler</span>: <span class="hljs-string">&quot;CacheFirst&quot;</span>,<br>            <span class="hljs-attr">options</span>: &#123;<br>              <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;images-cache&quot;</span>,<br>              <span class="hljs-attr">expiration</span>: &#123;<br>                <span class="hljs-attr">maxEntries</span>: <span class="hljs-number">100</span>, <span class="hljs-comment">// 最多缓存100张图片</span><br>                <span class="hljs-attr">maxAgeSeconds</span>: <span class="hljs-number">30</span> * <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span>, <span class="hljs-comment">// 缓存30天</span><br>              &#125;,<br>              <span class="hljs-attr">cacheableResponse</span>: &#123;<br>                <span class="hljs-attr">statuses</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">200</span>], <span class="hljs-comment">// 缓存成功的响应</span><br>              &#125;,<br>            &#125;,<br>          &#125;,<br>          &#123;<br>            <span class="hljs-attr">urlPattern</span>: <span class="hljs-regexp">/^https:\/\/mobileproducts\.cdn\.sohu\.com\/.*/</span>,<br>            <span class="hljs-attr">handler</span>: <span class="hljs-string">&quot;CacheFirst&quot;</span>,<br>            <span class="hljs-attr">options</span>: &#123;<br>              <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;cdn-images-cache&quot;</span>,<br>              <span class="hljs-attr">expiration</span>: &#123;<br>                <span class="hljs-attr">maxEntries</span>: <span class="hljs-number">100</span>,<br>                <span class="hljs-attr">maxAgeSeconds</span>: <span class="hljs-number">7</span> * <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span>, <span class="hljs-comment">// CDN图片缓存7天</span><br>              &#125;,<br>              <span class="hljs-attr">cacheableResponse</span>: &#123;<br>                <span class="hljs-attr">statuses</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">200</span>],<br>              &#125;,<br>            &#125;,<br>          &#125;,<br>        ],<br>        <span class="hljs-attr">globPatterns</span>: [<span class="hljs-string">&quot;**/*.&#123;js,css,html,ico,png,jpg,jpeg,svg,gif&#125;&quot;</span>],<br>      &#125;,<br>    &#125;),<br>  ],<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>这里配置的一些含义：</p>
+<ul>
+<li>base：打包后的 sw 和 manifest 的引入路径，如果需要和 vite 配置的 basename 不同需要专门配置</li>
+<li>scope：sw 生效范围</li>
+<li>manifest：manifest 文件的基本配置，成功后在控制台 application 中看见，但在本地的打包不会触发浏览器地址栏的下载图标</li>
+<li>workbox：缓存规则配置</li>
+</ul>
+<p>需要注意的是 Service Worker 只能在<strong>安全上下文（Secure Context）</strong>中使用：</p>
+<p>✅ HTTPS 网站：<a target="_blank" rel="noopener" href="https://example.com/">https://example.com</a><br>✅ 本地开发：<a target="_blank" rel="noopener" href="http://localhost/">http://localhost</a> 或 <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1</a><br>如果在本地用映射域名打开是看不到注入的 service worker 的</p>
+<h4 id="缓存规则配置"><a href="#缓存规则配置" class="headerlink" title="缓存规则配置"></a>缓存规则配置</h4><p>配置缓存规则时，需要明确这两个概念：</p>
+<ul>
+<li><strong>预缓存（Precache）</strong>：在 Service Worker 安装阶段，就把一批静态文件（HTML、CSS、JS、图片等）缓存到浏览器中。</li>
+<li><strong>运行时缓存（Runtime Cache）</strong>：对动态请求（接口、非核心图片等）在运行时按策略缓存，比如 Cache First、Network First、Stale While Revalidate。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>预缓存（Precache）</th>
+<th>运行时缓存（Runtime Cache）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>缓存时机</td>
+<td>安装 SW 时一次性缓存</td>
+<td>资源请求时缓存</td>
+</tr>
+<tr>
+<td>资源列表</td>
+<td>固定、提前定义</td>
+<td>动态，取决于运行时请求</td>
+</tr>
+<tr>
+<td>适用资源</td>
+<td>核心静态资源</td>
+<td>API、图片、CDN 资源等</td>
+</tr>
+<tr>
+<td>离线可用性</td>
+<td>安装完成后可直接离线使用</td>
+<td>首次访问需联网，后续可缓存</td>
+</tr>
+<tr>
+<td>版本更新</td>
+<td>需要更改 revision 才会更新</td>
+<td>请求返回新数据可自动更新</td>
+</tr>
+</tbody></table>
+<p>下面是配置的一些缓存规则，主要涉及以下内容：<br>✧ 缓存优先（Cache First）：优先从缓存返回，若未命中则请求网络返回并缓存</p>
+<p>✧ 网络优先（Network First）：优先请求网络返回并缓存，失败时直接返回缓存</p>
+<p>✧ 增量更新（Stale-While-Revalidate）：立即返回缓存（如有），同时在后台请求网络更新缓存<br>➢ 对实时性要求不高，可容忍旧数据</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">WorkboxPlugin</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;workbox-webpack-plugin&quot;</span>);<br><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-attr">plugins</span>: [<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">WorkboxPlugin</span>.<span class="hljs-title class_">GenerateSW</span>(&#123;<br>      <span class="hljs-attr">swDest</span>: <span class="hljs-string">&quot;service-worker.js&quot;</span>,<br>      <span class="hljs-attr">clientsClaim</span>: <span class="hljs-literal">true</span>,<br>      <span class="hljs-attr">skipWaiting</span>: <span class="hljs-literal">true</span>,<br>      <span class="hljs-attr">maximumFileSizeToCacheInBytes</span>: <span class="hljs-number">13</span> * <span class="hljs-number">1024</span> * <span class="hljs-number">1024</span>, <span class="hljs-comment">// 13MB</span><br><br>      <span class="hljs-comment">// 预缓存匹配规则（构建输出文件）</span><br>      <span class="hljs-attr">globPatterns</span>: [<span class="hljs-string">&quot;**/*.&#123;html,js,css,png,jpg,jpeg,svg,webp&#125;&quot;</span>],<br><br>      <span class="hljs-comment">// 不缓存的文件</span><br>      <span class="hljs-attr">exclude</span>: [<span class="hljs-regexp">/\.html$/</span>, <span class="hljs-regexp">/\.shtml$/</span>],<br><br>      <span class="hljs-attr">runtimeCaching</span>: [<br>        <span class="hljs-comment">// 图片缓存</span><br>        &#123;<br>          <span class="hljs-attr">urlPattern</span>: <span class="hljs-regexp">/\.(?:png|jpg|jpeg|svg|webp)$/i</span>,<br>          <span class="hljs-attr">handler</span>: <span class="hljs-string">&quot;CacheFirst&quot;</span>,<br>          <span class="hljs-attr">options</span>: &#123;<br>            <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;image-cache&quot;</span>,<br>            <span class="hljs-attr">matchOptions</span>: &#123; <span class="hljs-attr">ignoreVary</span>: <span class="hljs-literal">true</span> &#125;,<br>            <span class="hljs-attr">plugins</span>: [<br>              &#123;<br>                <span class="hljs-attr">cacheWillUpdate</span>: <span class="hljs-keyword">async</span> (&#123; response &#125;) =&gt; &#123;<br>                  <span class="hljs-keyword">if</span> (response.<span class="hljs-property">headers</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;Vary&quot;</span>)?.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&quot;*&quot;</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>                  <span class="hljs-keyword">return</span> response;<br>                &#125;,<br>              &#125;,<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">expiration</span>.<span class="hljs-title class_">ExpirationPlugin</span>(&#123;<br>                <span class="hljs-attr">maxEntries</span>: <span class="hljs-number">100</span>,<br>                <span class="hljs-attr">maxAgeSeconds</span>: <span class="hljs-number">30</span> * <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span>, <span class="hljs-comment">// 30天</span><br>              &#125;),<br>            ],<br>          &#125;,<br>        &#125;,<br><br>        <span class="hljs-comment">// JS/CSS 缓存</span><br>        &#123;<br>          <span class="hljs-attr">urlPattern</span>: <span class="hljs-function">(<span class="hljs-params">&#123; request &#125;</span>) =&gt;</span><br>            request.<span class="hljs-property">destination</span> === <span class="hljs-string">&quot;script&quot;</span> || request.<span class="hljs-property">destination</span> === <span class="hljs-string">&quot;style&quot;</span>,<br>          <span class="hljs-attr">handler</span>: <span class="hljs-string">&quot;CacheFirst&quot;</span>,<br>          <span class="hljs-attr">options</span>: &#123;<br>            <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;statics-cache&quot;</span>,<br>            <span class="hljs-attr">matchOptions</span>: &#123; <span class="hljs-attr">ignoreVary</span>: <span class="hljs-literal">true</span> &#125;,<br>            <span class="hljs-attr">plugins</span>: [<br>              &#123;<br>                <span class="hljs-attr">cacheWillUpdate</span>: <span class="hljs-keyword">async</span> (&#123; response &#125;) =&gt; &#123;<br>                  <span class="hljs-keyword">if</span> (response.<span class="hljs-property">headers</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;Vary&quot;</span>)?.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&quot;*&quot;</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>                  <span class="hljs-keyword">return</span> response;<br>                &#125;,<br>              &#125;,<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">expiration</span>.<span class="hljs-title class_">ExpirationPlugin</span>(&#123;<br>                <span class="hljs-attr">maxEntries</span>: <span class="hljs-number">50</span>,<br>                <span class="hljs-attr">maxAgeSeconds</span>: <span class="hljs-number">15</span> * <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span>, <span class="hljs-comment">// 15天</span><br>              &#125;),<br>            ],<br>          &#125;,<br>        &#125;,<br><br>        <span class="hljs-comment">// 页面导航缓存</span><br>        &#123;<br>          <span class="hljs-attr">urlPattern</span>: <span class="hljs-function">(<span class="hljs-params">&#123; request &#125;</span>) =&gt;</span> request.<span class="hljs-property">mode</span> === <span class="hljs-string">&quot;navigate&quot;</span>,<br>          <span class="hljs-attr">handler</span>: <span class="hljs-string">&quot;NetworkFirst&quot;</span>,<br>          <span class="hljs-attr">options</span>: &#123;<br>            <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;navigation-cache&quot;</span>,<br>            <span class="hljs-attr">matchOptions</span>: &#123; <span class="hljs-attr">ignoreSearch</span>: <span class="hljs-literal">true</span> &#125;,<br>            <span class="hljs-attr">networkTimeoutSeconds</span>: <span class="hljs-number">3</span>,<br>            <span class="hljs-attr">plugins</span>: [<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">expiration</span>.<span class="hljs-title class_">ExpirationPlugin</span>(&#123;<br>                <span class="hljs-attr">maxEntries</span>: <span class="hljs-number">30</span>,<br>                <span class="hljs-attr">maxAgeSeconds</span>: <span class="hljs-number">7</span> * <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span>, <span class="hljs-comment">// 7天</span><br>              &#125;),<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">cacheableResponse</span>.<span class="hljs-title class_">CacheableResponsePlugin</span>(&#123;<br>                <span class="hljs-attr">statuses</span>: [<span class="hljs-number">200</span>],<br>              &#125;),<br>            ],<br>          &#125;,<br>        &#125;,<br>        <span class="hljs-comment">// API 缓存</span><br>        &#123;<br>          <span class="hljs-attr">urlPattern</span>: <span class="hljs-function">(<span class="hljs-params">&#123; url &#125;</span>) =&gt;</span> url.<span class="hljs-property">pathname</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&quot;/wap/info&quot;</span>),<br>          <span class="hljs-attr">handler</span>: <span class="hljs-string">&quot;StaleWhileRevalidate&quot;</span>,<br>          <span class="hljs-attr">options</span>: &#123;<br>            <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;api-cache&quot;</span>,<br>            <span class="hljs-attr">plugins</span>: [<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">expiration</span>.<span class="hljs-title class_">ExpirationPlugin</span>(&#123;<br>                <span class="hljs-attr">maxEntries</span>: <span class="hljs-number">10</span>,<br>                <span class="hljs-attr">maxAgeSeconds</span>: <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span>, <span class="hljs-comment">// 1天</span><br>              &#125;),<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">cacheableResponse</span>.<span class="hljs-title class_">CacheableResponsePlugin</span>(&#123;<br>                <span class="hljs-attr">statuses</span>: [<span class="hljs-number">200</span>],<br>              &#125;),<br>            ],<br>          &#125;,<br>        &#125;,<br><br>        <span class="hljs-comment">// API 缓存</span><br>        &#123;<br>          <span class="hljs-attr">urlPattern</span>: <span class="hljs-function">(<span class="hljs-params">&#123; url &#125;</span>) =&gt;</span> url.<span class="hljs-property">pathname</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&quot;/odin/api/&quot;</span>),<br>          <span class="hljs-attr">handler</span>: <span class="hljs-string">&quot;NetworkFirst&quot;</span>,<br>          <span class="hljs-attr">options</span>: &#123;<br>            <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;api-cache&quot;</span>,<br>            <span class="hljs-attr">networkTimeoutSeconds</span>: <span class="hljs-number">3</span>,<br>            <span class="hljs-attr">plugins</span>: [<br>              &#123;<br>                <span class="hljs-attr">cacheKeyWillBeUsed</span>: <span class="hljs-keyword">async</span> (&#123; request &#125;) =&gt; &#123;<br>                  <span class="hljs-keyword">const</span> url = <span class="hljs-keyword">new</span> <span class="hljs-title function_">URL</span>(request.<span class="hljs-property">url</span>);<br>                  <span class="hljs-keyword">return</span> url.<span class="hljs-property">href</span>; <span class="hljs-comment">// 自定义缓存 key</span><br>                &#125;,<br>              &#125;,<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">expiration</span>.<span class="hljs-title class_">ExpirationPlugin</span>(&#123;<br>                <span class="hljs-attr">maxEntries</span>: <span class="hljs-number">10</span>,<br>                <span class="hljs-attr">maxAgeSeconds</span>: <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span>, <span class="hljs-comment">// 1天</span><br>              &#125;),<br>              <span class="hljs-keyword">new</span> workbox.<span class="hljs-property">cacheableResponse</span>.<span class="hljs-title class_">CacheableResponsePlugin</span>(&#123;<br>                <span class="hljs-attr">statuses</span>: [<span class="hljs-number">200</span>],<br>              &#125;),<br>            ],<br>          &#125;,<br>        &#125;,<br>      ],<br>    &#125;),<br>  ],<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="消息推送"><a href="#消息推送" class="headerlink" title="消息推送"></a>消息推送</h3><p>主要依赖 Web Push API + Service Worker 来实现，整个过程分为 订阅（subscribe） → 发送（push） → 接收（service worker 监听） 三个阶段。</p>
+<ol>
+<li>用户授权<br>浏览器通过 Notification.requestPermission() 向用户请求通知权限。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> permission = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Notification</span>.<span class="hljs-title function_">requestPermission</span>();<br><span class="hljs-keyword">if</span> (permission !== <span class="hljs-string">&quot;granted&quot;</span>) &#123;<br>  <span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;请允许通知权限&quot;</span>);<br>  <span class="hljs-keyword">return</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>订阅推送服务<br>使用 PushManager.subscribe() 与浏览器内置的 Push Service 建立订阅关系，并获取一个 endpoint（URL）+ 公钥信息。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> subscription = <span class="hljs-keyword">await</span> reg.<span class="hljs-property">pushManager</span>.<span class="hljs-title function_">subscribe</span>(&#123;<br>  <span class="hljs-attr">userVisibleOnly</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-attr">applicationServerKey</span>: <span class="hljs-title function_">urlBase64ToUint8Array</span>(<span class="hljs-string">&quot;&lt;VAPID_PUBLIC_KEY&gt;&quot;</span>),<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>服务端保存订阅信息<br>将这个 endpoint 保存到你的数据库，用于后续发消息。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&quot;/save-subscription&quot;</span>, &#123;<br>  <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,<br>  <span class="hljs-attr">headers</span>: &#123; <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span> &#125;,<br>  <span class="hljs-attr">body</span>: <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(subscription),<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><p>服务端发送推送<br>使用 Web Push 协议（一般通过 web-push npm 包）向浏览器 Push Service 发送加密消息。</p>
+</li>
+<li><p>浏览器后台接收<br>Service Worker 即使在网页关闭时，也能监听 push 事件，并展示通知。</p>
+</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js">self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;push&quot;</span>, <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">const</span> data = event.<span class="hljs-property">data</span>.<span class="hljs-title function_">json</span>();<br>  event.<span class="hljs-title function_">waitUntil</span>(<br>    self.<span class="hljs-property">registration</span>.<span class="hljs-title function_">showNotification</span>(data.<span class="hljs-property">title</span>, &#123;<br>      <span class="hljs-attr">body</span>: data.<span class="hljs-property">body</span>,<br>      <span class="hljs-attr">icon</span>: <span class="hljs-string">&quot;/icon.png&quot;</span>,<br>    &#125;)<br>  );<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7516526050408513555?searchId=20250806111824E746A71C8C886B6D0B8E">PWA 开发指南（一）：最简单的 PWA 入门配置</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7311343224546508810?searchId=20250806111824E746A71C8C886B6D0B8E">PWA 离线方案研究报告 | 京东云技术团队</a><br>(3)<a target="_blank" rel="noopener" href="https://vite-pwa-org-zh.netlify.app/guide/">vite pwa</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/PWA/">#PWA</a>
+      
+        <a href="/unknown404.github.io/tags/%E7%A6%BB%E7%BA%BF%E5%8C%96/">#离线化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PWA初识</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2025/08/06/pwa/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2025/07/01/headlessui/" title="HeadlessUI组件库">
+                        <span class="hidden-mobile">HeadlessUI组件库</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

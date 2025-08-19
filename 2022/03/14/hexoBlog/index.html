@@ -1,275 +1,295 @@
 
+
 <!DOCTYPE html>
-<html lang="zh-cn">
-    
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="小白的文件整理箱">
-    <title>hexo搭建博客 - 小白的文件整理箱</title>
-    <meta name="author" content="小白的文件整理箱">
-    
-    
-    
-        
-            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
-        
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"\n\n准备工具1）node.js2) git\n本地建站流程1.在Gitee注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名可随意设置。但注意初始化时不要加文件。\n\n\n根据网上大多数博客的说法仓库名应该设置为用户名，否则 hexo 打包的 css 路径会找不到。但是实际操作中并没有遇到这样的问题推测有两个可能性。1）这个问题只出现在 GitHub Page 开设的流程。2）配置更新了，现在新版 hexo 的打包确保了相对路径的可查找性。\n \n2.将空仓库拉到本地，安装 hexo，安装指令如下：\n12npm install hexo-cli -g\n\n3.使用指令hexo init初始化 hexo，注意如果仓库的文件夹不为空的话，初始化就会失败，可以考虑新建一个文件夹，在新文件夹的位置启动初始化指令。（推荐将初始化生成的文件夹都放在仓库的另一个分支，master 分支保留给 hexo 打包博客文件）初始化后当前文件夹内部结构如下：\n12345678.├── _config.yml //网站的配置文件，可配置大部分参数├── package.json├── scaffolds  //模版文件夹├── source  //资源文件夹，用户添加资源的位置|   ├── _drafts  //草稿|   └── _posts   //博文└── themes  //主题文件夹。Hexo 会根据主题来生成静态页面。\n\n4.初始化完成以后 package.json 新增了几个指令，包括\n123456&quot;scripts&quot;: &#123;    &quot;build&quot;: &quot;hexo generate&quot;,    &quot;clean&quot;: &quot;hexo clean&quot;,    &quot;deploy&quot;: &quot;hexo deploy&quot;,    &quot;server&quot;: &quot;hexo server&quot;  &#125;,\n\n新增的 hexo 指令的意义是：\n\nhexo clean —— 清空已有 hexo 网站文件hexo generate(or g) —— 依据网页文本与新的 CSS 样式生成新网站文件hexo server(or s) —— 启动本地服务器，可以在 localhost:4000 查看网站修改效果按上述顺序执行就可以在 localhost:4000 看到默认版式下的页面了。一般默认的是一个 landscape 主题。\n\n到此为止一个简单的博客就在本地建好了。我们可以通过调整 themes 文件夹的主题、修改_config.yml 文件来使自己的博客更加个性化。\n更换主题hexo 有自己的主题网站，可以选择自己感兴趣的主题点击进入其 github 主页进行下载，解压后添加到 themes 文件夹下。\n虽然 hexo 的主题丰富，很容易找到合意的个性主题。但是第一次使用时最好找一个比较常用的模版，这样说明文档比较丰富、遇到问题网上搜索时也很容易找到答案 😭\n个人比较推荐并以后打算尝试的模版包括Next (大家都喜欢应该是有理由的吧)、Fluid (文档看着真齐全)。\n当前使用的主题是tranquilpeak，看着比较美观。后续以该主题为例讲解配置修改。\n具体步骤1）GitHub 网站上以 zip 方式下载2）将解压后的文件夹命名为 tranquilpeak 添加到博客的 themes 文件夹下3）打开博客仓库的终端进入到 tranquilpeak 文件夹位置执行npm install &amp;&amp; npm run prod4）调整博客仓库主文件夹下的theme: tranquilpeak5）使用指令 hexo clean &amp;&amp; hexo g &amp;&amp; hexo s 即可看到新样式\ntranquilpeak 相关配置tranquilpeak 主题文件夹下也有_config.yml 配置文件，在我下载的当前版本 4.1.3 里，作者把配置分为了“Sidebar Configuration”、“Header configuration”、“Author“、“Customization”、“Comment systems”、“Integrated services”和“Sharing options”。Sidebar Configuration：提供了侧边栏的菜单配置，可以根据自己的需求增减项目、调整链接\n123456sidebar:                            menu:                              home:                             title: Home    # 链接标题                url: /         # 链接URL                icon: home     # Font Awesome 图标名,https://fontawesome.com/icons?d=gallery&amp;m=free 上可以找到合适的图标\nHeader configuration：用于编辑头部右上角链接Author：编辑作者信息，包括以下几个部分。\n1234567author:    email:     location:     picture:     twitter:    google_plus:    google_plus_business:\n其中location和picture的填写内容会显示在关于（作者）的页面上。而作者的其他信息例如座右铭、工作等则是在博客总文件夹下的语言选项选定以后，在tranquilpeak\\languages\\下寻找对应语言的模版，修改作者相关的信息。\n12345author:    # 你的个人简介 (支持 Markdown 和 HTML 语法)    bio: &quot;&quot;    # 你的工作简介    job: &quot;&quot;\nCustomization：有关于侧边栏的展示方法（sidebar_behavior）、文章列表缩略图位置（thumbnail_image_position）、封面图（cover_image）等配置。\n“Comment systems”、“Integrated services”和“Sharing options”等配置暂时没有用到，以后再研究。\n书写博文1）可在终端执行如下指令完成页面新建\n1hexo new [layout] &lt;title&gt;\nlayout变量可以有三种选择：post、page 和 draft。在创建这三种不同类型的文件时，它们将会被保存到不同的路径；而您自定义的其他布局和 post 相同，都将储存到 source&#x2F;_posts 文件夹。\n\n\n\nlayout选项\n生成文件路径\n\n\n\npost\nsource&#x2F;_posts\n\n\npage\nsource\n\n\ndraft\nsource&#x2F;_drafts\n\n\ntitle是文章的名称，执行完指令后会在layout对应的路径下生成&lt;title&gt;.md文件。如果工程文件夹下的_config.yml 文件里post_asset_folder这一选项置为true的话则还会生成一个title的文件夹，可以存放引用资源。\n2）调整文章内容生成的文件头部通常会包含以下内容：\n12345---title: date: tags:---\n如果是草稿则没有自动生成的date变量，执行语句hexo publish draft  &lt;title&gt;、移动到source&#x2F;_posts 文件夹时应该会出现。根据自己的需要，可以在文件头部增加内容。以tranquilpeak为例，该样式支持categories、thumbnailImage、excerpt等配置。配置categories可以在分类页面看到自己这篇文章的归类情况；配置thumbnailImage时会在文章列表增加缩略图，但本地是看不到效果的，只有打包上传到gitee后才可以；配置excerpt时首页文章列表不会展示全文而只会展示摘要。tranquilpeak模版还支持两个标签语法：&lt;!-- more --&gt;和&lt;!-- toc --&gt;。前者是将标志之前的内容将会自动生成首页的概览，后者则是自动生成文章目录。具体的内容书写可以参考markdown语法。\n推送到gitee1）首先需要安装推送工具hexo-deployer-git。\n1npm install hexo-deployer-git --save\n2）在博客工程文件夹下的_config.yml找到URL和deploy的配置。\n12345678910# URL## Set your site url here. For example, if you use GitHub Page, set url as &#x27;https://username.github.io/project&#x27;url: https://unknown-four-hundred-and-four.gitee.io/unknown_404...deploy:  type: git  repository: https://gitee.com/unknown-four-hundred-and-four/unknown_404.git  branch: master\n这里URL需要改成静态资源最后部署的域名，按照配置文件的说明，应该是https://&#123;username&#125;.github.io/&#123;project&#125;的格式，username是GitHub用户名，在GitHub上仓库名和用户名是相同，但在gitee上可以不一样，所以要注意实际上需要填入的是仓库名。project对应当前博客的工程名。deploy选项里repository对应博客仓库的git地址，branch可根据需要修改，部署到page时注意一致性即可。3）文件生成成功后执行hexo deploy指令，将文件推到远程仓库的master分支上。\n\n\ngitee page服务启动1）在gitee仓库首页选择“服务-Gitee Page”\n\n\n2）如果没有实名认证的话开启Page服务需要验证，还需要绑定手机号。3）进入到Gitee Pages 服务页面，选择部署分支，注意和工程文件夹下的_config.yml的deploy配置一致，如果选择了强制使用https，则工程文件夹下_config.yml的url配置也必须是https。\n\n\n其他客户端拉取代码的注意事项本博客使用的主题tranquilpeak其资源assets是被列入忽略文件夹的内容，因此拉下来的代码不会包括这部分资源，如果直接启动无法正常看到页面样式。需要使用者在拉取代码以后进入主题的文件夹下按要求操作npm install &amp;&amp; npm run prod才可在本地看到正常的样式。如果之前将头像等资源放在assets文件夹下的话也需要在新生成的assets文件夹下重新加入。\n参考资料（1）基于Gitee+Hexo搭建个人博客（2）Hexo中文文档（3）tranquilpeak配置\n","dateCreated":"2022-03-14T14:05:43+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-03-14T14:05:43+08:00","description":"记录自己使用hexo搭建个人博客并部署到gitee的流程。","headline":"hexo搭建博客","image":["cover.jpg"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/","keywords":"Hexo","thumbnailUrl":"cover.jpg"}</script>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
     <meta name="description" content="记录自己使用hexo搭建个人博客并部署到gitee的流程。">
-<meta property="og:type" content="blog">
+<meta property="og:type" content="article">
 <meta property="og:title" content="hexo搭建博客">
-<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/03/14/hexoBlog/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="记录自己使用hexo搭建个人博客并部署到gitee的流程。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/gitee-init.png">
-<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/gitee-master.png">
-<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/gitee-page.png">
-<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/gitee-start.png">
+<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/cover.jpg">
 <meta property="article:published_time" content="2022-03-14T06:05:43.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:27:34.427Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.689Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="Hexo">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/gitee-init.png">
-    
-    
-        
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/cover.jpg"/>
-        <meta class="swiftype" name="image" data-type="enum" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/cover.jpg"/>
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://unkonwn404.github.io/unknown404.github.io/img/cover.jpg">
+  
+  
+  
+  <title>hexo搭建博客 - 小白的文件整理箱</title>
 
-    <!--STYLES END-->
-    
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    
 
-    
-        
-    
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
 
+<body>
+  
 
-    
-        
-            
-        
+  <header>
     
 
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/unknown_404/"
-            aria-label=""
-        >
-            小白的文件整理箱
-        </a>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="打开链接: /unknown_404/#about"
-            >
-        
-        
-            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-
-        
-    
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-            <div class="sidebar-profile">
-                <a
-                    href="/unknown_404/#about"
-                    aria-label="阅读有关作者的更多信息"
-                >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-                </a>
-                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
-                
-                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
-</h5>
-                
-            </div>
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/"
-                            
-                            rel="noopener"
-                            title="首页"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">首页</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-categories"
-                            
-                            rel="noopener"
-                            title="分类"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">分类</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-tags"
-                            
-                            rel="noopener"
-                            title="标签"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">标签</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-archives"
-                            
-                            rel="noopener"
-                            title="归档"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">归档</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="搜索"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">搜索</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="关于"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
+  </div>
 </nav>
 
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            hexo搭建博客
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2022-03-14T14:05:43+08:00">
-	
-		    3月 14, 2022
-    	
-    </time>
-    
-        <span>发布在 </span>
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="hexo搭建博客"></span>
+          
+        </div>
+
         
-    <a class="category-link" href="/unknown_404/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-14 14:05" pubdate>
+          2022年3月14日 下午
+        </time>
+      </span>
+    
+  </div>
 
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.3k 字
+        
+      </span>
+    
 
     
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
 </div>
 
-    
 </div>
 
+  </header>
+
+  <main>
     
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7"><span class="toc-text">准备工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%BB%BA%E7%AB%99%E6%B5%81%E7%A8%8B"><span class="toc-text">本地建站流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%8D%A2%E4%B8%BB%E9%A2%98"><span class="toc-text">更换主题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%AD%A5%E9%AA%A4"><span class="toc-text">具体步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tranquilpeak-%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE"><span class="toc-text">tranquilpeak 相关配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%A6%E5%86%99%E5%8D%9A%E6%96%87"><span class="toc-text">书写博文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E9%80%81%E5%88%B0gitee"><span class="toc-text">推送到gitee</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gitee-page%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8"><span class="toc-text">gitee page服务启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8B%89%E5%8F%96%E4%BB%A3%E7%A0%81%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">其他客户端拉取代码的注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+      
 
-<h2 id="准备工具"><a href="#准备工具" class="headerlink" title="准备工具"></a>准备工具</h2><p>1）<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">node.js</a><br>2) <a target="_blank" rel="noopener" href="https://git-scm.com/">git</a></p>
-<h2 id="本地建站流程"><a href="#本地建站流程" class="headerlink" title="本地建站流程"></a>本地建站流程</h2><p>1.在<a target="_blank" rel="noopener" href="https://gitee.com/">Gitee</a>注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名可随意设置。但注意初始化时不要加文件。</p>
-<div class="figure center" style="width:;"><img class="fig-img" src="gitee-init.png" alt=""></div><div style="clear:both;"></div>
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
 
-<div class="alert info"><p>根据网上大多数博客的说法仓库名应该设置为用户名，否则 hexo 打包的 css 路径会找不到。但是实际操作中并没有遇到这样的问题推测有两个可能性。<br>1）这个问题只出现在 GitHub Page 开设的流程。<br>2）配置更新了，现在新版 hexo 的打包确保了相对路径的可查找性。</p>
-</div> 
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">hexo搭建博客</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="准备工具"><a href="#准备工具" class="headerlink" title="准备工具"></a>准备工具</h2><p>1）<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">node.js</a><br>2) <a target="_blank" rel="noopener" href="https://git-scm.com/">git</a></p>
+<h2 id="本地建站流程"><a href="#本地建站流程" class="headerlink" title="本地建站流程"></a>本地建站流程</h2><p>1.在<a target="_blank" rel="noopener" href="https://gitee.com/">Gitee</a>注册登录账号，点击右上角“+”按钮创建新的仓库。仓库名可随意设置。但注意初始化时不要加文件。<br><img src="/unknown404.github.io/img/gitee-init.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<div class="note note-info">
+            <p>根据网上大多数博客的说法仓库名应该设置为用户名，否则 hexo 打包的 css 路径会找不到。但是实际操作中并没有遇到这样的问题推测有两个可能性。<br>1）这个问题只出现在 GitHub Page 开设的流程。<br>2）配置更新了，现在新版 hexo 的打包确保了相对路径的可查找性。</p>
+          </div> 
 <p>2.将空仓库拉到本地，安装 hexo，安装指令如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs avrasm">npm install hexo-<span class="hljs-keyword">cli</span> -g<br><br></code></pre></td></tr></table></figure>
 
 <p>3.使用指令<code>hexo init</code>初始化 hexo，注意如果仓库的文件夹不为空的话，初始化就会失败，可以考虑新建一个文件夹，在新文件夹的位置启动初始化指令。<br><em>（推荐将初始化生成的文件夹都放在仓库的另一个分支，master 分支保留给 hexo 打包博客文件）</em><br>初始化后当前文件夹内部结构如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml //网站的配置文件，可配置大部分参数</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds  //模版文件夹</span><br><span class="line">├── source  //资源文件夹，用户添加资源的位置</span><br><span class="line">|   ├── _drafts  //草稿</span><br><span class="line">|   └── _posts   //博文</span><br><span class="line">└── themes  //主题文件夹。Hexo 会根据主题来生成静态页面。</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs awk">.<br>├── _config.yml <span class="hljs-regexp">//</span>网站的配置文件，可配置大部分参数<br>├── package.json<br>├── scaffolds  <span class="hljs-regexp">//</span>模版文件夹<br>├── source  <span class="hljs-regexp">//</span>资源文件夹，用户添加资源的位置<br>|   ├── _drafts  <span class="hljs-regexp">//</span>草稿<br>|   └── _posts   <span class="hljs-regexp">//</span>博文<br>└── themes  <span class="hljs-regexp">//</span>主题文件夹。Hexo 会根据主题来生成静态页面。<br></code></pre></td></tr></table></figure>
 
 <p>4.初始化完成以后 package.json 新增了几个指令，包括</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;build&quot;: &quot;hexo generate&quot;,</span><br><span class="line">    &quot;clean&quot;: &quot;hexo clean&quot;,</span><br><span class="line">    &quot;deploy&quot;: &quot;hexo deploy&quot;,</span><br><span class="line">    &quot;server&quot;: &quot;hexo server&quot;</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;build&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;hexo generate&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;clean&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;hexo clean&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;deploy&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;hexo deploy&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;server&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;hexo server&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br></code></pre></td></tr></table></figure>
 
 <p>新增的 hexo 指令的意义是：</p>
 <blockquote>
@@ -282,15 +302,15 @@
 <p>当前使用的主题是<a target="_blank" rel="noopener" href="https://github.com/LouisBarranqueiro/hexo-theme-tranquilpeak">tranquilpeak</a>，看着比较美观。后续以该主题为例讲解配置修改。</p>
 <h3 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a>具体步骤</h3><p>1）GitHub 网站上以 zip 方式下载<br>2）将解压后的文件夹命名为 tranquilpeak 添加到博客的 themes 文件夹下<br>3）打开博客仓库的终端进入到 tranquilpeak 文件夹位置执行<code>npm install &amp;&amp; npm run prod</code><br>4）调整博客仓库主文件夹下的<code>theme: tranquilpeak</code><br>5）使用指令 hexo clean &amp;&amp; hexo g &amp;&amp; hexo s 即可看到新样式</p>
 <h3 id="tranquilpeak-相关配置"><a href="#tranquilpeak-相关配置" class="headerlink" title="tranquilpeak 相关配置"></a>tranquilpeak 相关配置</h3><p>tranquilpeak 主题文件夹下也有_config.yml 配置文件，在我下载的当前版本 4.1.3 里，作者把配置分为了“Sidebar Configuration”、“Header configuration”、“Author“、“Customization”、“Comment systems”、“Integrated services”和“Sharing options”。<br><strong>Sidebar Configuration</strong>：提供了侧边栏的菜单配置，可以根据自己的需求增减项目、调整链接</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sidebar:                   </span><br><span class="line">         menu:                 </span><br><span class="line">             home:             </span><br><span class="line">                title: Home    # 链接标题</span><br><span class="line">                url: /         # 链接URL</span><br><span class="line">                icon: home     # Font Awesome 图标名,https://fontawesome.com/icons?d=gallery&amp;m=free 上可以找到合适的图标</span><br></pre></td></tr></table></figure>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-symbol">sidebar:</span>                   <br><span class="hljs-symbol">         menu:</span>                 <br><span class="hljs-symbol">             home:</span>             <br><span class="hljs-symbol">                title:</span> Home    <span class="hljs-meta"># 链接标题</span><br><span class="hljs-symbol">                url:</span> /         <span class="hljs-meta"># 链接URL</span><br><span class="hljs-symbol">                icon:</span> home     <span class="hljs-meta"># Font Awesome 图标名,https:<span class="hljs-comment">//fontawesome.com/icons?d=gallery&amp;m=free 上可以找到合适的图标</span></span><br></code></pre></td></tr></table></figure>
 <p><strong>Header configuration</strong>：用于编辑头部右上角链接<br><strong>Author</strong>：编辑作者信息，包括以下几个部分。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">author:</span><br><span class="line">    email: </span><br><span class="line">    location: </span><br><span class="line">    picture: </span><br><span class="line">    twitter:</span><br><span class="line">    google_plus:</span><br><span class="line">    google_plus_business:</span><br></pre></td></tr></table></figure>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-symbol">author:</span><br><span class="hljs-symbol">    email:</span> <br><span class="hljs-symbol">    location:</span> <br><span class="hljs-symbol">    picture:</span> <br><span class="hljs-symbol">    twitter:</span><br><span class="hljs-symbol">    google_plus:</span><br><span class="hljs-symbol">    google_plus_business:</span><br></code></pre></td></tr></table></figure>
 <p>其中location和picture的填写内容会显示在关于（作者）的页面上。而作者的其他信息例如座右铭、工作等则是在博客总文件夹下的语言选项选定以后，在<code>tranquilpeak\languages\</code>下寻找对应语言的模版，修改作者相关的信息。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">author:</span><br><span class="line">    # 你的个人简介 (支持 Markdown 和 HTML 语法)</span><br><span class="line">    bio: &quot;&quot;</span><br><span class="line">    # 你的工作简介</span><br><span class="line">    job: &quot;&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-symbol">author:</span><br>    <span class="hljs-meta"># 你的个人简介 (支持 Markdown 和 HTML 语法)</span><br><span class="hljs-symbol">    bio:</span> <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-meta"># 你的工作简介</span><br><span class="hljs-symbol">    job:</span> <span class="hljs-string">&quot;&quot;</span><br></code></pre></td></tr></table></figure>
 <p><strong>Customization</strong>：有关于侧边栏的展示方法（sidebar_behavior）、文章列表缩略图位置（thumbnail_image_position）、封面图（cover_image）等配置。</p>
 <p>“Comment systems”、“Integrated services”和“Sharing options”等配置暂时没有用到，以后再研究。</p>
 <h2 id="书写博文"><a href="#书写博文" class="headerlink" title="书写博文"></a>书写博文</h2><p>1）可在终端执行如下指令完成页面新建</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gauss">hexo <span class="hljs-keyword">new</span> [layout] &lt;<span class="hljs-built_in">title</span>&gt;<br></code></pre></td></tr></table></figure>
 <p>layout变量可以有三种选择：post、page 和 draft。在创建这三种不同类型的文件时，它们将会被保存到不同的路径；而您自定义的其他布局和 post 相同，都将储存到 source&#x2F;_posts 文件夹。</p>
 <table>
 <thead>
@@ -314,354 +334,384 @@
 </tbody></table>
 <p>title是文章的名称，执行完指令后会在layout对应的路径下生成<code>&lt;title&gt;.md</code>文件。如果工程文件夹下的_config.yml 文件里<code>post_asset_folder</code>这一选项置为true的话则还会生成一个title的文件夹，可以存放引用资源。</p>
 <p>2）调整文章内容<br>生成的文件头部通常会包含以下内容：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: </span><br><span class="line">date: </span><br><span class="line">tags:</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<p>如果是草稿则没有自动生成的date变量，执行语句<code>hexo publish draft  &lt;title&gt;</code>、移动到source&#x2F;_posts 文件夹时应该会出现。<br>根据自己的需要，可以在文件头部增加内容。以tranquilpeak为例，该样式支持categories、thumbnailImage、excerpt等配置。配置categories可以在分类页面看到自己这篇文章的归类情况；配置thumbnailImage时会在文章列表增加缩略图，但本地是看不到效果的，只有打包上传到gitee后才可以；配置excerpt时首页文章列表不会展示全文而只会展示摘要。<br>tranquilpeak模版还支持两个标签语法：<code>&lt;!-- more --&gt;</code>和<code>&lt;!-- toc --&gt;</code>。前者是将标志之前的内容将会自动生成首页的概览，后者则是自动生成文章目录。<br>具体的内容书写可以参考markdown语法。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-meta">---</span><br><span class="hljs-attr">title:</span> <br><span class="hljs-attr">date:</span> <br><span class="hljs-attr">tags:</span><br><span class="hljs-meta">---</span><br></code></pre></td></tr></table></figure>
+<p>如果是草稿则没有自动生成的date变量，执行语句<code>hexo publish draft  &lt;title&gt;</code>、移动到source&#x2F;_posts 文件夹时应该会出现。<br>根据自己的需要，可以在文件头部增加内容。以tranquilpeak为例，该样式支持categories、thumbnailImage、excerpt等配置。配置categories可以在分类页面看到自己这篇文章的归类情况；配置thumbnailImage时会在文章列表增加缩略图，但本地是看不到效果的，只有打包上传到gitee后才可以；配置excerpt时首页文章列表不会展示全文而只会展示摘要。<br>tranquilpeak模版还支持两个标签语法：<code>&lt;!-- more --&gt;</code>和&#96;&#96;。前者是将标志之前的内容将会自动生成首页的概览，后者则是自动生成文章目录。<br>具体的内容书写可以参考markdown语法。</p>
 <h2 id="推送到gitee"><a href="#推送到gitee" class="headerlink" title="推送到gitee"></a>推送到gitee</h2><p>1）首先需要安装推送工具hexo-deployer-git。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">npm install hexo-deployer-git <span class="hljs-comment">--save</span><br></code></pre></td></tr></table></figure>
 <p>2）在博客工程文件夹下的_config.yml找到URL和deploy的配置。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># URL</span><br><span class="line">## Set your site url here. For example, if you use GitHub Page, set url as &#x27;https://username.github.io/project&#x27;</span><br><span class="line">url: https://unknown-four-hundred-and-four.gitee.io/unknown_404</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: https://gitee.com/unknown-four-hundred-and-four/unknown_404.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<p>这里URL需要改成静态资源最后部署的域名，按照配置文件的说明，应该是<code>https://&#123;username&#125;.github.io/&#123;project&#125;</code>的格式，username是GitHub用户名，在GitHub上仓库名和用户名是相同，但在gitee上可以不一样，所以要注意实际上需要填入的是仓库名。project对应当前博客的工程名。<br>deploy选项里repository对应博客仓库的git地址，branch可根据需要修改，部署到page时注意一致性即可。<br>3）文件生成成功后执行<code>hexo deploy</code>指令，将文件推到远程仓库的master分支上。</p>
-<div class="figure center" style="width:;"><img class="fig-img" src="gitee-master.png" alt=""></div><div style="clear:both;"></div>
-
-<h2 id="gitee-page服务启动"><a href="#gitee-page服务启动" class="headerlink" title="gitee page服务启动"></a>gitee page服务启动</h2><p>1）在gitee仓库首页选择“服务-Gitee Page”</p>
-<div class="figure center" style="width:;"><img class="fig-img" src="gitee-page.png" alt=""></div><div style="clear:both;"></div>
-
-<p>2）如果没有实名认证的话开启Page服务需要验证，还需要绑定手机号。<br>3）进入到Gitee Pages 服务页面，选择部署分支，注意和工程文件夹下的_config.yml的deploy配置一致，如果选择了强制使用https，则工程文件夹下_config.yml的url配置也必须是https。</p>
-<div class="figure center" style="width:;"><img class="fig-img" src="gitee-start.png" alt=""></div><div style="clear:both;"></div>
-
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment"># URL</span><br><span class="hljs-comment">## Set your site url here. For example, if you use GitHub Page, set url as &#x27;https://username.github.io/project&#x27;</span><br>url: https:<span class="hljs-regexp">//u</span>nknown-four-hundred-and-four.gitee.io/unknown_404<br><br>...<br><br>deploy:<br>  type: git<br>  repository: https:<span class="hljs-regexp">//gi</span>tee.com<span class="hljs-regexp">/unknown-four-hundred-and-four/u</span>nknown_404.git<br>  branch: master<br></code></pre></td></tr></table></figure>
+<p>这里URL需要改成静态资源最后部署的域名，按照配置文件的说明，应该是<code>https://&#123;username&#125;.github.io/&#123;project&#125;</code>的格式，username是GitHub用户名，在GitHub上仓库名和用户名是相同，但在gitee上可以不一样，所以要注意实际上需要填入的是仓库名。project对应当前博客的工程名。<br>deploy选项里repository对应博客仓库的git地址，branch可根据需要修改，部署到page时注意一致性即可。<br>3）文件生成成功后执行<code>hexo deploy</code>指令，将文件推到远程仓库的master分支上。<br><img src="/unknown404.github.io/img/gitee-master.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<h2 id="gitee-page服务启动"><a href="#gitee-page服务启动" class="headerlink" title="gitee page服务启动"></a>gitee page服务启动</h2><p>1）在gitee仓库首页选择“服务-Gitee Page”<br><img src="/unknown404.github.io/img/gitee-page.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<p>2）如果没有实名认证的话开启Page服务需要验证，还需要绑定手机号。<br>3）进入到Gitee Pages 服务页面，选择部署分支，注意和工程文件夹下的_config.yml的deploy配置一致，如果选择了强制使用https，则工程文件夹下_config.yml的url配置也必须是https。<br><img src="/unknown404.github.io/img/gitee-start.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
 <h2 id="其他客户端拉取代码的注意事项"><a href="#其他客户端拉取代码的注意事项" class="headerlink" title="其他客户端拉取代码的注意事项"></a>其他客户端拉取代码的注意事项</h2><p>本博客使用的主题tranquilpeak其资源assets是被列入忽略文件夹的内容，因此拉下来的代码不会包括这部分资源，如果直接启动无法正常看到页面样式。需要使用者在拉取代码以后进入主题的文件夹下按要求操作<code>npm install &amp;&amp; npm run prod</code>才可在本地看到正常的样式。如果之前将头像等资源放在assets文件夹下的话也需要在新生成的assets文件夹下重新加入。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>（1）<a target="_blank" rel="noopener" href="https://cungudafa.blog.csdn.net/article/details/104260494?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~LandingCtr~Rate-1.queryctrv4&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~LandingCtr~Rate-1.queryctrv4&utm_relevant_index=1">基于Gitee+Hexo搭建个人博客</a><br>（2）<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/writing">Hexo中文文档</a><br>（3）<a target="_blank" rel="noopener" href="https://github.com/LouisBarranqueiro/hexo-theme-tranquilpeak/blob/master/DOCUMENTATION.md">tranquilpeak配置</a></p>
 
+                
+              </div>
             
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/Hexo/">#Hexo</a>
+      
+    </div>
+  
+</div>
 
 
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>hexo搭建博客</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/03/14/hexoBlog/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
         </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-            <div class="post-footer-tags">
-                <span class="text-color-light text-small">标签</span><br/>
-                
-    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/Hexo/" rel="tag">Hexo</a>
+    <div class="license-icon iconfont"></div>
+  </div>
 
-            </div>
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/14/esUseage/"
-                    data-tooltip="Elasticsearch查询语句使用"
-                    aria-label="上一篇: Elasticsearch查询语句使用"
-                >
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
+                      <a href="/unknown404.github.io/2022/03/14/esUseage/" title="Elasticsearch查询语句使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Elasticsearch查询语句使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/13/markdown%E7%AC%94%E8%AE%B0/"
-                    data-tooltip="markdown笔记"
-                    aria-label="下一篇: markdown笔记"
-                >
+                  </article>
+                  <article class="post-next col-6">
                     
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
-    </span>
-</footer>
-
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/14/esUseage/"
-                    data-tooltip="Elasticsearch查询语句使用"
-                    aria-label="上一篇: Elasticsearch查询语句使用"
-                >
+                      <a href="/unknown404.github.io/2022/03/13/markdown%E7%AC%94%E8%AE%B0/" title="markdown笔记">
+                        <span class="hidden-mobile">markdown笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/03/13/markdown%E7%AC%94%E8%AE%B0/"
-                    data-tooltip="markdown笔记"
-                    aria-label="下一篇: markdown笔记"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
+                  </article>
                 </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
+              
+            </div>
+
             
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                        aria-label="分享到 Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                        aria-label="分享到 Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/03/14/hexoBlog/"
-                        aria-label="分享到 Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
-
-            
-        </div>
-        
-
-
-    
-        
-    
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
-        </div>
-        
-            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-            <h4 id="about-card-name">小白的文件整理箱</h4>
-        
-            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>菜鸟级摸鱼工程师</p>
 
-            </div>
-        
-        
-            <div id="about-card-location">
-                <i class="fa fa-map-marker-alt"></i>
-                <br/>
-                Shadow Border
-            </div>
-        
+
+
+  </aside>
+
+
     </div>
+  </div>
 </div>
 
-        
-        
-<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
 
-<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
 
-<!--SCRIPTS END-->
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
 
 
     
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
-    </body>
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
 </html>

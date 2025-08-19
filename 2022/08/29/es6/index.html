@@ -1,259 +1,287 @@
 
+
 <!DOCTYPE html>
-<html lang="zh-cn">
-    
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="小白的文件整理箱">
-    <title>ES6语法 - 小白的文件整理箱</title>
-    <meta name="author" content="小白的文件整理箱">
-    
-    
-    
-        
-            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
-        
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"面试时常问的 ES6 特性\n\n\n\nlet,const创建块级作用域，若调用发生在声明前会暂时性死区const 指向地址不能改变，但可以增加内部属性\n箭头函数特点：没有 this 和 arguments；不能作为构造函数；没有函数提升\n123456789101112131415let obj = &#123; name: &#x27;Tyler&#x27;, a: function () &#123;  let name = &#x27;Anderson&#x27;  let test = () =&gt; &#123;   console.log(this.name)  &#125;  test() &#125;,&#125;obj.a()// Tyler// 找到最近的非箭头函数a，所以箭头函数的this 就是a 的this。// a目前是由obj调用的，因此此时箭头函数的this 为obj\n\nProxy使用方法：const proxy &#x3D; new Proxy(target, handler)输入参数：\n\ntarget：拦截的目标对象\nhandler：定制拦截行为\n\nProxy 与 Object.defineProperty 对比Proxy 的优点：\n\nProxy 可以直接监听整个对象而非属性。\nProxy 可以直接监听数组的变化。\nProxy 有 13 中拦截方法，如 ownKeys、deleteProperty、has 等是 Object.defineProperty 不具备的。\nProxy 返回的是一个新对象，我们可以只操作新的对象达到目的，而 Object.defineProperty 只能遍历对象属性直接修改;\nProxy 做为新标准将受到浏览器产商重点持续的性能优化,也就是传说中的新标准的性能红利。\n\nObject.defineProperty 的优点：\n\n兼容性好，支持 IE9，而 Proxy 的存在浏览器兼容性问题,而且无法用 polyfill 磨平。\n\nObject.defineProperty 的缺点：\n\nObject.defineProperty 只能劫持对象的属性,因此我们需要对每个对象的每个属性进行遍历。\nObject.defineProperty 不能监听数组。是通过重写数据的那 7 个可以改变数据的方法来对数组进行监听的。\nObject.defineProperty 也不能对 es6 新产生的 Map,Set 这些数据结构做出监听。\nObject.defineProperty 也不能监听新增和删除操作，通过 Vue.set()和 Vue.delete 来实现响应式的。\n\n模块化导入导出方式：import、export\ncommonJs vs ES6\ncommonJs 输出是值的拷贝，es6 输出值的引用\ncommonJs 模块运行时加载（先加载全部模块再导入方法），es6 模块是编译时加载（指定加载某输出值）\ncommonJs 同步导入，es6 模块异步导入\n\n其他模块化方法特点amd 和 requireJs：依赖前置，提前执行cmd 和 seaJs：依赖后置，延迟执行umd：通用模块定义规范\n异步编程promise3 种状态：1）pending；2）resolved；3）rejected特点：1）立即执行；2）then 异步回调；3）状态不可逆；4）链式调用\npromise 简易实现123456789101112131415161718192021222324252627282930313233343536function myPromise(fn) &#123;    const that = this    that.state = &#x27;pending&#x27;    that.value = null    that.resolvedCallbacks = []    that.rejectedCallbacks = []    function resolve(value) &#123;        if (that.state === &#x27;pending&#x27;) &#123;            that.state = &#x27;resolved&#x27;            that.value = value            that.resolvedCallbacks.map(cb =&gt; cb(value))        &#125;    &#125;    function reject(value) &#123;        if (that.state === &#x27;pending&#x27;) &#123;            that.state = &#x27;rejected&#x27;            that.value = value            that.rejectedCallbacks.map(cb =&gt; cb(value))        &#125;    &#125;    try &#123;        fn(resolve, reject)    &#125; catch (e) &#123;        reject(e)    &#125;&#125;myPromise.prototype.then = function (onFulfilled, onRejected) &#123;    const that = this    onFulfilled = typeof onFulfilled === &#x27;function&#x27; ? onFulfilled : v =&gt; v    onRejected = typeof onRejected === &#x27;function&#x27; ? onRejected : e =&gt;        throw e    if (that.state === &#x27;resolved&#x27;) onFulfilled(that.value)    if (that.state === &#x27;rejected&#x27;) onRejected(that.value)&#125;\n\nasync awaitgenerator 的语法糖。async 声明 function 是一个异步函数，返回一个 promise 对象，可以使用 then 方法添加回调函数。await 操作符只能在异步函数 async function 内部使用。await 会阻塞后面的代码，等待接在 await 后面的表达式返回 Promise 对象结果。\n数据类型 Set、MapSet 和 weakSet、Map 和 WeakMap 区别weakSet 结构与 Set 类似，是不重复值集合，但 weakSet 只能是对象且为弱引用，且不可遍历weakMap 结构与 Map 类似，但 weakMap 只接受对象为键名，键名是对象弱引用，且不可遍历\nMap 和 Object 的区别1）Key filed：在 Object 中， key 必须是简单数据类型（整数，字符串或者是 symbol），而在 Map 中则可以是 JavaScript 支持的所有数据类型，也就是说可以用一个 Object 来当做一个 Map 元素的 key。2）元素顺序：Map 元素的顺序遵循插入的顺序，而 Object 的则没有这一特性。3）初始化、增查删改方式\n","dateCreated":"2022-08-29T17:01:20+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-08-29T17:01:20+08:00","description":"面试时常问的 ES6 特性","headline":"ES6语法","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/","keywords":"ES6, JavaScript"}</script>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
     <meta name="description" content="面试时常问的 ES6 特性">
-<meta property="og:type" content="blog">
+<meta property="og:type" content="article">
 <meta property="og:title" content="ES6语法">
-<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/index.html">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/08/29/es6/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="面试时常问的 ES6 特性">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-29T09:01:20.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:27:34.425Z">
+<meta property="article:modified_time" content="2025-08-19T14:35:45.687Z">
 <meta property="article:author" content="小白的文件整理箱">
-<meta property="article:tag" content="ES6">
 <meta property="article:tag" content="JavaScript">
-<meta name="twitter:card" content="summary">
-    
-    
-        
-    
-    
-        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
-    
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
+<meta property="article:tag" content="ES6">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>ES6语法 - 小白的文件整理箱</title>
 
-    <!--STYLES END-->
-    
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    
 
-    
-        
-    
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
 </head>
 
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
 
+<body>
+  
 
-    
-        
-            
-        
+  <header>
     
 
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/unknown_404/"
-            aria-label=""
-        >
-            小白的文件整理箱
-        </a>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="打开链接: /unknown_404/#about"
-            >
-        
-        
-            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-
-        
-    
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-            <div class="sidebar-profile">
-                <a
-                    href="/unknown_404/#about"
-                    aria-label="阅读有关作者的更多信息"
-                >
-                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-                </a>
-                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
-                
-                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
-</h5>
-                
-            </div>
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/"
-                            
-                            rel="noopener"
-                            title="首页"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">首页</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-categories"
-                            
-                            rel="noopener"
-                            title="分类"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">分类</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-tags"
-                            
-                            rel="noopener"
-                            title="标签"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">标签</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/unknown_404/all-archives"
-                            
-                            rel="noopener"
-                            title="归档"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">归档</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="搜索"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">搜索</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="关于"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">关于</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
+  </div>
 </nav>
 
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            ES6语法
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2022-08-29T17:01:20+08:00">
-	
-		    8月 29, 2022
-    	
-    </time>
-    
-        <span>发布在 </span>
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ES6语法"></span>
+          
+        </div>
+
         
-    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/">前端基础</a>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-29 17:01" pubdate>
+          2022年8月29日 下午
+        </time>
+      </span>
+    
+  </div>
 
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
 
     
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          35 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
 </div>
 
-    
 </div>
 
+  </header>
+
+  <main>
     
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <p>面试时常问的 ES6 特性</p>
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ES6语法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>面试时常问的 ES6 特性</p>
 <span id="more"></span>
-<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#let-const"><span class="toc-text">let,const</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="toc-text">箭头函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxy"><span class="toc-text">Proxy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Proxy-%E4%B8%8E-Object-defineProperty-%E5%AF%B9%E6%AF%94"><span class="toc-text">Proxy 与 Object.defineProperty 对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%8C%96"><span class="toc-text">模块化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#commonJs-vs-ES6"><span class="toc-text">commonJs vs ES6</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%A8%A1%E5%9D%97%E5%8C%96%E6%96%B9%E6%B3%95%E7%89%B9%E7%82%B9"><span class="toc-text">其他模块化方法特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B"><span class="toc-text">异步编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#promise"><span class="toc-text">promise</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#promise-%E7%AE%80%E6%98%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">promise 简易实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#async-await"><span class="toc-text">async await</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-Set%E3%80%81Map"><span class="toc-text">数据类型 Set、Map</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Set-%E5%92%8C-weakSet%E3%80%81Map-%E5%92%8C-WeakMap-%E5%8C%BA%E5%88%AB"><span class="toc-text">Set 和 weakSet、Map 和 WeakMap 区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map-%E5%92%8C-Object-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">Map 和 Object 的区别</span></a></li></ol></li></ol>
 
 <h2 id="let-const"><a href="#let-const" class="headerlink" title="let,const"></a>let,const</h2><p>创建块级作用域，若调用发生在声明前会暂时性死区<br>const 指向地址不能改变，但可以增加内部属性</p>
-<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>特点：没有 this 和 arguments；不能作为构造函数；没有函数提升</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">let obj = &#123;</span><br><span class="line"> name: &#x27;Tyler&#x27;,</span><br><span class="line"> a: function () &#123;</span><br><span class="line">  let name = &#x27;Anderson&#x27;</span><br><span class="line">  let test = () =&gt; &#123;</span><br><span class="line">   console.log(this.name)</span><br><span class="line">  &#125;</span><br><span class="line">  test()</span><br><span class="line"> &#125;,</span><br><span class="line">&#125;</span><br><span class="line">obj.a()</span><br><span class="line"></span><br><span class="line">// Tyler</span><br><span class="line">// 找到最近的非箭头函数a，所以箭头函数的this 就是a 的this。</span><br><span class="line">// a目前是由obj调用的，因此此时箭头函数的this 为obj</span><br></pre></td></tr></table></figure>
+<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>特点：没有 this 和 arguments；不能作为构造函数；没有函数提升<br>与普通函数本质区别：主要在于 this 的绑定方式。普通函数的 this 指向在运行时动态确定，取决于调用方式，而箭头函数的 this 是在定义时从外层作用域继承而来，不会随着调用方式的改变而改变。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> obj = &#123;<br> <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Tyler&#x27;</span>,<br> <span class="hljs-attr">a</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> name = <span class="hljs-string">&#x27;Anderson&#x27;</span><br>  <span class="hljs-keyword">let</span> <span class="hljs-title function_">test</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>   <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>)<br>  &#125;<br>  <span class="hljs-title function_">test</span>()<br> &#125;,<br>&#125;<br>obj.<span class="hljs-title function_">a</span>()<br><br><span class="hljs-comment">// Tyler</span><br><span class="hljs-comment">// 找到最近的非箭头函数a，所以箭头函数的this 就是a 的this。</span><br><span class="hljs-comment">// a目前是由obj调用的，因此此时箭头函数的this 为obj</span><br></code></pre></td></tr></table></figure>
 
 <h2 id="Proxy"><a href="#Proxy" class="headerlink" title="Proxy"></a>Proxy</h2><p>使用方法：const proxy &#x3D; new Proxy(target, handler)<br>输入参数：</p>
 <ul>
@@ -264,7 +292,7 @@
 <ul>
 <li>Proxy 可以直接监听整个对象而非属性。</li>
 <li>Proxy 可以直接监听数组的变化。</li>
-<li>Proxy 有 13 中拦截方法，如 ownKeys、deleteProperty、has 等是 Object.defineProperty 不具备的。</li>
+<li>Proxy 有 13 种拦截方法，如 ownKeys、deleteProperty、has 等是 Object.defineProperty 不具备的。</li>
 <li>Proxy 返回的是一个新对象，我们可以只操作新的对象达到目的，而 Object.defineProperty 只能遍历对象属性直接修改;</li>
 <li>Proxy 做为新标准将受到浏览器产商重点持续的性能优化,也就是传说中的新标准的性能红利。</li>
 </ul>
@@ -279,350 +307,399 @@
 <li>Object.defineProperty 也不能对 es6 新产生的 Map,Set 这些数据结构做出监听。</li>
 <li>Object.defineProperty 也不能监听新增和删除操作，通过 Vue.set()和 Vue.delete 来实现响应式的。</li>
 </ul>
-<h2 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h2><p>导入导出方式：import、export</p>
+<h2 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h2><p>导入导出方式：<br>commonJs：require、module.exports、exports<br>es6：import、export、export default</p>
 <h3 id="commonJs-vs-ES6"><a href="#commonJs-vs-ES6" class="headerlink" title="commonJs vs ES6"></a>commonJs vs ES6</h3><ol>
 <li>commonJs 输出是值的拷贝，es6 输出值的引用</li>
 <li>commonJs 模块运行时加载（先加载全部模块再导入方法），es6 模块是编译时加载（指定加载某输出值）</li>
 <li>commonJs 同步导入，es6 模块异步导入</li>
 </ol>
-<h3 id="其他模块化方法特点"><a href="#其他模块化方法特点" class="headerlink" title="其他模块化方法特点"></a>其他模块化方法特点</h3><p>amd 和 requireJs：依赖前置，提前执行<br>cmd 和 seaJs：依赖后置，延迟执行<br>umd：通用模块定义规范</p>
+<h3 id="其他模块化方法特点"><a href="#其他模块化方法特点" class="headerlink" title="其他模块化方法特点"></a>其他模块化方法特点</h3><p>amd ：应用实例 requireJs。特点：依赖预加载；依赖模块加载完成后就直接执行依赖模块，依赖模块的执行顺序和我们书写的顺序不一定一致（依赖前置、提前执行）<br>cmd ：应用实例 seaJs。特点：就近依赖，按需加载；模块加载完成后并不执行，只是下载而已，等到所有的依赖模块都加载好后，进入回调函数逻辑，遇到 require 语句的时候执行依赖模块（依赖就近、延迟执行）<br>umd：通用模块定义规范，兼容之前提到的模块规范 amd 和 commonJs 及全局变量。在 webpack 项目调用 umd 模块时工具自动处理，使得 import 语句能够正常工作 ‌</p>
 <h2 id="异步编程"><a href="#异步编程" class="headerlink" title="异步编程"></a>异步编程</h2><h3 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h3><p>3 种状态：1）pending；2）resolved；3）rejected<br>特点：1）立即执行；2）then 异步回调；3）状态不可逆；4）链式调用</p>
-<h4 id="promise-简易实现"><a href="#promise-简易实现" class="headerlink" title="promise 简易实现"></a>promise 简易实现</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">function myPromise(fn) &#123;</span><br><span class="line">    const that = this</span><br><span class="line">    that.state = &#x27;pending&#x27;</span><br><span class="line">    that.value = null</span><br><span class="line">    that.resolvedCallbacks = []</span><br><span class="line">    that.rejectedCallbacks = []</span><br><span class="line"></span><br><span class="line">    function resolve(value) &#123;</span><br><span class="line">        if (that.state === &#x27;pending&#x27;) &#123;</span><br><span class="line">            that.state = &#x27;resolved&#x27;</span><br><span class="line">            that.value = value</span><br><span class="line">            that.resolvedCallbacks.map(cb =&gt; cb(value))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function reject(value) &#123;</span><br><span class="line">        if (that.state === &#x27;pending&#x27;) &#123;</span><br><span class="line">            that.state = &#x27;rejected&#x27;</span><br><span class="line">            that.value = value</span><br><span class="line">            that.rejectedCallbacks.map(cb =&gt; cb(value))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    try &#123;</span><br><span class="line">        fn(resolve, reject)</span><br><span class="line">    &#125; catch (e) &#123;</span><br><span class="line">        reject(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">myPromise.prototype.then = function (onFulfilled, onRejected) &#123;</span><br><span class="line">    const that = this</span><br><span class="line">    onFulfilled = typeof onFulfilled === &#x27;function&#x27; ? onFulfilled : v =&gt; v</span><br><span class="line">    onRejected = typeof onRejected === &#x27;function&#x27; ? onRejected : e =&gt;</span><br><span class="line">        throw e</span><br><span class="line">    if (that.state === &#x27;resolved&#x27;) onFulfilled(that.value)</span><br><span class="line">    if (that.state === &#x27;rejected&#x27;) onRejected(that.value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="promise-简易实现"><a href="#promise-简易实现" class="headerlink" title="promise 简易实现"></a>promise 简易实现</h4><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs pf">function myPromise(fn) &#123;<br>    <span class="hljs-keyword">const</span> that = this<br>    that.<span class="hljs-keyword">state</span> = &#x27;pending&#x27;<br>    that.value = null<br>    that.resolvedCallbacks = []<br>    that.rejectedCallbacks = []<br><br>    function resolve(value) &#123;<br>        if (that.<span class="hljs-keyword">state</span> === &#x27;pending&#x27;) &#123;<br>            that.<span class="hljs-keyword">state</span> = &#x27;resolved&#x27;<br>            that.value = value<br>            that.resolvedCallbacks.map(cb =&gt; cb(value))<br>        &#125;<br>    &#125;<br><br>    function reject(value) &#123;<br>        if (that.<span class="hljs-keyword">state</span> === &#x27;pending&#x27;) &#123;<br>            that.<span class="hljs-keyword">state</span> = &#x27;rejected&#x27;<br>            that.value = value<br>            that.rejectedCallbacks.map(cb =&gt; cb(value))<br>        &#125;<br>    &#125;<br>    try &#123;<br>        fn(resolve, reject)<br>    &#125; catch (e) &#123;<br>        reject(e)<br>    &#125;<br>&#125;<br>myPromise.prototype.then = function (<span class="hljs-keyword">on</span>Fulfilled, <span class="hljs-keyword">on</span>Rejected) &#123;<br>    <span class="hljs-keyword">const</span> that = this<br>    <span class="hljs-keyword">on</span>Fulfilled = typeof <span class="hljs-keyword">on</span>Fulfilled === &#x27;function&#x27; ? <span class="hljs-keyword">on</span>Fulfilled : v =&gt; v<br>    <span class="hljs-keyword">on</span>Rejected = typeof <span class="hljs-keyword">on</span>Rejected === &#x27;function&#x27; ? <span class="hljs-keyword">on</span>Rejected : e =&gt;<br>        throw e<br>    if (that.<span class="hljs-keyword">state</span> === &#x27;resolved&#x27;) <span class="hljs-keyword">on</span>Fulfilled(that.value)<br>    if (that.<span class="hljs-keyword">state</span> === &#x27;rejected&#x27;) <span class="hljs-keyword">on</span>Rejected(that.value)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Promise-all-简易实现"><a href="#Promise-all-简易实现" class="headerlink" title="Promise.all 简易实现"></a>Promise.all 简易实现</h4><p>函数返回一个 promise，每个异步任务进入 resolve 态时计数都加 1，只有当计数与异步任务总数一致时返回的 promise 的状态置为 resolved</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">promiseAll</span>(<span class="hljs-params">promises</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">resolve, reject</span>) &#123;<br>    <span class="hljs-keyword">if</span> (!<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(promises)) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TypeError</span>(<span class="hljs-string">`argument must be a array`</span>);<br>    &#125;<br>    <span class="hljs-keyword">var</span> resolvedCounter = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">var</span> promiseNum = promises.<span class="hljs-property">length</span>;<br>    <span class="hljs-keyword">var</span> resolvedResult = [];<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; promiseNum; i++) &#123;<br>      <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>(promises[i]).<span class="hljs-title function_">then</span>(<br>        <span class="hljs-function">(<span class="hljs-params">value</span>) =&gt;</span> &#123;<br>          resolvedCounter++;<br>          resolvedResult[i] = value;<br>          <span class="hljs-keyword">if</span> (resolvedCounter == promiseNum) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-title function_">resolve</span>(resolvedResult);<br>          &#125;<br>        &#125;,<br>        <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> &#123;<br>          <span class="hljs-keyword">return</span> <span class="hljs-title function_">reject</span>(error);<br>        &#125;<br>      );<br>    &#125;<br>  &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Promise-race-简易实现"><a href="#Promise-race-简易实现" class="headerlink" title="Promise.race 简易实现"></a>Promise.race 简易实现</h4><p>因为 Promise 的状态只能改变一次, 那么我们只需要把 Promise.race 中产生的 Promise 对象的 resolve 方法, 注入到数组中的每一个 Promise 实例中的回调函数中即可.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Promise</span>.<span class="hljs-property">race</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">args</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>, len = args.<span class="hljs-property">length</span>; i &lt; len; i++) &#123;<br>      args[i].<span class="hljs-title function_">then</span>(resolve, reject);<br>    &#125;<br>  &#125;);<br>&#125;;<br></code></pre></td></tr></table></figure>
 
 <h3 id="async-await"><a href="#async-await" class="headerlink" title="async await"></a>async await</h3><p>generator 的语法糖。<br>async 声明 function 是一个异步函数，返回一个 promise 对象，可以使用 then 方法添加回调函数。<br>await 操作符只能在异步函数 async function 内部使用。await 会阻塞后面的代码，等待接在 await 后面的表达式返回 Promise 对象结果。</p>
 <h2 id="数据类型-Set、Map"><a href="#数据类型-Set、Map" class="headerlink" title="数据类型 Set、Map"></a>数据类型 Set、Map</h2><h3 id="Set-和-weakSet、Map-和-WeakMap-区别"><a href="#Set-和-weakSet、Map-和-WeakMap-区别" class="headerlink" title="Set 和 weakSet、Map 和 WeakMap 区别"></a>Set 和 weakSet、Map 和 WeakMap 区别</h3><p>weakSet 结构与 Set 类似，是不重复值集合，但 weakSet 只能是对象且为弱引用，且不可遍历<br>weakMap 结构与 Map 类似，但 weakMap 只接受对象为键名，键名是对象弱引用，且不可遍历</p>
 <h3 id="Map-和-Object-的区别"><a href="#Map-和-Object-的区别" class="headerlink" title="Map 和 Object 的区别"></a>Map 和 Object 的区别</h3><p>1）Key filed：在 Object 中， key 必须是简单数据类型（整数，字符串或者是 symbol），而在 Map 中则可以是 JavaScript 支持的所有数据类型，也就是说可以用一个 Object 来当做一个 Map 元素的 key。<br>2）元素顺序：Map 元素的顺序遵循插入的顺序，而 Object 的则没有这一特性。<br>3）初始化、增查删改方式</p>
+<h2 id="for-in-和-for-of-区别"><a href="#for-in-和-for-of-区别" class="headerlink" title="for in 和 for of 区别"></a>for in 和 for of 区别</h2><ul>
+<li>for in：用于遍历对象的可枚举属性（包括原型链上的属性），也可以用于数组。不过，当用于数组时，它遍历的是数组的索引而不是元素。</li>
+<li>for of：用于遍历可迭代对象（例如数组、字符串、Map、Set 等）。它遍历的是可迭代对象的值，不适合遍历对象的属性。</li>
+</ul>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>1）<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/108217164">《模块化系列》彻底理清 AMD,CommonJS,CMD,UMD,ES6</a></p>
 
+                
+              </div>
             
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" class="category-chain-item">前端基础</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/JavaScript/">#JavaScript</a>
+      
+        <a href="/unknown404.github.io/tags/ES6/">#ES6</a>
+      
+    </div>
+  
+</div>
 
 
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ES6语法</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2022/08/29/es6/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
         </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年8月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-            <div class="post-footer-tags">
-                <span class="text-color-light text-small">标签</span><br/>
-                
-    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/ES6/" rel="tag">ES6</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/JavaScript/" rel="tag">JavaScript</a>
+    <div class="license-icon iconfont"></div>
+  </div>
 
-            </div>
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/09/02/decorator/"
-                    data-tooltip="ES7装饰器语法"
-                    aria-label="上一篇: ES7装饰器语法"
-                >
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
+                      <a href="/unknown404.github.io/2022/09/02/decorator/" title="ES7装饰器语法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ES7装饰器语法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/08/23/packageInfo/"
-                    data-tooltip="依赖包管理工具比较"
-                    aria-label="下一篇: 依赖包管理工具比较"
-                >
+                  </article>
+                  <article class="post-next col-6">
                     
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
-    </span>
-</footer>
-
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
                     
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/09/02/decorator/"
-                    data-tooltip="ES7装饰器语法"
-                    aria-label="上一篇: ES7装饰器语法"
-                >
+                      <a href="/unknown404.github.io/2022/08/23/packageInfo/" title="依赖包管理工具比较">
+                        <span class="hidden-mobile">依赖包管理工具比较</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/unknown_404/2022/08/23/packageInfo/"
-                    data-tooltip="依赖包管理工具比较"
-                    aria-label="下一篇: 依赖包管理工具比较"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Diesen Beitrag teilen"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                    title="分享到 Facebook"
-                    aria-label="分享到 Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                    title="分享到 Twitter"
-                    aria-label="分享到 Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                    title="分享到 Google+"
-                    aria-label="分享到 Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
-</div>
-
-
+                  </article>
                 </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
+              
+            </div>
+
             
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                        aria-label="分享到 Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                        aria-label="分享到 Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/29/es6/"
-                        aria-label="分享到 Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
-
-            
-        </div>
-        
-
-
-    
-        
-    
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
-        </div>
-        
-            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
-        
-            <h4 id="about-card-name">小白的文件整理箱</h4>
-        
-            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>菜鸟级摸鱼工程师</p>
 
-            </div>
-        
-        
-            <div id="about-card-location">
-                <i class="fa fa-map-marker-alt"></i>
-                <br/>
-                Shadow Border
-            </div>
-        
+
+
+  </aside>
+
+
     </div>
+  </div>
 </div>
 
-        
-        
-<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
 
-<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
 
-<!--SCRIPTS END-->
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
 
 
     
 
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
-    </body>
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
 </html>
