@@ -182,6 +182,7 @@ const counterSlice = createSlice({
 
 export const { increment, decrement, addByAmount } = counterSlice.actions;
 export default counterSlice.reducer;
+
 // store/index.js
 import { configureStore } from '@reduxjs/toolkit';
 import counterReducer from '../counter/counterSlice';
@@ -215,6 +216,19 @@ function App() {
   );
 }
 ```
+
+## 总结
+
+| 特性        | Redux                                    | MobX                     | Zustand                             |
+| ----------- | ---------------------------------------- | ------------------------ | ----------------------------------- |
+| 响应式机制  | 手动更新、不可变数据                     | 自动追踪、响应式         | hooks + 代理自动响应                |
+| 代码复杂度  | 高（需 action、reducer）                 | 中（较灵活）             | 低（直接修改状态）                  |
+| 学习曲线    | 较陡峭                                   | 较缓和                   | 极低                                |
+| 性能优化    | 需手动配置（如 memo、selector）          | 自动响应依赖             | 自动依赖追踪，轻量渲染              |
+| 状态结构    | 单一 store，全局                         | 多 store，可嵌套         | 支持多 store，按需组合              |
+| 中间件/插件 | 强大生态，Redux DevTools、Saga、Thunk 等 | 较少但够用               | 支持 DevTools，支持中间件扩展       |
+| 使用场景    | 大型项目、多人协作、可预测状态流         | 复杂业务逻辑、响应式建模 | 中小项目、快速开发、现代 React 项目 |
+| 主流程度    | **历史最广泛使用**                       | 一线企业较多采用         | **近年来非常流行，逐渐普及**        |
 
 ## 参考文献
 

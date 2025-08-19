@@ -41,4 +41,4 @@ vite 属于构建项目：建立项目的运行环境，需要手动安装插件
 ## 参考文献
 
 （1）[一篇文章说清 webpack、vite、vue-cli、create-vue 的区别](https://juejin.cn/post/7095603836072493086?searchId=20240902144719D7C75F0E69B15A07B83B)
-（2）[一篇文章说清 webpack、vite、vue-cli、create-vue 的区别](https://juejin.cn/post/7095603836072493086?searchId=20240902144719D7C75F0E69B15A07B83B)
+

@@ -189,10 +189,31 @@ function flat(arr) {
     })
     return result
 }
+function flat(arr,res=[]){
+  arr.forEach(item=>{
+    if(!Array.isArray(item)){
+      res.push(item)
+    }else{
+      flat(item,res)
+    }
+  })
+  return res
+}
 const arr = flat(arr)
 ```
 
-2. 现成 API
+2. reduce
+
+```JavaScript
+
+function flatten(arr) {
+  return arr.reduce((acc, cur) => {
+    return acc.concat(Array.isArray(cur) ? flatten(cur) : cur)
+  }, []);
+}
+```
+
+3. 现成 API
 
 ```JavaScript
 // 第一种方案：用现成flat
@@ -594,7 +615,7 @@ function insertNode(head,index,val){
     dummy.next = head
     const target=new ListNode(val)
     let start=0,current=dummy
-    while(current.next){
+    while(current){
         if(start===index){
             target.next=current.next
             current.next=target
