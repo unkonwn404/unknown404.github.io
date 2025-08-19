@@ -1,281 +1,252 @@
 
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
+<html lang="zh-cn">
+    
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="小白的文件整理箱">
-  <meta name="keywords" content="">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>js实现从utf-8到base64编码 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"编码知识小记\n\n\n编码相关概念的辨析编码历史计算机起源之初，科学家对英语字符与二进制位之间的关系做了统一规定，定义了 128 个字符的编码规则，用七位二进制表示。这套编码规则被称为 ASCII 编码。随着计算机的普及，在不同的地区和国家，当地程序员为了适应本地的语言使用创建了新的字符编码。但不同国家间读取内容时由于编码方式的差异会导致内容乱码，对国际沟通交流造成了障碍。\n这时候 Unicode 就出现了。 Unicode 是国际标准字符集，它将世界各种语言的每个字符定义一个唯一的编码，以满足跨语言、跨平台的文本信息转换。Unicode 字符集的编码范围是 0x0000 - 0x10FFFF , 可以容纳一百多万个字符， 每个字符都有一个独一无二的编码，也即每个字符都有一个二进制数值和它对应。\nUnicode、utf-8、utf-16 辨析Unicode 只是字符集，即很多个字符的集合；而 UTF-8、UTF-16、UTF-32 才是真正的字符编码规则：utf-8 是用一个字节来编码所有的字符，utf-16 是用两个字节来编码所有的字符，utf-32 则选择用 4 个字节来编码。其中最常见的编码规则是 utf-8，因为互联网的大部分资源都是英文的，使用 utf-8 保存更节省空间。Unicode 转 utf-8 主要是变长编码，有具体表格展示不同 unicode 的编码规则，这里不再赘述。\nBase64 编码Base64 的编码方法要求把每三个 8bit 的字节转换成四个 6bit 的字节，然后把 6Bit 再添两位高位 0，组成四个 8Bit 的字节。经过 base64 编码后的字符串会比原来长 1&#x2F;3。\n前端页面表单数据转 base64需要注意的点是虽然 html 和 js 的编码是 utf-8，但 js 从页面得到的中文是 utf-16 编码，直接转 base64 是会出错的。MDN 上给出了最简单的解决方法：\n1234567891011function utf8_to_b64(str) &#123;  return window.btoa(unescape(encodeURIComponent(str)));&#125;function b64_to_utf8(str) &#123;  return decodeURIComponent(escape(window.atob(str)));&#125;// Usage:utf8_to_b64(&quot;✓ à la mode&quot;); // &quot;4pyTIMOgIGxhIG1vZGU=&quot;b64_to_utf8(&quot;4pyTIMOgIGxhIG1vZGU=&quot;); // &quot;✓ à la mode&quot;\n\n里面涉及的流程是：\n\n先用 encodeURIComponent 把 js 的字符串转成 UTF-8 的百分号编码形式。该方法不会对 ASCII 字母和数字及部分 ASCII 标点符号进行编码，非英文字符会先转为 UTF8 的字节码，然后前面加个%进行拼接；\n再用 unescape 把百分号编码按字节转化成对应的含有 Latin-1 字符集字符的 js 字符串 （即使它是乱码）；\n最后用 btoa 把只含有 Latin-1 的 js 字符串转换成 Base64 编码；根据 MDN 文档，btoa 可以将二进制字符串转为 base64 编码的 ASCII 字符串，在实际操作中发现如果直接对中文编码会抛出错误：‘The string to be encoded contains characters outside of the Latin1 range.’，可以推断 btoa 是可以处理 Latin-1 字符集字符的。\n\n关于这种编码方式，网上也看到有去掉 escape&#x2F;unescape 的版本，似乎同样能得到预期结果。但是这得到的编码并非 utf-8 转 base64 的结果，在只有 ASCII 码时 unescape 使用与否都能得到一样的答案，然而出现带百分号编码的字符串时省去 unescape 会使编码结果的长度增加了，因为 btoa 编码了百分号；且如果是将编码结果传给其他 API 时会很难理解其内容\n前端 node.js 转 base641234567//utf-8 转 base64const txt = new Buffer(&#x27;文字&#x27;).toString(&#x27;base64&#x27;);console.log(txt)//base64 转 utf-8const ztxt = new Buffer(txt, &#x27;base64&#x27;).toString(&#x27;utf8&#x27;);console.log(ztxt)\n\n处理起来相对简单，可以直接用 buffer 模块的 api\n参考文献（1）Unicode、UTF-8、UTF-16 终于懂了（2）Base64（3）为什么 escape 可以使 btoa 正确处理 UTF-8 编码的字符串？（4）Converting to Base64 in JavaScript without Deprecated ‘Escape’ call\n","dateCreated":"2022-11-29T21:42:55+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-11-29T21:42:55+08:00","description":"编码知识小记","headline":"js实现从utf-8到base64编码","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/","keywords":"WEB API"}</script>
     <meta name="description" content="编码知识小记">
-<meta property="og:type" content="article">
+<meta property="og:type" content="blog">
 <meta property="og:title" content="js实现从utf-8到base64编码">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/11/29/encodeBase64/index.html">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="编码知识小记">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-11-29T13:42:55.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.745Z">
+<meta property="article:modified_time" content="2025-08-19T14:27:34.425Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="WEB API">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
-  
-  <title>js实现从utf-8到base64编码 - 小白的文件整理箱</title>
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+    <!--STYLES END-->
+    
 
+    
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/unknown404.github.io/js/utils.js" ></script>
-  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+    
+        
+    
 </head>
 
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
-<body>
-  
 
-  <header>
+    
+        
+            
+        
     
 
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/unknown404.github.io/">
-      <strong>小白的文件整理箱</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/about/">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
     </div>
-  </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
 </nav>
 
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="js实现从utf-8到base64编码"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-29 21:42" pubdate>
-          2022年11月29日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          2k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          17 分钟
-        
-      </span>
-    
-
-    
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">js实现从utf-8到base64编码</h1>
             
-            
-              <div class="markdown-body">
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
                 
-                <p>编码知识小记</p>
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            js实现从utf-8到base64编码
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-11-29T21:42:55+08:00">
+	
+		    11月 29, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/">工作技巧</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>编码知识小记</p>
 <span id="more"></span>
 
 <h2 id="编码相关概念的辨析"><a href="#编码相关概念的辨析" class="headerlink" title="编码相关概念的辨析"></a>编码相关概念的辨析</h2><h3 id="编码历史"><a href="#编码历史" class="headerlink" title="编码历史"></a>编码历史</h3><p>计算机起源之初，科学家对英语字符与二进制位之间的关系做了统一规定，定义了 128 个字符的编码规则，用七位二进制表示。这套编码规则被称为 ASCII 编码。随着计算机的普及，在不同的地区和国家，当地程序员为了适应本地的语言使用创建了新的字符编码。但不同国家间读取内容时由于编码方式的差异会导致内容乱码，对国际沟通交流造成了障碍。</p>
@@ -283,7 +254,7 @@
 <h3 id="Unicode、utf-8、utf-16-辨析"><a href="#Unicode、utf-8、utf-16-辨析" class="headerlink" title="Unicode、utf-8、utf-16 辨析"></a>Unicode、utf-8、utf-16 辨析</h3><p>Unicode 只是字符集，即很多个字符的集合；而 UTF-8、UTF-16、UTF-32 才是真正的字符编码规则：utf-8 是用一个字节来编码所有的字符，utf-16 是用两个字节来编码所有的字符，utf-32 则选择用 4 个字节来编码。<br>其中最常见的编码规则是 utf-8，因为互联网的大部分资源都是英文的，使用 utf-8 保存更节省空间。Unicode 转 utf-8 主要是变长编码，有具体表格展示不同 unicode 的编码规则，这里不再赘述。</p>
 <h3 id="Base64-编码"><a href="#Base64-编码" class="headerlink" title="Base64 编码"></a>Base64 编码</h3><p>Base64 的编码方法要求把每三个 8bit 的字节转换成四个 6bit 的字节，然后把 6Bit 再添两位高位 0，组成四个 8Bit 的字节。经过 base64 编码后的字符串会比原来长 1&#x2F;3。</p>
 <h2 id="前端页面表单数据转-base64"><a href="#前端页面表单数据转-base64" class="headerlink" title="前端页面表单数据转 base64"></a>前端页面表单数据转 base64</h2><p>需要注意的点是虽然 html 和 js 的编码是 utf-8，但 js 从页面得到的中文是 utf-16 编码，直接转 base64 是会出错的。<br>MDN 上给出了最简单的解决方法：</p>
-<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-keyword">function</span> utf8<span class="hljs-constructor">_to_b64(<span class="hljs-params">str</span>)</span> &#123;<br>  return window.btoa(unescape(encode<span class="hljs-constructor">URIComponent(<span class="hljs-params">str</span>)</span>));<br>&#125;<br><br><span class="hljs-keyword">function</span> b64<span class="hljs-constructor">_to_utf8(<span class="hljs-params">str</span>)</span> &#123;<br>  return decode<span class="hljs-constructor">URIComponent(<span class="hljs-params">escape</span>(<span class="hljs-params">window</span>.<span class="hljs-params">atob</span>(<span class="hljs-params">str</span>)</span>));<br>&#125;<br><br><span class="hljs-comment">// Usage:</span><br>utf8<span class="hljs-constructor">_to_b64(<span class="hljs-string">&quot;✓ à la mode&quot;</span>)</span>; <span class="hljs-comment">// &quot;4pyTIMOgIGxhIG1vZGU=&quot;</span><br>b64<span class="hljs-constructor">_to_utf8(<span class="hljs-string">&quot;4pyTIMOgIGxhIG1vZGU=&quot;</span>)</span>; <span class="hljs-comment">// &quot;✓ à la mode&quot;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function utf8_to_b64(str) &#123;</span><br><span class="line">  return window.btoa(unescape(encodeURIComponent(str)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function b64_to_utf8(str) &#123;</span><br><span class="line">  return decodeURIComponent(escape(window.atob(str)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Usage:</span><br><span class="line">utf8_to_b64(&quot;✓ à la mode&quot;); // &quot;4pyTIMOgIGxhIG1vZGU=&quot;</span><br><span class="line">b64_to_utf8(&quot;4pyTIMOgIGxhIG1vZGU=&quot;); // &quot;✓ à la mode&quot;</span><br></pre></td></tr></table></figure>
 
 <p>里面涉及的流程是：</p>
 <ol>
@@ -292,377 +263,341 @@
 <li>最后用 btoa 把只含有 Latin-1 的 js 字符串转换成 Base64 编码；根据 MDN 文档，btoa 可以将二进制字符串转为 base64 编码的 ASCII 字符串，在实际操作中发现如果直接对中文编码会抛出错误：‘The string to be encoded contains characters outside of the Latin1 range.’，可以推断 btoa 是可以处理 Latin-1 字符集字符的。</li>
 </ol>
 <p>关于这种编码方式，网上也看到有去掉 escape&#x2F;unescape 的版本，似乎同样能得到预期结果。但是这得到的编码并非 utf-8 转 base64 的结果，在只有 ASCII 码时 unescape 使用与否都能得到一样的答案，然而出现带百分号编码的字符串时省去 unescape 会使编码结果的长度增加了，因为 btoa 编码了百分号；且如果是将编码结果传给其他 API 时会很难理解其内容</p>
-<h2 id="前端-node-js-转-base64"><a href="#前端-node-js-转-base64" class="headerlink" title="前端 node.js 转 base64"></a>前端 node.js 转 base64</h2><figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs arcade"><span class="hljs-comment">//utf-8 转 base64</span><br>const txt = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Buffer</span>(<span class="hljs-string">&#x27;文字&#x27;</span>).toString(<span class="hljs-string">&#x27;base64&#x27;</span>);<br><span class="hljs-built_in">console</span>.<span class="hljs-built_in">log</span>(txt)<br><br><span class="hljs-comment">//base64 转 utf-8</span><br>const ztxt = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Buffer</span>(txt, <span class="hljs-string">&#x27;base64&#x27;</span>).toString(<span class="hljs-string">&#x27;utf8&#x27;</span>);<br><span class="hljs-built_in">console</span>.<span class="hljs-built_in">log</span>(ztxt)<br></code></pre></td></tr></table></figure>
+<h2 id="前端-node-js-转-base64"><a href="#前端-node-js-转-base64" class="headerlink" title="前端 node.js 转 base64"></a>前端 node.js 转 base64</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//utf-8 转 base64</span><br><span class="line">const txt = new Buffer(&#x27;文字&#x27;).toString(&#x27;base64&#x27;);</span><br><span class="line">console.log(txt)</span><br><span class="line"></span><br><span class="line">//base64 转 utf-8</span><br><span class="line">const ztxt = new Buffer(txt, &#x27;base64&#x27;).toString(&#x27;utf8&#x27;);</span><br><span class="line">console.log(ztxt)</span><br></pre></td></tr></table></figure>
 
 <p>处理起来相对简单，可以直接用 buffer 模块的 api</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/427488961">Unicode、UTF-8、UTF-16 终于懂了</a><br>（2）<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Glossary/Base64#Solution_2_%E2%80%93_escaping_the_string_before_encoding_it">Base64</a><br>（3）<a target="_blank" rel="noopener" href="https://best33.com/311.moe">为什么 escape 可以使 btoa 正确处理 UTF-8 编码的字符串？</a><br>（4）<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/30631927/converting-to-base64-in-javascript-without-deprecated-escape-call">Converting to Base64 in JavaScript without Deprecated ‘Escape’ call</a></p>
 
-                
-              </div>
             
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
 
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
-  
-  
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/WEB-API/" rel="tag">WEB API</a>
 
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/unknown404.github.io/tags/WEB-API/">#WEB API</a>
-      
-    </div>
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>js实现从utf-8到base64编码</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/11/29/encodeBase64/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>小白的文件整理箱</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年11月29日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
-
-
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/12/02/cssUsage/" title="页面置灰的实现方式">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">页面置灰的实现方式</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/11/29/nvmProblemSearch/" title="依赖失踪之谜 —— 记一次失败的问题查找">
-                        <span class="hidden-mobile">依赖失踪之谜 —— 记一次失败的问题查找</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
             </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/12/02/cssUsage/"
+                    data-tooltip="页面置灰的实现方式"
+                    aria-label="上一篇: 页面置灰的实现方式"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/11/29/nvmProblemSearch/"
+                    data-tooltip="依赖失踪之谜 —— 记一次失败的问题查找"
+                    aria-label="下一篇: 依赖失踪之谜 —— 记一次失败的问题查找"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/12/02/cssUsage/"
+                    data-tooltip="页面置灰的实现方式"
+                    aria-label="上一篇: 页面置灰的实现方式"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/11/29/nvmProblemSearch/"
+                    data-tooltip="依赖失踪之谜 —— 记一次失败的问题查找"
+                    aria-label="下一篇: 依赖失踪之谜 —— 记一次失败的问题查找"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/11/29/encodeBase64/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
 
             
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header">
-    <i class="iconfont icon-list"></i>
-    <span>目录</span>
-  </p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
+        
 
 
     
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
+        
     
 
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
         </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
 </div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
 
     
 
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unknown404.github.io/js/events.js" ></script>
-<script  src="/unknown404.github.io/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
 
 
 
-
-  
-    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
-  
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script  src="/unknown404.github.io/js/local-search.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unknown404.github.io/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
+    </body>
 </html>

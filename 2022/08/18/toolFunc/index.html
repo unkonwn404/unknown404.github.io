@@ -1,694 +1,613 @@
 
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
+<html lang="zh-cn">
+    
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="小白的文件整理箱">
-  <meta name="keywords" content="">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>工具函数 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"记录一些常用的工具函数（不定期更新）。\n\n\n\n两个数组求交集\n\n123function intersectArr(arr1,arr2)&#123;    return arr1.filter(item=&gt;arr2.includes(item))&#125;\n\n延伸：判断某数组是否包含另一数组的参数（适用于权限验证，用户的权限是否与路由设置的角色权限匹配）\n123function isIntersect(arr1,arr2)&#123;    return arr1.some(item=&gt;arr2.includes(item))&#125;\n\n\n删除对象中的 null 或 undefined 值\n\n123456const removeNullorUndefinedofObj = (obj) =&gt; &#123;  return Object.entries(obj).reduce(    (cur, [key, value]) =&gt; (value === null || value === undefined ? cur : (cur[key] = value), cur),    &#123;&#125;,  );&#125;;\n\n\nurl 中搜索参数格式化\n\n1234567891011const parseQuery = () =&gt; &#123;  const search = window.location.search;  return search    .slice(1)    .split(&quot;&amp;&quot;)    .reduce((query, it) =&gt; &#123;      const [key, value] = it.split(&quot;=&quot;);      query[key] = decodeURIComponent(value);      return query;    &#125;, &#123;&#125;);&#125;;\n\n\n快速创建 0 - n-1 范围的数组\n\n12345Array.from(&#123;length: n&#125;, (_, i) =&gt; i)[...Array(n).keys()]new Array(n).fill(1).map((_, i) =&gt; i)\n\n\n多个数组全组合的情况统计\n\n12345678910111213141516171819202122232425262728293031323334353637function zuhe(arr,n)&#123;    var pass = new Set();    var zh = []    if(n&lt;0 || arr.length &lt; n)&#123;throw &#x27;参数错误&#x27;&#125;    if(n == 1)&#123;        for(let _arr of arr)&#123;            for(let v of _arr)&#123;                if(!pass.has(v))&#123; //去重                    pass.add(v);                    zh.push([v]);                &#125;            &#125;        &#125;        return zh;    &#125;    for(let i=0; i &lt;= arr.length-n; i++ )&#123;        for(let v of arr[i])&#123;            if(!pass.has(v))&#123; //去重                pass.add(v);                let _zh = zuhe(arr.slice(i+1),n-1).map(a=&gt;&#123;                    a.unshift(v)                    return a;                &#125;)                zh = zh.concat(_zh)            &#125;        &#125;    &#125;    return zh;&#125;var arr1 = [&quot;a&quot;,&quot;b&quot;,&quot;c&quot;];var arr2 = [&quot;A&quot;,&quot;B&quot;];var arr3 = [&quot;1&quot;,&quot;2&quot;];var zh2 = zuhe([arr1,arr2,arr3],2)var zh3 = zuhe([arr1,arr2,arr3],3)console.log(zh2)console.log(zh3)\n参考文献（1）js多个数组元素两两组合三三组合\n","dateCreated":"2022-08-18T20:31:52+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-08-18T20:31:52+08:00","description":"记录一些常用的工具函数（不定期更新）。","headline":"工具函数","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/","keywords":"JavaScript"}</script>
     <meta name="description" content="记录一些常用的工具函数（不定期更新）。">
-<meta property="og:type" content="article">
+<meta property="og:type" content="blog">
 <meta property="og:title" content="工具函数">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/08/18/toolFunc/index.html">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="记录一些常用的工具函数（不定期更新）。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-18T12:31:52.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.852Z">
+<meta property="article:modified_time" content="2025-08-19T14:27:34.465Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="JavaScript">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
-  
-  <title>工具函数 - 小白的文件整理箱</title>
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+    <!--STYLES END-->
+    
 
+    
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/unknown404.github.io/js/utils.js" ></script>
-  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+    
+        
+    
 </head>
 
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
-<body>
-  
 
-  <header>
+    
+        
+            
+        
     
 
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/unknown404.github.io/">
-      <strong>小白的文件整理箱</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/about/">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
     </div>
-  </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
 </nav>
 
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="工具函数"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-08-18 20:31" pubdate>
-          2022年8月18日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          2.8k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          24 分钟
-        
-      </span>
-    
-
-    
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">工具函数</h1>
             
-            
-              <div class="markdown-body">
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
                 
-                <p>记录一些常用的工具函数（不定期更新）。</p>
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            工具函数
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-18T20:31:52+08:00">
+	
+		    8月 18, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/">工作技巧</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>记录一些常用的工具函数（不定期更新）。</p>
 <span id="more"></span>
 
 <ol>
 <li>两个数组求交集</li>
 </ol>
-<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs arcade"><span class="hljs-keyword">function</span> <span class="hljs-title function_">intersectArr</span>(<span class="hljs-params">arr1,arr2</span>)&#123;<br>    <span class="hljs-keyword">return</span> arr1.<span class="hljs-built_in">filter</span>(<span class="hljs-function"><span class="hljs-params">item</span>=&gt;</span>arr2.<span class="hljs-built_in">includes</span>(item))<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function intersectArr(arr1,arr2)&#123;</span><br><span class="line">    return arr1.filter(item=&gt;arr2.includes(item))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>延伸：判断某数组是否包含另一数组的参数（适用于权限验证，用户的权限是否与路由设置的角色权限匹配）</p>
-<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs arcade"><span class="hljs-keyword">function</span> <span class="hljs-title function_">isIntersect</span>(<span class="hljs-params">arr1,arr2</span>)&#123;<br>    <span class="hljs-keyword">return</span> arr1.some(<span class="hljs-function"><span class="hljs-params">item</span>=&gt;</span>arr2.<span class="hljs-built_in">includes</span>(item))<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function isIntersect(arr1,arr2)&#123;</span><br><span class="line">    return arr1.some(item=&gt;arr2.includes(item))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ol start="2">
 <li>删除对象中的 null 或 undefined 值</li>
 </ol>
-<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript">const removeNullorUndefinedofObj = <span class="hljs-function"><span class="hljs-params">(obj)</span> =&gt;</span> &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.entries(obj).reduce(<br>    <span class="hljs-function"><span class="hljs-params">(cur, [key, value])</span> =&gt;</span> (value === <span class="hljs-literal">null</span> || value === <span class="hljs-literal">undefined</span> ? cur : (cur[key] = value), cur),<br>    &#123;&#125;,<br>  );<br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const removeNullorUndefinedofObj = (obj) =&gt; &#123;</span><br><span class="line">  return Object.entries(obj).reduce(</span><br><span class="line">    (cur, [key, value]) =&gt; (value === null || value === undefined ? cur : (cur[key] = value), cur),</span><br><span class="line">    &#123;&#125;,</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <ol start="3">
 <li>url 中搜索参数格式化</li>
 </ol>
-<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs stata"><span class="hljs-keyword">const</span> parseQuery = () =&gt; &#123;<br>  <span class="hljs-keyword">const</span> <span class="hljs-keyword">search</span> = <span class="hljs-keyword">window</span>.location.<span class="hljs-keyword">search</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">search</span><br>    .slice(1)<br>    .<span class="hljs-keyword">split</span>(<span class="hljs-string">&quot;&amp;&quot;</span>)<br>    .reduce((<span class="hljs-keyword">query</span>, it) =&gt; &#123;<br>      <span class="hljs-keyword">const</span> [key, value] = it.<span class="hljs-keyword">split</span>(<span class="hljs-string">&quot;=&quot;</span>);<br>      <span class="hljs-keyword">query</span>[key] = decodeURIComponent(value);<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">query</span>;<br>    &#125;, &#123;&#125;);<br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">const parseQuery = () =&gt; &#123;</span><br><span class="line">  const search = window.location.search;</span><br><span class="line">  return search</span><br><span class="line">    .slice(1)</span><br><span class="line">    .split(&quot;&amp;&quot;)</span><br><span class="line">    .reduce((query, it) =&gt; &#123;</span><br><span class="line">      const [key, value] = it.split(&quot;=&quot;);</span><br><span class="line">      query[key] = decodeURIComponent(value);</span><br><span class="line">      return query;</span><br><span class="line">    &#125;, &#123;&#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <ol start="4">
 <li>快速创建 0 - n-1 范围的数组</li>
 </ol>
-<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-built_in">Array</span>.<span class="hljs-keyword">from</span>(&#123;length: n&#125;, <span class="hljs-function"><span class="hljs-params">(_, i)</span> =&gt;</span> i)<br><br>[...<span class="hljs-built_in">Array</span>(n).keys()]<br><br><span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(n).fill(<span class="hljs-number">1</span>).map(<span class="hljs-function"><span class="hljs-params">(_, i)</span> =&gt;</span> i)<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Array.from(&#123;length: n&#125;, (_, i) =&gt; i)</span><br><span class="line"></span><br><span class="line">[...Array(n).keys()]</span><br><span class="line"></span><br><span class="line">new Array(n).fill(1).map((_, i) =&gt; i)</span><br></pre></td></tr></table></figure>
 
 <ol start="5">
 <li>多个数组全组合的情况统计</li>
 </ol>
-<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs arcade"><span class="hljs-keyword">function</span> <span class="hljs-title function_">zuhe</span>(<span class="hljs-params">arr,n</span>)&#123;<br>    <span class="hljs-keyword">var</span> pass = <span class="hljs-keyword">new</span> Set();<br>    <span class="hljs-keyword">var</span> zh = []<br>    <span class="hljs-keyword">if</span>(n&lt;<span class="hljs-number">0</span> || arr.<span class="hljs-built_in">length</span> &lt; n)&#123;throw <span class="hljs-string">&#x27;参数错误&#x27;</span>&#125;<br>    <span class="hljs-keyword">if</span>(n == <span class="hljs-number">1</span>)&#123;<br>        <span class="hljs-keyword">for</span>(let _arr of arr)&#123;<br>            <span class="hljs-keyword">for</span>(let v of _arr)&#123;<br>                <span class="hljs-keyword">if</span>(!pass.has(v))&#123; <span class="hljs-comment">//去重</span><br>                    pass.add(v);<br>                    zh.<span class="hljs-built_in">push</span>([v]);<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> zh;<br>    &#125;<br>    <span class="hljs-keyword">for</span>(let i=<span class="hljs-number">0</span>; i &lt;= arr.<span class="hljs-built_in">length</span>-n; i++ )&#123;<br>        <span class="hljs-keyword">for</span>(let v of arr[i])&#123;<br>            <span class="hljs-keyword">if</span>(!pass.has(v))&#123; <span class="hljs-comment">//去重</span><br>                pass.add(v);<br>                let _zh = zuhe(arr.<span class="hljs-built_in">slice</span>(i+<span class="hljs-number">1</span>),n<span class="hljs-number">-1</span>).<span class="hljs-built_in">map</span>(<span class="hljs-function"><span class="hljs-params">a</span>=&gt;</span>&#123;<br>                    a.unshift(v)<br>                    <span class="hljs-keyword">return</span> a;<br>                &#125;)<br>                zh = zh.concat(_zh)<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> zh;<br>&#125;<br><span class="hljs-keyword">var</span> arr1 = [<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>];<br><span class="hljs-keyword">var</span> arr2 = [<span class="hljs-string">&quot;A&quot;</span>,<span class="hljs-string">&quot;B&quot;</span>];<br><span class="hljs-keyword">var</span> arr3 = [<span class="hljs-string">&quot;1&quot;</span>,<span class="hljs-string">&quot;2&quot;</span>];<br><br><span class="hljs-keyword">var</span> zh2 = zuhe([arr1,arr2,arr3],<span class="hljs-number">2</span>)<br><span class="hljs-keyword">var</span> zh3 = zuhe([arr1,arr2,arr3],<span class="hljs-number">3</span>)<br><span class="hljs-built_in">console</span>.<span class="hljs-built_in">log</span>(zh2)<br><span class="hljs-built_in">console</span>.<span class="hljs-built_in">log</span>(zh3)<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">function zuhe(arr,n)&#123;</span><br><span class="line">    var pass = new Set();</span><br><span class="line">    var zh = []</span><br><span class="line">    if(n&lt;0 || arr.length &lt; n)&#123;throw &#x27;参数错误&#x27;&#125;</span><br><span class="line">    if(n == 1)&#123;</span><br><span class="line">        for(let _arr of arr)&#123;</span><br><span class="line">            for(let v of _arr)&#123;</span><br><span class="line">                if(!pass.has(v))&#123; //去重</span><br><span class="line">                    pass.add(v);</span><br><span class="line">                    zh.push([v]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return zh;</span><br><span class="line">    &#125;</span><br><span class="line">    for(let i=0; i &lt;= arr.length-n; i++ )&#123;</span><br><span class="line">        for(let v of arr[i])&#123;</span><br><span class="line">            if(!pass.has(v))&#123; //去重</span><br><span class="line">                pass.add(v);</span><br><span class="line">                let _zh = zuhe(arr.slice(i+1),n-1).map(a=&gt;&#123;</span><br><span class="line">                    a.unshift(v)</span><br><span class="line">                    return a;</span><br><span class="line">                &#125;)</span><br><span class="line">                zh = zh.concat(_zh)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return zh;</span><br><span class="line">&#125;</span><br><span class="line">var arr1 = [&quot;a&quot;,&quot;b&quot;,&quot;c&quot;];</span><br><span class="line">var arr2 = [&quot;A&quot;,&quot;B&quot;];</span><br><span class="line">var arr3 = [&quot;1&quot;,&quot;2&quot;];</span><br><span class="line"></span><br><span class="line">var zh2 = zuhe([arr1,arr2,arr3],2)</span><br><span class="line">var zh3 = zuhe([arr1,arr2,arr3],3)</span><br><span class="line">console.log(zh2)</span><br><span class="line">console.log(zh3)</span><br></pre></td></tr></table></figure>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000018650936">js多个数组元素两两组合三三组合</a></p>
 
-<ol start="6">
-<li>数组转对象</li>
-</ol>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// method 1</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, [<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-string">&#x27;c&#x27;</span>]); <span class="hljs-comment">// &#123;0:&quot;a&quot;, 1:&quot;b&quot;, 2:&quot;c&quot;&#125;</span><br><span class="hljs-comment">// method 2</span><br>&#123; ...[<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>] &#125;<br></code></pre></td></tr></table></figure>
-
-<ol start="7">
-<li>浏览器环境下导出某段数据文件</li>
-</ol>
-<p>思路：利用 Blob 文件。Blob 构造函数的语法为：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">var</span> aBlob = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Blob</span>(blobParts, options);<br></code></pre></td></tr></table></figure>
-
-<p>相关的参数说明如下：·</p>
-<p>blobParts：它是一个由 ArrayBuffer，ArrayBufferView，Blob，DOMString 等对象构成的数组。DOMStrings 会被编码为 UTF-8。<br>options：一个可选的对象，包含以下两个属性：<br>type —— 默认值为 “”，它代表了将会被放入到 blob 中的数组内容的 MIME 类型。常见的 MIME 类型有：超文本标记语言文本 .html text&#x2F;html、PNG图像 .png image&#x2F;png、普通文本 .txt text&#x2F;plain 等。<br>endings —— 默认值为 “transparent”，用于指定包含行结束符 \n 的字符串如何被写入。它是以下两个值中的一个：”native”，代表行结束符会被更改为适合宿主操作系统文件系统的换行符，或者 “transparent”，代表会保持 blob 中保存的结束符不变。</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">function</span> <span class="hljs-title function_">downLoadData</span>(<span class="hljs-params">filename: <span class="hljs-built_in">string</span>, data: <span class="hljs-built_in">string</span></span>) &#123;<br>  <span class="hljs-keyword">var</span> url = <span class="hljs-variable language_">window</span>.<span class="hljs-property">URL</span>.<span class="hljs-title function_">createObjectURL</span>(<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Blob</span>([data], &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text/plain&quot;</span> &#125;)<br>  );<br>  <span class="hljs-keyword">var</span> link = <span class="hljs-variable language_">window</span>.<span class="hljs-property">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&quot;a&quot;</span>);<br>  link.<span class="hljs-property">href</span> = url;<br>  link.<span class="hljs-property">download</span> = filename;<br>  link.<span class="hljs-property">style</span>.<span class="hljs-property">display</span> = <span class="hljs-string">&quot;none&quot;</span>;<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-property">document</span>.<span class="hljs-property">body</span>.<span class="hljs-title function_">appendChild</span>(link);<br>  <span class="hljs-comment">// 模拟点击a连接，触发下载</span><br>  link.<span class="hljs-title function_">click</span>();<br>  <span class="hljs-comment">// 清除添加的dom，释放url资源</span><br>  <span class="hljs-variable language_">window</span>.<span class="hljs-property">document</span>.<span class="hljs-property">body</span>.<span class="hljs-title function_">removeChild</span>(link);<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-property">URL</span>.<span class="hljs-title function_">revokeObjectURL</span>(url);<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000018650936">js 多个数组元素两两组合三三组合</a><br>（2）<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/4215737/convert-array-to-object">Convert Array to Object</a></p>
-
-                
-              </div>
             
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
 
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
-  
-  
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/JavaScript/" rel="tag">JavaScript</a>
 
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/unknown404.github.io/tags/JavaScript/">#JavaScript</a>
-      
-    </div>
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>工具函数</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/08/18/toolFunc/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>小白的文件整理箱</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年8月18日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
-
-
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/08/18/koroHeader/" title="koroFileHeader使用技巧">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">koroFileHeader使用技巧</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/08/08/rollup/" title="rollup打包工具使用">
-                        <span class="hidden-mobile">rollup打包工具使用</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
             </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/18/koroHeader/"
+                    data-tooltip="koroFileHeader使用技巧"
+                    aria-label="上一篇: koroFileHeader使用技巧"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/08/rollup/"
+                    data-tooltip="rollup打包工具使用"
+                    aria-label="下一篇: rollup打包工具使用"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/18/koroHeader/"
+                    data-tooltip="koroFileHeader使用技巧"
+                    aria-label="上一篇: koroFileHeader使用技巧"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/08/rollup/"
+                    data-tooltip="rollup打包工具使用"
+                    aria-label="下一篇: rollup打包工具使用"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/18/toolFunc/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
 
             
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header">
-    <i class="iconfont icon-list"></i>
-    <span>目录</span>
-  </p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
+        
 
 
     
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
+        
     
 
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
         </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
 </div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
 
     
 
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unknown404.github.io/js/events.js" ></script>
-<script  src="/unknown404.github.io/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
 
 
 
-
-  
-    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
-  
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script  src="/unknown404.github.io/js/local-search.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unknown404.github.io/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
+    </body>
 </html>

@@ -1,343 +1,294 @@
 
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
+<html lang="zh-cn">
+    
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="小白的文件整理箱">
-  <meta name="keywords" content="">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>React - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"前端 react 框架方面知识整理。\n\n\nReact相关基本概念JSXJSX定义一个类似于XML的 JavaScript 的语法扩展。用js语法表示UI的类模版语言，用于创建虚拟DOM。\nJSX的本质是React.createElement(component, props, …children)方法的语法糖。通过babel可以将jsx文件转为 React.createElement\nJSX语法特点\n只能有一个根元素\n存在多行dom内容时，可以将内容包裹在括号中\n标签首字母：如果是小写字母开头，React则将改标签转为html中同名元素，若html没有同名标签，则报错如果是大写字母开头，React就去渲染对应的组件，若组件没有定义，则报错\n样式的类名指定不用class，要用className；style内部样式属性也同样用camelCase（小驼峰命名）来定义。这是因为jsx本质不是html\n{}中不能写JS语句\n\n受控组件和非受控组件受控组件：表单组件如&lt;input&gt;&lt;select&gt;&lt;textearea&gt;等元素受外部数据源state控制，更新只能通过onChange事件内部设置 setState()来更新。非受控组件：表单组件是通过使用 ref 来从 DOM 节点中获取表单数据、defaultValue设置初始值。\n根据React官方文档，绝大部分时候推荐使用受控组件来实现表单，因为在受控组件中，表单数据由React组件负责处理；如果选择受受控组件的话，表单数据就由DOM本身处理。\n实际工作中，仅用于单次表单提交、提交时校验的情况使用非受控组件即可，其特点是更方便快捷，代码量小，但是控制能力比较弱。涉及对数据进行即时校验，格式化输入数据等需求，受控组件更适合使用，其控制能力强，但是代码量会比较多。在开发中应该权衡需求，进度进行相应的选择。\nreact组件重新渲染的方式\nstate 改变\nprops改变\nforceUpdate\n父组件重新渲染（即使传入子组件的 props 未发生变化，那么子组件也会重新渲染）虚拟DOM虚拟DOM实现原理从本质上来说，Virtual Dom是一个JavaScript对象，通过对象的方式来表示DOM结构。将页面的状态抽象为JS对象的形式，配合不同的渲染工具，使跨平台渲染成为可能。通过事务处理机制，将多次DOM修改的结果一次性的更新到页面上，从而有效的减少页面渲染的次数，减少修改DOM的重绘重排次数，提高渲染性能。虚拟DOM优缺点优点：\n保证性能下限在回流、重绘的情况下，真实DOM操作需要重建所有的DOM，而虚拟DOM操作可以用diff算法统一更新必要的DOMVirtual DOM的更新DOM的准备工作耗费更多的时间，也就是JS层面，相比于更多的DOM操作它的消费是极其便宜的。\n可以跨平台\n无需手动操作DOM缺点：\n无法极致优化React diff算法原理\n\n\n真实的 DOM 首先会映射为虚拟 DOM；\n当虚拟 DOM 发生变化后，就会根据差距计算生成 patch，这个 patch 是一个结构化的数据，内容包含了增加、更新、移除等；\n根据 patch 去更新真实的 DOM，反馈到用户的界面上。\n\n在 React16 之前，React 是直接递归渲染 vdom 的，setState 会触发重新渲染，对比渲染出的新旧 vdom，对差异部分进行 dom 操作。在 React16 之后，为了优化性能，会先把 vdom 转换成 fiber，也就是从树转换成链表，然后再渲染。整体渲染流程分成了两个阶段：\nrender 阶段：从 vdom 转换成 fiber，并且对需要 dom 操作的节点打上 effectTag 的标记commit 阶段：对有 effectTag 标记的 fiber 节点进行 dom 操作，并执行所有的 effect 副作用函数。\n从 vdom 转成 fiber 的过程叫做 reconcile（调和），这个过程是可以打断的，由 scheduler 调度执行。\nReact 的 diff 算法是分成两次遍历的：第一轮遍历，一一对比 vdom 和老的 fiber，如果key和type相同则认为该节点可以复用、处理下一个节点，否则就结束遍历。如果所有的新的 vdom 处理完了，那就把剩下的老 fiber 节点删掉就行。如果还有 vdom 没处理，那就进行第二次遍历；第二轮遍历，主要是解决节点移动的问题：遍历新的 vdom 节点，每一个都去看看这个节点在旧fiber链中的位置（旧位置），如果旧位置在最新固定节点的右边，说明这个节点位置不变，就是可复用，移动过来打上更新的标记，并成为新的固定节点；如果旧位置在最新固定节点的左边，当前这个节点的位置要往右挪。最后把剩下的老 fiber 删掉，剩下的新 vdom 新增。\nReact列表渲染为什么要用key？diff 算法中通过 tag 和 key 来判断是否是同一个节点，因此必须用 key。且key值最好不是 index，因为列表依赖的数据长度可能会变化，而使用index作为key不能表征数据的变化，影响性能；在列表结构内部使用其他元素如input时diff算法会认为其没有发生变化，因此内部的数据也不会更新key值也不能是random、不然会增加diff计算量\nReact 事件机制事件机制特点（以 react 16 为例）\n在 jsx 文件中 onClick 或 onChange 绑定的事件处理函数,根本就没有注册到真实的 dom 上。是绑定在 document 上（react 17 以后是根节点上）统一管理的。\n真实的 dom 上的 click 事件被单独处理,已经被 react 底层替换成空函数。\nreact 绑定的事件如 onChange，在 document 上，可能有多个事件与之对应。\nreact 并不是一开始，把所有的事件都绑定在 document 上，而是采取了一种按需绑定，比如发现了 onClick 事件,再去绑定 document click 事件。\n\n事件机制流程注册合成事件构建初始化 React 合成事件和原生事件的对应关系，合成事件和对应的事件处理插件关系。\n事件绑定\nreact dom 对应的 fiber 会在 memoizedProps 和 pendingProps 保存事件\ndiff 阶段如果判断是 react 合成事件，则会按照事件系统逻辑单独处理。\n根据 React 合成事件类型，找到对应的原生事件的类型，然后调用判断原生事件类型，大部分事件都按照冒泡逻辑处理，少数事件会按照捕获逻辑处理（比如 scroll 事件）。\n调用 addTrappedEventListener 进行真正的事件绑定，绑定在 document 上，dispatchEvent 为统一的事件处理函数。\n\n事件触发\n以触发点击事件为例，首先执行的是 dispatchEvent 函数，该函数包括的操作有：1）根据真实的事件源对象，找到 e.target 真实的 dom 元素。2）根据 dom 元素，找到与它对应的 fiber 对象 targetInst，在我们 demo 中，找到 button 按钮对应的 fiber。3）进入 react 的 legacy 模式，在这个模式下，批量更新。\n执行事件对应的处理插件中的 extractEvents，模拟事件捕获-&gt;事件源-&gt;事件冒泡这一过程。具体操作：1）形成合成事件源对象2）每次 React 会从事件源开始，从上遍历类型为 hostComponent 即 dom 类型的 fiber,判断 props 中是否有当前事件比如 onClick,对于冒泡阶段的事件(onClick)，将 push 到执行队列后面 ， 对于捕获阶段的事件(onClickCapture)，将 unShift 到执行队列的前面。最终形成一个事件执行队列。3）将事件执行队列，保存到 React 事件源对象上。等待执行。\nrunEventsInBatch 执行事件队列，如果发现阻止冒泡，那么 break 跳出循环，最后重置事件源，放回到事件池中，完成整个流程。\n\nReact 事件 vs 原生事件1）事件名称命名方式：原生事件为全小写，react 事件采用小驼峰2）事件函数处理语法：原生事件为字符串，react 事件为函数3）默认行为处理：react 事件不能采用 return false 的方式来阻止浏览器的默认行为，而必须要地明确地调用 preventDefault()来阻止默认行为4）执行时机：两种事件同时存在时会先执行原生事件，再执行 react 合成事件5）阻止冒泡行为的影响：原生事件（阻止冒泡）会阻止合成事件的执行，react 合成事件（阻止冒泡）不会阻止原生事件的执行\nreact 使用合成事件的优点\n兼容所有浏览器，更好的跨平台；\n将事件统一存放在一个数组，避免频繁的新增与删除（垃圾回收）。\n方便 react 统一管理和事务机制。\n\nReact FiberReact Fiber 并不是真正意义上的纤程（微线程、协程），而是一种基于浏览器的单线程调度算法：在这个过程中，React 渲染的过程可以被中断，可以将控制权交回浏览器，让位给高优先级的任务，浏览器空闲后再恢复渲染。该算法依赖 requestIdleCallback（在一帧时间 16ms (1000ms &#x2F; 60)内，如果浏览器处理完包括用户输入、js 执行、动画、布局、绘制的任务之后，还有盈余时间，浏览器就会调用 requestIdleCallback 的回调）。\nReact V15 在渲染时，会递归比对 VirtualDOM 树，找出需要变动的节点，然后同步更新它们。在这个过程期间更新不能中断， 由于 React 占据着浏览器资源，用户触发的事件无法得到响应，导致用户感觉到卡顿。\n而 Fiber 是一种将 reconciliation （递归 diff），拆分成无数个小任务的算法；它随时能够停止，恢复。\nReact class 组件生命周期\nreact 16.4 以上的生命周期如图所示，列举了常用的生命周期函数，主要分为 3 个阶段\n挂载阶段\nconstructor：进行 state 的初始化，给事件处理方法绑定 this\ngetDerivedStateFromProps：静态方法，会返回一个对象用于更新 state、或者返回 null 不更新。在接收到新的 props 或者调用了 setState 和 forceUpdate 时该函数会被调用。\nrender：纯函数，根据 state 和 props 渲染组件。可返回的内容包括原生的 DOM、React 组件、Fragment、Portals、字符串和数字、Boolean 和 null 等\ncomponentDidMount：组件挂载完成后调用，可以进行以下操作：\n\n\n执行依赖于 DOM 的操作；\n发送网络请求；（官方建议）\n添加订阅消息；（会在 componentWillUnmount 取消订阅）\n\n更新阶段当组件的 props 改变了，或组件内部调用了 setState&#x2F;forceUpdate，会触发更新重新渲染，这个过程可能会发生多次。\n\ngetDerivedStateFromProps\nshouldComponentUpdate：有两个参数 nextProps 和 nextState，表示新的属性和变化之后的 state，返回一个布尔值，true 表示会触发重新渲染，false 表示不会触发重新渲染，默认返回 true,我们通常利用此生命周期来优化 React 程序性能\nrender\ngetSnapshotBeforeUpdate：该函数有两个传入参数 prevProps 和 prevState，表示之前的属性和之前的 state，这个函数有一个返回值，会作为第三个参数传给 componentDidUpdate，通常默认会返回 null。此生命周期函数必须与 componentDidUpdate 搭配使用\ncomponentDidUpdate：该函数有 3 个传入参数 prevProps、prevState 和 snapshot。可以用于当组件更新后，对 DOM 进行操作或者 props 变化时执行网络请求\n\n卸载阶段\ncomponentWillUnmount：主要操作包括\n\n\n清除 timer，取消网络请求或清除\n取消在 componentDidMount() 中创建的订阅等这个生命周期在一个组件被卸载和销毁之前被调用，因此你不应该再这个方法中使用 setState。\n\n废弃的生命周期componentWillMount在挂载阶段 render() 之前调用。可以使用 componentDidMount 和 constructor 来代替\ncomponentWillReceivePropsprops 更新时调用此方法用于更新 state。会破坏 state 数据的单一数据源，导致组件状态变得不可预测，另一方面也会增加组件的重绘次数。如果在 componentWillReceiveProps 生命周期直接调用父组件的某些有调用 setState 的函数，会导致程序死循环。可以使用 getDerivedStateFromProps 来代替\ncomponentWillUpdate在更新阶段组件渲染 render()之前调用，通常，此方法可以替换为 componentDidUpdate()和 getSnapshotBeforeUpdate()。\n对于异步渲染情况，渲染可分为两个阶段：reconciliation 和 commit 。前者过程是可以打断的，后者不能暂停，会一直更新界面直到完成。\n\n\n\nReconciliation 阶段\nCommit 阶段\n\n\n\ncomponentWillMount\ncomponentDidMount\n\n\ncomponentWillReceiveProps\ncomponentDidUpdate\n\n\nshouldComponentUpdate\ncomponentWillUnmount\n\n\ncomponentWillUpdate\n\n\n\n因为 Reconciliation 阶段是可以被打断的，所以 Reconciliation 阶段会执行的生命周期函数就可能会出现调用多次的情况，从而引起 Bug。由此对于 Reconciliation 阶段调用的几个函数，除了 shouldComponentUpdate 以外，其他都应该避免去使用。\n适合做异步请求的生命周期componentDidmount\nsetStatesetState用法1setState(object nextState[, function callback])\n传入的参数包括：\n\nnextState，对象属性。将要设置的新状态，该状态会和当前的state合并\ncallback，回调函数。可选参数。该函数会在setState设置成功，且组件重新渲染后调用。等价于在 componentDidUpdate 生命周期内执行。在这个回调函数中你可以拿到更新后 state 的值。setState调用流程setState方法会将将新的 state 放进组件的状态队列里，等待合适的时机，批量更新state，重新构建 React 元素树并且着手重新渲染整个UI界面。setState同步还是异步setState 并不是单纯同步&#x2F;异步的，它的表现会因调用场景的不同而不同。在源码中，通过 isBatchingUpdates 来判断setState 是先存进 state 队列还是直接更新，如果值为 true 则执行异步操作，为 false 则直接更新。\n\n“异步”并不是说内部由异步代码实现，其实本身执行的过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致在合成事件和钩子函数中没法立马拿到更新后的值。\n异步： 在 React 可以控制的地方，就为 true，比如在 React 生命周期事件和合成事件中，都会走合并操作，延迟更新的策略。同步： 在 React 无法控制的地方，比如原生事件，具体就是在 addEventListener 、setTimeout、setInterval 等事件中，就只能同步更新。\nReact函数组件组件间通信父子组件通信父组件-&gt;子组件：通过 props 传递数据给子组件子组件-&gt;父组件：子组件通过调用父组件传来的函数传递数据给父组件\n兄弟组件通信可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。\n跨多层次组件通信可以使用Context API\n任意组件可以通过 Redux 或者 Event Bus 解决，另外如果你不怕麻烦的话，可以使用这种方式解决上述所有的通信情况\nReact 生态Redux参考文献（1）React 事件机制（2）「react 进阶」一文吃透 react 事件系统原理（3）react 生命周期（4）「2021」高频前端面试题汇总之React篇（下）（5）图解 React 的 diff 算法：核心就两个字 —— 复用（6）深入理解React Diff算法\n","dateCreated":"2022-06-09T20:47:30+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-06-09T20:47:30+08:00","description":"前端 react 框架方面知识整理。","headline":"React","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/","keywords":"React"}</script>
     <meta name="description" content="前端 react 框架方面知识整理。">
-<meta property="og:type" content="article">
+<meta property="og:type" content="blog">
 <meta property="og:title" content="React">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/06/09/React/index.html">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="前端 react 框架方面知识整理。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle-detail.jpeg">
+<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/life-cycle-detail.jpeg">
 <meta property="article:published_time" content="2022-06-09T12:47:30.000Z">
-<meta property="article:modified_time" content="2025-07-17T03:03:58.693Z">
+<meta property="article:modified_time" content="2025-08-19T14:27:34.414Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle-detail.jpeg">
-  
-  
-  
-  <title>React - 小白的文件整理箱</title>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/life-cycle-detail.jpeg">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+    <!--STYLES END-->
+    
 
+    
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/unknown404.github.io/js/utils.js" ></script>
-  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+    
+        
+    
 </head>
 
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
-<body>
-  
 
-  <header>
+    
+        
+            
+        
     
 
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/unknown404.github.io/">
-      <strong>小白的文件整理箱</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/about/">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
     </div>
-  </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
 </nav>
 
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="React"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-06-09 20:47" pubdate>
-          2022年6月9日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          13k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          109 分钟
-        
-      </span>
-    
-
-    
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">React</h1>
             
-            
-              <div class="markdown-body">
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
                 
-                <p>前端 react 框架方面知识整理。</p>
-<span id="more"></span>
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            React
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-06-09T20:47:30+08:00">
+	
+		    6月 09, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/">前端基础</a>
 
-<h2 id="React-相关基本概念"><a href="#React-相关基本概念" class="headerlink" title="React 相关基本概念"></a>React 相关基本概念</h2><h3 id="JSX"><a href="#JSX" class="headerlink" title="JSX"></a>JSX</h3><h4 id="JSX-定义"><a href="#JSX-定义" class="headerlink" title="JSX 定义"></a>JSX 定义</h4><p>一个类似于 XML 的 JavaScript 的语法扩展。用 js 语法表示 UI 的类模版语言，用于创建虚拟 DOM。</p>
-<p>JSX 的本质是 React.createElement(component, props, …children)方法的语法糖。通过 babel 可以将 jsx 文件转为 React.createElement</p>
-<h4 id="JSX-语法特点"><a href="#JSX-语法特点" class="headerlink" title="JSX 语法特点"></a>JSX 语法特点</h4><ul>
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>前端 react 框架方面知识整理。</p>
+<span id="more"></span>
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#React%E7%9B%B8%E5%85%B3%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">React相关基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JSX"><span class="toc-text">JSX</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#JSX%E5%AE%9A%E4%B9%89"><span class="toc-text">JSX定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JSX%E8%AF%AD%E6%B3%95%E7%89%B9%E7%82%B9"><span class="toc-text">JSX语法特点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%97%E6%8E%A7%E7%BB%84%E4%BB%B6%E5%92%8C%E9%9D%9E%E5%8F%97%E6%8E%A7%E7%BB%84%E4%BB%B6"><span class="toc-text">受控组件和非受控组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#react%E7%BB%84%E4%BB%B6%E9%87%8D%E6%96%B0%E6%B8%B2%E6%9F%93%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="toc-text">react组件重新渲染的方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9FDOM"><span class="toc-text">虚拟DOM</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%99%9A%E6%8B%9FDOM%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">虚拟DOM实现原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%99%9A%E6%8B%9FDOM%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">虚拟DOM优缺点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#React-diff%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86"><span class="toc-text">React diff算法原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#React%E5%88%97%E8%A1%A8%E6%B8%B2%E6%9F%93%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8key%EF%BC%9F"><span class="toc-text">React列表渲染为什么要用key？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">React 事件机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%E7%89%B9%E7%82%B9%EF%BC%88%E4%BB%A5-react-16-%E4%B8%BA%E4%BE%8B%EF%BC%89"><span class="toc-text">事件机制特点（以 react 16 为例）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%E6%B5%81%E7%A8%8B"><span class="toc-text">事件机制流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E5%90%88%E6%88%90%E4%BA%8B%E4%BB%B6"><span class="toc-text">注册合成事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%BB%91%E5%AE%9A"><span class="toc-text">事件绑定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91"><span class="toc-text">事件触发</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#React-%E4%BA%8B%E4%BB%B6-vs-%E5%8E%9F%E7%94%9F%E4%BA%8B%E4%BB%B6"><span class="toc-text">React 事件 vs 原生事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#react-%E4%BD%BF%E7%94%A8%E5%90%88%E6%88%90%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-text">react 使用合成事件的优点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Fiber"><span class="toc-text">React Fiber</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-class-%E7%BB%84%E4%BB%B6"><span class="toc-text">React class 组件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%82%E8%BD%BD%E9%98%B6%E6%AE%B5"><span class="toc-text">挂载阶段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E9%98%B6%E6%AE%B5"><span class="toc-text">更新阶段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%B8%E8%BD%BD%E9%98%B6%E6%AE%B5"><span class="toc-text">卸载阶段</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%9F%E5%BC%83%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">废弃的生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#componentWillMount"><span class="toc-text">componentWillMount</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#componentWillReceiveProps"><span class="toc-text">componentWillReceiveProps</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#componentWillUpdate"><span class="toc-text">componentWillUpdate</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%82%E5%90%88%E5%81%9A%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">适合做异步请求的生命周期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setState"><span class="toc-text">setState</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#setState%E7%94%A8%E6%B3%95"><span class="toc-text">setState用法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#setState%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-text">setState调用流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#setState%E5%90%8C%E6%AD%A5%E8%BF%98%E6%98%AF%E5%BC%82%E6%AD%A5"><span class="toc-text">setState同步还是异步</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React%E5%87%BD%E6%95%B0%E7%BB%84%E4%BB%B6"><span class="toc-text">React函数组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%97%B4%E9%80%9A%E4%BF%A1"><span class="toc-text">组件间通信</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%88%B6%E5%AD%90%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1"><span class="toc-text">父子组件通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%84%E5%BC%9F%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1"><span class="toc-text">兄弟组件通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%A8%E5%A4%9A%E5%B1%82%E6%AC%A1%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1"><span class="toc-text">跨多层次组件通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E6%84%8F%E7%BB%84%E4%BB%B6"><span class="toc-text">任意组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E7%94%9F%E6%80%81"><span class="toc-text">React 生态</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Redux"><span class="toc-text">Redux</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+<h2 id="React相关基本概念"><a href="#React相关基本概念" class="headerlink" title="React相关基本概念"></a>React相关基本概念</h2><h3 id="JSX"><a href="#JSX" class="headerlink" title="JSX"></a>JSX</h3><h4 id="JSX定义"><a href="#JSX定义" class="headerlink" title="JSX定义"></a>JSX定义</h4><p>一个类似于XML的 JavaScript 的语法扩展。用js语法表示UI的类模版语言，用于创建虚拟DOM。</p>
+<p>JSX的本质是React.createElement(component, props, …children)方法的语法糖。通过babel可以将jsx文件转为 React.createElement</p>
+<h4 id="JSX语法特点"><a href="#JSX语法特点" class="headerlink" title="JSX语法特点"></a>JSX语法特点</h4><ul>
 <li>只能有一个根元素</li>
-<li>存在多行 dom 内容时，可以将内容包裹在括号中</li>
-<li>标签首字母：<br>如果是小写字母开头，React 则将改标签转为 html 中同名元素，若 html 没有同名标签，则报错<br>如果是大写字母开头，React 就去渲染对应的组件，若组件没有定义，则报错</li>
-<li>样式的类名指定不用 class，要用 className；style 内部样式属性也同样用 camelCase（小驼峰命名）来定义。这是因为 jsx 本质不是 html</li>
-<li>{}中不能写 JS 语句</li>
+<li>存在多行dom内容时，可以将内容包裹在括号中</li>
+<li>标签首字母：<br>如果是小写字母开头，React则将改标签转为html中同名元素，若html没有同名标签，则报错<br>如果是大写字母开头，React就去渲染对应的组件，若组件没有定义，则报错</li>
+<li>样式的类名指定不用class，要用className；style内部样式属性也同样用camelCase（小驼峰命名）来定义。这是因为jsx本质不是html</li>
+<li>{}中不能写JS语句</li>
 </ul>
-<h3 id="受控组件和非受控组件"><a href="#受控组件和非受控组件" class="headerlink" title="受控组件和非受控组件"></a>受控组件和非受控组件</h3><p>受控组件：表单组件如<code>&lt;input&gt;&lt;select&gt;&lt;textearea&gt;</code>等元素受外部数据源 state 控制，更新只能通过 onChange 事件内部设置 setState()来更新。<br>非受控组件：表单组件是通过使用 ref 来从 DOM 节点中获取表单数据、defaultValue 设置初始值。</p>
-<p>根据 React 官方文档，绝大部分时候推荐使用受控组件来实现表单，因为在受控组件中，表单数据由 React 组件负责处理；如果选择受受控组件的话，表单数据就由 DOM 本身处理。</p>
+<h3 id="受控组件和非受控组件"><a href="#受控组件和非受控组件" class="headerlink" title="受控组件和非受控组件"></a>受控组件和非受控组件</h3><p>受控组件：表单组件如<code>&lt;input&gt;&lt;select&gt;&lt;textearea&gt;</code>等元素受外部数据源state控制，更新只能通过onChange事件内部设置 setState()来更新。<br>非受控组件：表单组件是通过使用 ref 来从 DOM 节点中获取表单数据、defaultValue设置初始值。</p>
+<p>根据React官方文档，绝大部分时候推荐使用受控组件来实现表单，因为在受控组件中，表单数据由React组件负责处理；如果选择受受控组件的话，表单数据就由DOM本身处理。</p>
 <p>实际工作中，仅用于单次表单提交、提交时校验的情况使用非受控组件即可，其特点是更方便快捷，代码量小，但是控制能力比较弱。涉及对数据进行即时校验，格式化输入数据等需求，受控组件更适合使用，其控制能力强，但是代码量会比较多。在开发中应该权衡需求，进度进行相应的选择。</p>
-<h3 id="单向数据流的优缺点"><a href="#单向数据流的优缺点" class="headerlink" title="单向数据流的优缺点"></a>单向数据流的优缺点</h3><p>优点：<br>数据流从上到下非常清晰，状态变化容易预测，易于调试。可避免副作用，例如数据可以在多个组件之间随意修改，可能导致的状态的不一致性。<br>缺点：<br>如果数据需要跨层级传递，可能会出现大量属性传递，代码繁琐，也会导致不必要的渲染。<br>如果数据传递不存在父子关系，组件的通信会变得复杂。</p>
-<h3 id="react-组件重新渲染的方式"><a href="#react-组件重新渲染的方式" class="headerlink" title="react 组件重新渲染的方式"></a>react 组件重新渲染的方式</h3><ol>
+<h3 id="react组件重新渲染的方式"><a href="#react组件重新渲染的方式" class="headerlink" title="react组件重新渲染的方式"></a>react组件重新渲染的方式</h3><ol>
 <li>state 改变</li>
-<li>props 改变</li>
+<li>props改变</li>
 <li>forceUpdate</li>
-<li>父组件重新渲染（即使传入子组件的 props 未发生变化，那么子组件也会重新渲染）</li>
-</ol>
-<h3 id="虚拟-DOM"><a href="#虚拟-DOM" class="headerlink" title="虚拟 DOM"></a>虚拟 DOM</h3><h4 id="虚拟-DOM-实现原理"><a href="#虚拟-DOM-实现原理" class="headerlink" title="虚拟 DOM 实现原理"></a>虚拟 DOM 实现原理</h4><p>从本质上来说，Virtual Dom 是一个 JavaScript 对象，通过对象的方式来表示 DOM 结构。将页面的状态抽象为 JS 对象的形式，配合不同的渲染工具，使跨平台渲染成为可能。通过事务处理机制，将多次 DOM 修改的结果一次性的更新到页面上，从而有效的减少页面渲染的次数，减少修改 DOM 的重绘重排次数，提高渲染性能。</p>
-<h4 id="虚拟-DOM-优缺点"><a href="#虚拟-DOM-优缺点" class="headerlink" title="虚拟 DOM 优缺点"></a>虚拟 DOM 优缺点</h4><p>优点：</p>
-<ol>
-<li>保证性能下限<br>在回流、重绘的情况下，真实 DOM 操作需要重建所有的 DOM，而虚拟 DOM 操作可以用 diff 算法统一更新必要的 DOM<br>Virtual DOM 的更新 DOM 的准备工作耗费更多的时间，也就是 JS 层面，相比于更多的 DOM 操作它的消费是极其便宜的。</li>
+<li>父组件重新渲染（即使传入子组件的 props 未发生变化，那么子组件也会重新渲染）<h3 id="虚拟DOM"><a href="#虚拟DOM" class="headerlink" title="虚拟DOM"></a>虚拟DOM</h3><h4 id="虚拟DOM实现原理"><a href="#虚拟DOM实现原理" class="headerlink" title="虚拟DOM实现原理"></a>虚拟DOM实现原理</h4>从本质上来说，Virtual Dom是一个JavaScript对象，通过对象的方式来表示DOM结构。将页面的状态抽象为JS对象的形式，配合不同的渲染工具，使跨平台渲染成为可能。通过事务处理机制，将多次DOM修改的结果一次性的更新到页面上，从而有效的减少页面渲染的次数，减少修改DOM的重绘重排次数，提高渲染性能。<h4 id="虚拟DOM优缺点"><a href="#虚拟DOM优缺点" class="headerlink" title="虚拟DOM优缺点"></a>虚拟DOM优缺点</h4>优点：</li>
+<li>保证性能下限<br>在回流、重绘的情况下，真实DOM操作需要重建所有的DOM，而虚拟DOM操作可以用diff算法统一更新必要的DOM<br>Virtual DOM的更新DOM的准备工作耗费更多的时间，也就是JS层面，相比于更多的DOM操作它的消费是极其便宜的。</li>
 <li>可以跨平台</li>
-<li>无需手动操作 DOM</li>
+<li>无需手动操作DOM<br>缺点：</li>
+<li>无法极致优化<h4 id="React-diff算法原理"><a href="#React-diff算法原理" class="headerlink" title="React diff算法原理"></a>React diff算法原理</h4></li>
 </ol>
-<p>缺点：</p>
-<ol start="4">
-<li>无法极致优化</li>
-</ol>
-<h4 id="React-diff-算法原理"><a href="#React-diff-算法原理" class="headerlink" title="React diff 算法原理"></a>React diff 算法原理</h4><ul>
+<ul>
 <li>真实的 DOM 首先会映射为虚拟 DOM；</li>
 <li>当虚拟 DOM 发生变化后，就会根据差距计算生成 patch，这个 patch 是一个结构化的数据，内容包含了增加、更新、移除等；</li>
 <li>根据 patch 去更新真实的 DOM，反馈到用户的界面上。</li>
 </ul>
-<p>在 React16 之前，React 是直接递归比较 vdom 的，setState 会触发重新渲染，对比渲染出的新旧 vdom，对差异部分进行 dom 操作。<br>在 React16 之后，为了优化性能，会先把 vdom 转换成 fiber，也就是从树转换成链表，然后再渲染。整体渲染流程分成了两个阶段：</p>
-<p><strong>reconciliation 阶段</strong>：从 vdom 转换成 fiber，并且对需要 dom 操作的节点打上 effectTag 的标记，通过 requestIdleCallback 或 Scheduler 分片执行<br><strong>commit 阶段</strong>：对有 effectTag 标记的 fiber 节点进行 dom 操作，并执行所有的 effect 副作用函数。这个阶段是同步的，不可中断，以保证最终的更新操作能应用到实际的 DOM 中。</p>
+<p>在 React16 之前，React 是直接递归渲染 vdom 的，setState 会触发重新渲染，对比渲染出的新旧 vdom，对差异部分进行 dom 操作。<br>在 React16 之后，为了优化性能，会先把 vdom 转换成 fiber，也就是从树转换成链表，然后再渲染。整体渲染流程分成了两个阶段：</p>
+<p>render 阶段：从 vdom 转换成 fiber，并且对需要 dom 操作的节点打上 effectTag 的标记<br>commit 阶段：对有 effectTag 标记的 fiber 节点进行 dom 操作，并执行所有的 effect 副作用函数。</p>
 <p>从 vdom 转成 fiber 的过程叫做 reconcile（调和），这个过程是可以打断的，由 scheduler 调度执行。</p>
-<p>React 的 diff 算法是分成两次遍历的：<br><strong>第一轮遍历</strong>，一一对比 vdom 和老的 fiber，如果 key 和 type 相同则认为该节点可以复用、处理下一个节点，否则就结束遍历。<br>如果所有的新的 vdom 处理完了，那就把剩下的老 fiber 节点删掉就行。<br>如果还有 vdom 没处理，那就进行第二次遍历；<br><strong>第二轮遍历</strong>，主要是解决节点移动的问题：遍历新的 vdom 节点，每一个都去看看这个节点在旧 fiber 链中的位置（旧位置），如果旧位置在最新固定节点的右边，说明这个节点位置不变，就是可复用，移动过来打上更新的标记，并成为新的固定节点；如果旧位置在最新固定节点的左边，当前这个节点的位置要往右挪。最后把剩下的老 fiber 删掉，剩下的新 vdom 新增。</p>
-<h4 id="React-列表渲染为什么要用-key？"><a href="#React-列表渲染为什么要用-key？" class="headerlink" title="React 列表渲染为什么要用 key？"></a>React 列表渲染为什么要用 key？</h4><p>diff 算法中通过 tag 和 key 来判断是否是同一个节点，因此必须用 key。且<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7099745927413366797">key 值最好不是 index</a>，因为列表依赖的数据长度可能会变化，而使用 index 作为 key 不能表征数据的变化，影响性能；在列表结构内部使用其他元素如 input 时 diff 算法会认为其没有发生变化，因此内部的数据也不会更新<br>key 值也不能是 random、不然会增加 diff 计算量<br>总结：</p>
-<ol>
-<li>减小 diff 算法计算量，提升渲染性能</li>
-<li>避免列表项有状态的组件状态混乱</li>
-</ol>
-<h2 id="React-并发机制"><a href="#React-并发机制" class="headerlink" title="React 并发机制"></a>React 并发机制</h2><p>允许 React 在渲染过程中根据任务的优先级进行调度和中断，从而确保高优先级的更新能够及时渲染</p>
-<h3 id="并发机制工作原理"><a href="#并发机制工作原理" class="headerlink" title="并发机制工作原理"></a>并发机制工作原理</h3><ul>
-<li>时间分片</li>
-<li>可中断渲染</li>
-<li>优先调度</li>
-</ul>
-<h3 id="并发启用方式"><a href="#并发启用方式" class="headerlink" title="并发启用方式"></a>并发启用方式</h3><p>要在 React 应用中启用并发模式，需要使用 createRoot API</p>
+<p>React 的 diff 算法是分成两次遍历的：<br><strong>第一轮遍历</strong>，一一对比 vdom 和老的 fiber，如果key和type相同则认为该节点可以复用、处理下一个节点，否则就结束遍历。<br>如果所有的新的 vdom 处理完了，那就把剩下的老 fiber 节点删掉就行。<br>如果还有 vdom 没处理，那就进行第二次遍历；<br><strong>第二轮遍历</strong>，主要是解决节点移动的问题：遍历新的 vdom 节点，每一个都去看看这个节点在旧fiber链中的位置（旧位置），如果旧位置在最新固定节点的右边，说明这个节点位置不变，就是可复用，移动过来打上更新的标记，并成为新的固定节点；如果旧位置在最新固定节点的左边，当前这个节点的位置要往右挪。最后把剩下的老 fiber 删掉，剩下的新 vdom 新增。</p>
+<h4 id="React列表渲染为什么要用key？"><a href="#React列表渲染为什么要用key？" class="headerlink" title="React列表渲染为什么要用key？"></a>React列表渲染为什么要用key？</h4><p>diff 算法中通过 tag 和 key 来判断是否是同一个节点，因此必须用 key。且<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7099745927413366797">key值最好不是 index</a>，因为列表依赖的数据长度可能会变化，而使用index作为key不能表征数据的变化，影响性能；在列表结构内部使用其他元素如input时diff算法会认为其没有发生变化，因此内部的数据也不会更新<br>key值也不能是random、不然会增加diff计算量</p>
 <h2 id="React-事件机制"><a href="#React-事件机制" class="headerlink" title="React 事件机制"></a>React 事件机制</h2><h3 id="事件机制特点（以-react-16-为例）"><a href="#事件机制特点（以-react-16-为例）" class="headerlink" title="事件机制特点（以 react 16 为例）"></a>事件机制特点（以 react 16 为例）</h3><ol>
 <li>在 jsx 文件中 onClick 或 onChange 绑定的事件处理函数,根本就没有注册到真实的 dom 上。是绑定在 document 上（react 17 以后是根节点上）统一管理的。</li>
 <li>真实的 dom 上的 click 事件被单独处理,已经被 react 底层替换成空函数。</li>
 <li>react 绑定的事件如 onChange，在 document 上，可能有多个事件与之对应。</li>
 <li>react 并不是一开始，把所有的事件都绑定在 document 上，而是采取了一种按需绑定，比如发现了 onClick 事件,再去绑定 document click 事件。</li>
 </ol>
-<p>总结：采用了合成事件，即将浏览器的原生事件统一封装，暴露给组件以保持一致的事件接口；以事件委托的方式处理事件，即在根节点（如 document 或根 DOM 节点）上监听所有事件</p>
 <h3 id="事件机制流程"><a href="#事件机制流程" class="headerlink" title="事件机制流程"></a>事件机制流程</h3><h4 id="注册合成事件"><a href="#注册合成事件" class="headerlink" title="注册合成事件"></a>注册合成事件</h4><p>构建初始化 React 合成事件和原生事件的对应关系，合成事件和对应的事件处理插件关系。</p>
 <h4 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h4><ol>
 <li>react dom 对应的 fiber 会在 memoizedProps 和 pendingProps 保存事件</li>
@@ -350,7 +301,7 @@
 <li>执行事件对应的处理插件中的 extractEvents，模拟事件捕获-&gt;事件源-&gt;事件冒泡这一过程。具体操作：<br>1）形成合成事件源对象<br>2）每次 React 会从事件源开始，从上遍历类型为 hostComponent 即 dom 类型的 fiber,判断 props 中是否有当前事件比如 onClick,对于冒泡阶段的事件(onClick)，将 push 到执行队列后面 ， 对于捕获阶段的事件(onClickCapture)，将 unShift 到执行队列的前面。最终形成一个事件执行队列。<br>3）将事件执行队列，保存到 React 事件源对象上。等待执行。</li>
 <li>runEventsInBatch 执行事件队列，如果发现阻止冒泡，那么 break 跳出循环，最后重置事件源，放回到事件池中，完成整个流程。</li>
 </ol>
-<h3 id="React-事件-vs-原生事件"><a href="#React-事件-vs-原生事件" class="headerlink" title="React 事件 vs 原生事件"></a>React 事件 vs 原生事件</h3><p>1）事件名称命名方式：原生事件为全小写，react 事件采用小驼峰<br>2）事件函数处理语法：原生事件为字符串，react 事件为函数<br>3）默认行为处理：react 事件不能采用 return false 的方式来阻止浏览器的默认行为，而必须要地明确地调用 preventDefault()来阻止默认行为<br>4）执行时机：两种事件同时存在时，如果合成事件和原生事件绑定在同一个元素上，会先执行原生事件，再执行 react 合成事件，因为 React 的合成事件绑定在父节点上（事件委托），而原生事件直接绑定在元素上；如果合成事件绑定在 React 组件中，而原生事件绑定在其父元素上，合成事件会先触发，因为 React 的事件委托机制优先处理合成事件。<br>5）阻止冒泡行为的影响：原生事件（阻止冒泡）会阻止合成事件的执行，react 合成事件（阻止冒泡）不会阻止原生事件的执行</p>
+<h3 id="React-事件-vs-原生事件"><a href="#React-事件-vs-原生事件" class="headerlink" title="React 事件 vs 原生事件"></a>React 事件 vs 原生事件</h3><p>1）事件名称命名方式：原生事件为全小写，react 事件采用小驼峰<br>2）事件函数处理语法：原生事件为字符串，react 事件为函数<br>3）默认行为处理：react 事件不能采用 return false 的方式来阻止浏览器的默认行为，而必须要地明确地调用 preventDefault()来阻止默认行为<br>4）执行时机：两种事件同时存在时会先执行原生事件，再执行 react 合成事件<br>5）阻止冒泡行为的影响：原生事件（阻止冒泡）会阻止合成事件的执行，react 合成事件（阻止冒泡）不会阻止原生事件的执行</p>
 <h3 id="react-使用合成事件的优点"><a href="#react-使用合成事件的优点" class="headerlink" title="react 使用合成事件的优点"></a>react 使用合成事件的优点</h3><ol>
 <li>兼容所有浏览器，更好的跨平台；</li>
 <li>将事件统一存放在一个数组，避免频繁的新增与删除（垃圾回收）。</li>
@@ -359,12 +310,8 @@
 <h2 id="React-Fiber"><a href="#React-Fiber" class="headerlink" title="React Fiber"></a>React Fiber</h2><p>React Fiber 并不是真正意义上的纤程（微线程、协程），而是一种基于浏览器的单线程调度算法：在这个过程中，React 渲染的过程可以被中断，可以将控制权交回浏览器，让位给高优先级的任务，浏览器空闲后再恢复渲染。该算法依赖 requestIdleCallback（在一帧时间 16ms (1000ms &#x2F; 60)内，如果浏览器处理完包括用户输入、js 执行、动画、布局、绘制的任务之后，还有盈余时间，浏览器就会调用 requestIdleCallback 的回调）。</p>
 <p>React V15 在渲染时，会递归比对 VirtualDOM 树，找出需要变动的节点，然后同步更新它们。在这个过程期间更新不能中断， 由于 React 占据着浏览器资源，用户触发的事件无法得到响应，导致用户感觉到卡顿。</p>
 <p>而 Fiber 是一种将 reconciliation （递归 diff），拆分成无数个小任务的算法；它随时能够停止，恢复。</p>
-<h3 id="为什么-react-需要-fiber-，vue-不需要？"><a href="#为什么-react-需要-fiber-，vue-不需要？" class="headerlink" title="为什么 react 需要 fiber ，vue 不需要？"></a>为什么 react 需要 fiber ，vue 不需要？</h3><ul>
-<li>react 更新组件，自顶向下，该组件以及它的子组件全部需要渲染。 vue 更新组件，通过 get、set 准确定位到视图</li>
-<li>react 因为先天的不足——无法精确更新，所以需要 react fiber 把组件渲染工作切片；而 vue 基于数据劫持，更新粒度很小，没有这个压力；</li>
-<li>react fiber 这种数据结构使得节点可以回溯到其父节点，只要保留下中断的节点索引，就可以恢复之前的工作进度</li>
-</ul>
-<h2 id="React-class-组件"><a href="#React-class-组件" class="headerlink" title="React class 组件"></a>React class 组件</h2><h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><p><img src="/unknown404.github.io/img/life-cycle-detail.jpeg" srcset="/unknown404.github.io/img/loading.gif" lazyload><br>react 16.4 以上的生命周期如图所示，列举了常用的生命周期函数，主要分为 3 个阶段</p>
+<h2 id="React-class-组件"><a href="#React-class-组件" class="headerlink" title="React class 组件"></a>React class 组件</h2><h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><div class="figure center" style="width:;"><img class="fig-img" src="life-cycle-detail.jpeg" alt=""></div><div style="clear:both;"></div>
+<p>react 16.4 以上的生命周期如图所示，列举了常用的生命周期函数，主要分为 3 个阶段</p>
 <h4 id="挂载阶段"><a href="#挂载阶段" class="headerlink" title="挂载阶段"></a>挂载阶段</h4><ul>
 <li><strong>constructor</strong>：进行 state 的初始化，给事件处理方法绑定 this</li>
 <li><strong>getDerivedStateFromProps</strong>：静态方法，会返回一个对象用于更新 state、或者返回 null 不更新。在接收到新的 props 或者调用了 setState 和 forceUpdate 时该函数会被调用。</li>
@@ -421,464 +368,350 @@
 </tbody></table>
 <p>因为 Reconciliation 阶段是可以被打断的，所以 Reconciliation 阶段会执行的生命周期函数就可能会出现调用多次的情况，从而引起 Bug。由此对于 Reconciliation 阶段调用的几个函数，除了 shouldComponentUpdate 以外，其他都应该避免去使用。</p>
 <h3 id="适合做异步请求的生命周期"><a href="#适合做异步请求的生命周期" class="headerlink" title="适合做异步请求的生命周期"></a>适合做异步请求的生命周期</h3><p>componentDidmount</p>
-<h3 id="setState"><a href="#setState" class="headerlink" title="setState"></a>setState</h3><h4 id="setState-用法"><a href="#setState-用法" class="headerlink" title="setState 用法"></a>setState 用法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-title function_">setState</span>(object nextState[, <span class="hljs-keyword">function</span> callback])<br></code></pre></td></tr></table></figure>
-
+<h3 id="setState"><a href="#setState" class="headerlink" title="setState"></a>setState</h3><h4 id="setState用法"><a href="#setState用法" class="headerlink" title="setState用法"></a>setState用法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">setState</span>(object nextState[, <span class="keyword">function</span> callback])</span><br></pre></td></tr></table></figure>
 <p>传入的参数包括：</p>
 <ul>
-<li>nextState，对象属性。将要设置的新状态，该状态会和当前的 state 合并</li>
-<li>callback，回调函数。可选参数。该函数会在 setState 设置成功，且组件重新渲染后调用。等价于在 componentDidUpdate 生命周期内执行。在这个回调函数中你可以拿到更新后 state 的值。</li>
+<li>nextState，对象属性。将要设置的新状态，该状态会和当前的state合并</li>
+<li>callback，回调函数。可选参数。该函数会在setState设置成功，且组件重新渲染后调用。等价于在 componentDidUpdate 生命周期内执行。在这个回调函数中你可以拿到更新后 state 的值。<h4 id="setState调用流程"><a href="#setState调用流程" class="headerlink" title="setState调用流程"></a>setState调用流程</h4>setState方法会将将新的 state 放进组件的状态队列里，等待合适的时机，批量更新state，重新构建 React 元素树并且着手重新渲染整个UI界面。<h4 id="setState同步还是异步"><a href="#setState同步还是异步" class="headerlink" title="setState同步还是异步"></a>setState同步还是异步</h4>setState 并不是单纯同步&#x2F;异步的，它的表现会因调用场景的不同而不同。在源码中，通过 isBatchingUpdates 来判断setState 是先存进 state 队列还是直接更新，如果值为 true 则执行异步操作，为 false 则直接更新。</li>
 </ul>
-<h4 id="setState-调用流程"><a href="#setState-调用流程" class="headerlink" title="setState 调用流程"></a>setState 调用流程</h4><p>setState 方法会将将新的 state 放进组件的状态队列里，等待合适的时机，批量更新 state，重新构建 React 元素树并且着手重新渲染整个 UI 界面。</p>
-<h4 id="setState-同步还是异步"><a href="#setState-同步还是异步" class="headerlink" title="setState 同步还是异步"></a>setState 同步还是异步</h4><p>setState 并不是单纯同步&#x2F;异步的，它的表现会因调用场景的不同而不同。在源码中，通过 isBatchingUpdates 来判断 setState 是先存进 state 队列还是直接更新，如果值为 true 则执行异步操作，为 false 则直接更新。</p>
 <p>“异步”并不是说内部由异步代码实现，其实本身执行的过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致在合成事件和钩子函数中没法立马拿到更新后的值。</p>
 <p>异步： 在 React 可以控制的地方，就为 true，比如在 React 生命周期事件和合成事件中，都会走合并操作，延迟更新的策略。<br>同步： 在 React 无法控制的地方，比如原生事件，具体就是在 addEventListener 、setTimeout、setInterval 等事件中，就只能同步更新。</p>
-<h2 id="React-函数组件"><a href="#React-函数组件" class="headerlink" title="React 函数组件"></a>React 函数组件</h2><h3 id="hook-原理"><a href="#hook-原理" class="headerlink" title="hook 原理"></a>hook 原理</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-comment">// react-reconciler/src/ReactFiberHooks.js</span><br><span class="hljs-keyword">export</span> type <span class="hljs-title class_">Hook</span> = &#123;<br>  <span class="hljs-attr">memoizedState</span>: any, <span class="hljs-comment">// 最新的状态值</span><br>  <span class="hljs-attr">baseState</span>: any, <span class="hljs-comment">// 初始状态值，如`useState(0)`，则初始值为0</span><br>  <span class="hljs-attr">baseUpdate</span>: <span class="hljs-title class_">Update</span>&lt;any, any&gt; | <span class="hljs-literal">null</span>,<br>  <span class="hljs-attr">queue</span>: <span class="hljs-title class_">UpdateQueue</span>&lt;any, any&gt; | <span class="hljs-literal">null</span>, <span class="hljs-comment">// 临时保存对状态值的操作，更准确来说是一个链表数据结构中的一个指针</span><br>  <span class="hljs-attr">next</span>: <span class="hljs-title class_">Hook</span> | <span class="hljs-literal">null</span>,  <span class="hljs-comment">// 指向下一个链表节点</span><br>&#125;;<br></code></pre></td></tr></table></figure>
-
-<p>hooks 的实现就是基于 fiber 的，会在 fiber 节点上放一个链表，节点的结构如上面的 Hook 所示。React Hooks 是用链表来保存状态的，memoizedState 属性保存的实际上是这个链表的头指针。<br>每个 useXxx 的 hooks 都有 mountXxx 和 updateXxx 两个阶段，mount 阶段在节点的 memorizedState 属性上存放了对应的数据，然后 update 阶段使用不同的 hooks api 使用对应的数据来完成更新的功能。较为简单的钩子函数如 useRef、useCallback、useMemo，它们只是对值做了缓存；而复杂的钩子如 useState、useEffect 则会涉及 fiber 的空闲调度</p>
-<p>总结：React Hooks 的状态和副作用绑定在 Fiber 节点 上，Fiber 控制 Hooks 在组件中以固定顺序调用</p>
-<h3 id="class-与-hook-区别"><a href="#class-与-hook-区别" class="headerlink" title="class 与 hook 区别"></a>class 与 hook 区别</h3><p><strong>类组件</strong>的根基是 OOP（面向对象编程），所以它有继承、有属性、有内部状态的管理。<br><strong>函数组件</strong>的根基是 FP，也就是函数式编程。它属于“结构化编程”的一种，与数学函数思想类似。也就是假定输入与输出存在某种特定的映射关系，那么输入一定的情况下，输出必然是确定的。</p>
-<ul>
-<li>类组件是可以实现继承的，而函数组件缺少继承的能力。继承比较黑盒，不建议采用。组合优于继承</li>
-<li>类组件 this 模糊性</li>
-<li>函数式组件写法简单，无生命周期函数，类组件划分了明确的生命周期</li>
-<li>类组件在涉及状态管理时代码会显得很复杂，函数式相比之下简单点</li>
-</ul>
-<h3 id="useState-要使用数组而不是对象"><a href="#useState-要使用数组而不是对象" class="headerlink" title="useState 要使用数组而不是对象"></a>useState 要使用数组而不是对象</h3><p>数组解构可以重命名</p>
-<ul>
-<li>如果 useState 返回的是数组，那么使用者可以对数组中的元素命名，代码看起来也比较干净</li>
-<li>如果 useState 返回的是对象，在解构对象的时候必须要和 useState 内部实现返回的对象同名，想要使用多次的话，必须得设置别名才能使用返回值</li>
-</ul>
-<h3 id="为何-Hooks-不能放在条件或循环之内？"><a href="#为何-Hooks-不能放在条件或循环之内？" class="headerlink" title="为何 Hooks 不能放在条件或循环之内？"></a>为何 Hooks 不能放在条件或循环之内？</h3><p>React 内部在执行函数组件时，会维护一个“Hook 调用栈”（本质上是一个数组）。每次组件重新渲染时，React 会根据调用顺序，把 hooks[0] 赋给第一个 useState，hooks[1] 赋给第二个。顺序一旦变了，整个状态系统就乱了。</p>
-<h2 id="组件间通信"><a href="#组件间通信" class="headerlink" title="组件间通信"></a>组件间通信</h2><h3 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h3><p>父组件-&gt;子组件：通过 props 传递数据给子组件<br>子组件-&gt;父组件：子组件通过调用父组件传来的函数传递数据给父组件</p>
+<h2 id="React函数组件"><a href="#React函数组件" class="headerlink" title="React函数组件"></a>React函数组件</h2><h2 id="组件间通信"><a href="#组件间通信" class="headerlink" title="组件间通信"></a>组件间通信</h2><h3 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h3><p>父组件-&gt;子组件：通过 props 传递数据给子组件<br>子组件-&gt;父组件：子组件通过调用父组件传来的函数传递数据给父组件</p>
 <h3 id="兄弟组件通信"><a href="#兄弟组件通信" class="headerlink" title="兄弟组件通信"></a>兄弟组件通信</h3><p>可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。</p>
-<h3 id="跨多层次组件通信"><a href="#跨多层次组件通信" class="headerlink" title="跨多层次组件通信"></a>跨多层次组件通信</h3><p>可以使用 Context API</p>
-<ul>
-<li>React.createContext 会创建一个 Context 对象，每个 Context 对象都会返回一个 Provider React 组件，它允许消费组件订阅 context 的变化。Provider 接收一个 value 属性，传递给消费组件。</li>
-<li>Context 对象的 Consumer 组件可以接收当前的 context 值，并返回一个 React 节点。传递给函数的 value 值等价于组件树上方离这个 context 最近的 Provider 提供的 value 值。如果没有对应的 Provider，value 参数等同于传递给 createContext() 的 defaultValue。</li>
-<li>挂载在 class 上的 contextType 属性可以赋值为由 React.createContext() 创建的 Context 对象。此属性可以让你使用 this.context 来获取最近 Context 上的值。</li>
-</ul>
+<h3 id="跨多层次组件通信"><a href="#跨多层次组件通信" class="headerlink" title="跨多层次组件通信"></a>跨多层次组件通信</h3><p>可以使用Context API</p>
 <h3 id="任意组件"><a href="#任意组件" class="headerlink" title="任意组件"></a>任意组件</h3><p>可以通过 Redux 或者 Event Bus 解决，另外如果你不怕麻烦的话，可以使用这种方式解决上述所有的通信情况</p>
-<h2 id="React-生态"><a href="#React-生态" class="headerlink" title="React 生态"></a>React 生态</h2><h3 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h3><h4 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h4><ul>
-<li>state：数据源存放位置</li>
-<li>action：定义分发行为</li>
-<li>dispatch：分发 action 的函数</li>
-<li>reducer：处理 action 的函数，返回新的 state</li>
-</ul>
-<h4 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h4><ul>
-<li>首先，用户（通过 View）发出 Action，发出方式就用到了 dispatch 方法</li>
-<li>然后，Store 自动调用 Reducer，并且传入两个参数：当前 State 和收到的 Action，Reducer 会返回新的 State</li>
-<li>State—旦有变化，Store 就会调用监听函数，通过 mapStateToProps 将新 state 传给组件来更新 View</li>
-</ul>
-<p>Redux 实现示例：</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs JSX"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">ReactDOM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-dom&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Provider</span>, connect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-redux&#x27;</span>;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">React.Component</span>&#123;<br>    <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-keyword">let</span> &#123; text, click, clickR &#125; = <span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>;<br>        <span class="hljs-keyword">return</span>(<br>            <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>数据:已有人&#123;text&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;click&#125;</span>&gt;</span>加人<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;clickR&#125;</span>&gt;</span>减人<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>        )<br>    &#125;<br>&#125;<br><span class="hljs-keyword">const</span> initialState = &#123;<br>    <span class="hljs-attr">text</span>:<span class="hljs-number">5</span><br>&#125;<br><span class="hljs-keyword">const</span> reducer = <span class="hljs-keyword">function</span>(<span class="hljs-params">state,action</span>)&#123;<br>    <span class="hljs-keyword">switch</span>(action.<span class="hljs-property">type</span>)&#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD&#x27;</span>:<br>            <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">text</span>:state.<span class="hljs-property">text</span>+<span class="hljs-number">1</span>&#125;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;REMOVE&#x27;</span>:<br>            <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">text</span>:state.<span class="hljs-property">text</span>-<span class="hljs-number">1</span>&#125;<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> initialState;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> <span class="hljs-variable constant_">ADD</span> = &#123;<br>    <span class="hljs-attr">type</span>:<span class="hljs-string">&#x27;ADD&#x27;</span><br>&#125;<br><span class="hljs-keyword">let</span> <span class="hljs-title class_">Remove</span> = &#123;<br>    <span class="hljs-attr">type</span>:<span class="hljs-string">&#x27;REMOVE&#x27;</span><br>&#125;<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer);<br><br><span class="hljs-keyword">let</span> mapStateToProps = <span class="hljs-keyword">function</span> (<span class="hljs-params">state</span>)&#123;<br>    <span class="hljs-keyword">return</span>&#123;<br>        <span class="hljs-attr">text</span>:state.<span class="hljs-property">text</span><br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> mapDispatchToProps = <span class="hljs-keyword">function</span>(<span class="hljs-params">dispatch</span>)&#123;<br>    <span class="hljs-keyword">return</span>&#123;<br>        <span class="hljs-attr">click</span>:<span class="hljs-function">()=&gt;</span><span class="hljs-title function_">dispatch</span>(<span class="hljs-variable constant_">ADD</span>),<br>        <span class="hljs-attr">clickR</span>:<span class="hljs-function">()=&gt;</span><span class="hljs-title function_">dispatch</span>(<span class="hljs-title class_">Remove</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">App</span> = <span class="hljs-title function_">connect</span>(mapStateToProps,mapDispatchToProps)(<span class="hljs-title class_">App</span>);<br><br><span class="hljs-title class_">ReactDOM</span>.<span class="hljs-title function_">render</span>(<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span> = <span class="hljs-string">&#123;store&#125;</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">App</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">App</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>,<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;root&#x27;</span>)<br>)<br></code></pre></td></tr></table></figure>
+<h2 id="React-生态"><a href="#React-生态" class="headerlink" title="React 生态"></a>React 生态</h2><h3 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h3><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7068649069610024974">React 事件机制</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6955636911214067720">「react 进阶」一文吃透 react 事件系统原理</a><br>（3）<a target="_blank" rel="noopener" href="https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/">react 生命周期</a><br>（4）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6940942549305524238">「2021」高频前端面试题汇总之React篇（下）</a><br>（5）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7131741751152214030">图解 React 的 diff 算法：核心就两个字 —— 复用</a><br>（6）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6919302952486174733">深入理解React Diff算法</a></p>
 
-<h4 id="Redux-中异步的请求怎么处理"><a href="#Redux-中异步的请求怎么处理" class="headerlink" title="Redux 中异步的请求怎么处理"></a>Redux 中异步的请求怎么处理</h4><p>使用 react-thunk 中间件</p>
-<ol>
-<li>store 配置中间件</li>
-</ol>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs JSX"><span class="hljs-keyword">import</span> thunk <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-thunk&#x27;</span>;<br><span class="hljs-keyword">import</span> reducer <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducer&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; createStore, applyMiddleware, combineReducers &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">getClientStore</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>    <span class="hljs-keyword">const</span> defaultState = <span class="hljs-variable language_">window</span>.<span class="hljs-property">__context__</span>.<span class="hljs-property">state</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">createStore</span>(reducer, defaultState, <span class="hljs-title function_">applyMiddleware</span>(thunk.<span class="hljs-title function_">withExtraArgument</span>(clientRequest)));<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>添加一个返回 action 的函数，内部调用异步接口</li>
-</ol>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  发送get请求，并生成相应action，更新store的函数</span><br><span class="hljs-comment">  <span class="hljs-doctag">@param</span> url &#123;string&#125; 请求地址</span><br><span class="hljs-comment">  <span class="hljs-doctag">@param</span> func &#123;function&#125; 真正需要生成的action对应的actionCreator</span><br><span class="hljs-comment">  <span class="hljs-doctag">@return</span> &#123;<span class="hljs-type">function</span>&#125;</span><br><span class="hljs-comment">*/</span><br><span class="hljs-comment">// dispatch为自动接收的store.dispatch函数</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">getHttpAction</span> = (<span class="hljs-params">url, func</span>) =&gt; <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> &#123;<br>    axios.<span class="hljs-title function_">get</span>(url).<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>)&#123;<br>        <span class="hljs-keyword">const</span> action = <span class="hljs-title function_">func</span>(res.<span class="hljs-property">data</span>)<br>        <span class="hljs-title function_">dispatch</span>(action)<br>    &#125;)<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>分发 action</li>
-</ol>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs JSX"><span class="hljs-title function_">componentDidMount</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">var</span> action = <span class="hljs-title function_">getHttpAction</span>(<span class="hljs-string">&#x27;/getData&#x27;</span>, getInitTodoItemAction)<br>    <span class="hljs-comment">// 发送函数类型的action时，该action的函数体会自动执行</span><br>    store.<span class="hljs-title function_">dispatch</span>(action)<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>react-saga 也是处理异步的中间件，允许你在独立的 saga 文件中集中处理异步逻辑，相比 react-thunk 更适合复杂异步逻辑和流程控制的大型项目。</p>
-<h3 id="DVA"><a href="#DVA" class="headerlink" title="DVA"></a>DVA</h3><p>基于 redux 和 redux-saga 的数据流方案，dva 额外内置了 react-router 和 fetch 简化开发</p>
-<h4 id="相关概念-1"><a href="#相关概念-1" class="headerlink" title="相关概念"></a>相关概念</h4><ul>
-<li>State 数据，通常为一个 JavaScript 对象，操作的时候每次都要当作不可变数据（immutable data）来对待，保证每次都是全新对象，没有引用关系，这样才能保证 State 的独立性，便于测试和追踪变化。</li>
-<li>Action 行为，一个普通 JavaScript 对象，它是改变 State 的唯一途径。</li>
-<li>dispatch，一个用于触发 action 改变 State 的函数。</li>
-<li>Reducer 描述如何改变数据的纯函数，接受两个参数：已有结果和 action 传入的数据，通过运算得到新的 state。</li>
-<li>Effects（Side Effects） 副作用，常见的表现为异步操作。dva 为了控制副作用的操作，底层引入了 redux-sagas 做异步流程控制，由于采用了 generator 的相关概念，所以将异步转成同步写法，从而将 effects 转为纯函数。</li>
-<li>Connect 一个函数，绑定 State 到 View</li>
-</ul>
-<h4 id="实践示例"><a href="#实践示例" class="headerlink" title="实践示例"></a>实践示例</h4><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs JSX"><br><span class="hljs-comment">// 创建应用</span><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">dva</span>();<br>app.<span class="hljs-title function_">use</span>(<span class="hljs-title function_">createLoading</span>()) <span class="hljs-comment">// 使用插件</span><br><span class="hljs-comment">// 注册 Model</span><br>app.<span class="hljs-title function_">model</span>(&#123;<br>  <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;count&#x27;</span>,<br>  <span class="hljs-attr">state</span>: <span class="hljs-number">0</span>,<br>  <span class="hljs-attr">reducers</span>: &#123;<br>    <span class="hljs-title function_">add</span>(<span class="hljs-params">state</span>) &#123; <span class="hljs-keyword">return</span> state + <span class="hljs-number">1</span> &#125;,<br>  &#125;,<br>  <span class="hljs-attr">effects</span>: &#123;<br>    *<span class="hljs-title function_">addAfter1Second</span>(<span class="hljs-params">action, &#123; call, put &#125;</span>) &#123;<br>      <span class="hljs-keyword">yield</span> <span class="hljs-title function_">call</span>(delay, <span class="hljs-number">1000</span>);<br>      <span class="hljs-keyword">yield</span> <span class="hljs-title function_">put</span>(&#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;add&#x27;</span> &#125;);<br>    &#125;,<br>  &#125;,<br>&#125;);<br><span class="hljs-comment">// 注册视图</span><br>app.<span class="hljs-title function_">router</span>(<span class="hljs-function">() =&gt;</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ConnectedApp</span> /&gt;</span></span>);<br><span class="hljs-comment">// 启动应用</span><br>app.<span class="hljs-title function_">start</span>(<span class="hljs-string">&#x27;#root&#x27;</span>);<br></code></pre></td></tr></table></figure>
-
-<h4 id="辨析：Redux-vs-DVA"><a href="#辨析：Redux-vs-DVA" class="headerlink" title="辨析：Redux vs DVA"></a>辨析：Redux vs DVA</h4><ul>
-<li>异步实现：Redux 需要借助中间件如 redux-thunk、redux-saga，dva 提供了 effects 函数处理</li>
-<li>路由管理：Redux 不直接处理路由相关的功能，DVA 提供了对路由的内建支持</li>
-<li>管理模型：在 Redux 中，store 和 actions 是应用状态管理的核心，DVA 引入了 model 的概念，将 state、reducers、effects（异步逻辑）和 subscriptions（订阅）集成在一起</li>
-</ul>
-<h3 id="React-SSR"><a href="#React-SSR" class="headerlink" title="React SSR"></a>React SSR</h3><p>代表框架：Next.js<br>特点：服务器端渲染 HTML 字符串并注入数据状态，在首次加载时生成完整页面的 DOM 结构，并在客户端接手后增强交互性。这样不仅能提高 SEO 性能，还改善了页面的首屏渲染体验。</p>
-<h3 id="React-项目优化"><a href="#React-项目优化" class="headerlink" title="React 项目优化"></a>React 项目优化</h3><ul>
-<li>使用 useMemo 缓存变量</li>
-<li>使用 useCallback 缓存函数</li>
-<li>循环添加 key, key 最好用数组项的唯一值，不推荐用 index</li>
-</ul>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7068649069610024974">React 事件机制</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6955636911214067720">「react 进阶」一文吃透 react 事件系统原理</a><br>（3）<a target="_blank" rel="noopener" href="https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/">react 生命周期</a><br>（4）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6940942549305524238">「2021」高频前端面试题汇总之 React 篇（下）</a><br>（5）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7131741751152214030">图解 React 的 diff 算法：核心就两个字 —— 复用</a><br>（6）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6919302952486174733">深入理解 React Diff 算法</a><br>（7）<a target="_blank" rel="noopener" href="https://alexjjwu.fun/web/docs/alexwjj/fe-study/">React</a><br>（8）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6963466553601835044">一文彻底搞懂 DvaJS 原理</a><br>（9）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7075701341997236261">React Hooks 的原理，有的简单有的不简单</a></p>
-
-                
-              </div>
             
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
 
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-  <a href="/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" class="category-chain-item">前端基础</a>
-  
-  
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/React/" rel="tag">React</a>
 
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/unknown404.github.io/tags/React/">#React</a>
-      
-    </div>
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>React</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/06/09/React/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>小白的文件整理箱</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年6月9日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
-
-
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/06/18/mobileBrowser/" title="移动端开发的踩坑经历">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">移动端开发的踩坑经历</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/06/07/HTML/" title="HTML/CSS">
-                        <span class="hidden-mobile">HTML/CSS</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
             </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/18/mobileBrowser/"
+                    data-tooltip="移动端开发的踩坑经历"
+                    aria-label="上一篇: 移动端开发的踩坑经历"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/07/HTML/"
+                    data-tooltip="HTML/CSS"
+                    aria-label="下一篇: HTML/CSS"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/18/mobileBrowser/"
+                    data-tooltip="移动端开发的踩坑经历"
+                    aria-label="上一篇: 移动端开发的踩坑经历"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/07/HTML/"
+                    data-tooltip="HTML/CSS"
+                    aria-label="下一篇: HTML/CSS"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/06/09/React/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
 
             
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header">
-    <i class="iconfont icon-list"></i>
-    <span>目录</span>
-  </p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
+        
 
 
     
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
+        
     
 
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
         </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
 </div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
 
     
 
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unknown404.github.io/js/events.js" ></script>
-<script  src="/unknown404.github.io/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
 
 
 
-
-  
-    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
-  
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script  src="/unknown404.github.io/js/local-search.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unknown404.github.io/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
+    </body>
 </html>

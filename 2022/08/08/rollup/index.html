@@ -1,291 +1,262 @@
 
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
+<html lang="zh-cn">
+    
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="小白的文件整理箱">
-  <meta name="keywords" content="">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>rollup打包工具使用 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"rollup 使用指南和相关知识梳理。\n\n\n\nrollup 概述rollup 是一个 js 模块打包器。与 webpack 相比，rollup 更适合打包库，而 webpack 适合打包项目；同体积的代码条件下 rollup 打包的代码体检要小于 webpack。rollup 对于代码的 Tree-shaking 和 ES6 模块有着先天的算法优势上的支持，而 webpack 在代码分割、静态资源导入及热模块替换(HMR)有着更多优势。\nrollup 使用安装 rollup 工具创建一个新的空工程，打开命令行执行npm install --global rollup 指令。指令执行完成后项目的结构变为：\n12├── node_modules└── package.json\n\n此时工程里已经预装了一些插件，允许我们用 cli 命令来打包。但复杂的工程中这种方式就比较麻烦。所以需要配置文件。\n配置打包文件1234567891011121314151617181920212223242526272829303132333435import babel from &quot;@rollup/plugin-babel&quot;;import commonjs from &quot;rollup-plugin-commonjs&quot;;import resolve from &quot;@rollup/plugin-node-resolve&quot;;import size from &quot;rollup-plugin-sizes&quot;;import &#123; terser &#125; from &quot;rollup-plugin-terser&quot;;import cleanup from &quot;rollup-plugin-cleanup&quot;;export default &#123;  input: &quot;./index.js&quot;,  output: [    &#123;      file: &quot;./dist/dofin.js&quot;,      format: &quot;umd&quot;,      name: &quot;DOFIN&quot;,    &#125;,    &#123;      file: &quot;./dist/dofin.min.js&quot;,      format: &quot;iife&quot;,      name: &quot;DOFIN&quot;,      plugins: [terser()],    &#125;,  ],  plugins: [    resolve(),    size(),    cleanup(&#123;      comments: &quot;none&quot;,    &#125;),    babel(&#123;      babelHelpers: &quot;runtime&quot;,      exclude: &quot;node_modules/**&quot;,    &#125;),    commonjs(),  ],&#125;;\n\n以上述某一配置文件 rollup.config.js 为例，该文件通常需要需要的核心参数包括：\ninput打包文件入口\noutput文件输出配置\n\nfile 表示输出文件的路径\nformat 表示输出的格式\nname 当 format 为 iife 和 umd 时必须提供，将作为全局变量挂在 window(浏览器环境)下：window.A&#x3D;…\n\nplugins使用的插件\nexternal使用的外部依赖，不会被打包进输出文件\nglobal123global:&#123;    &#x27;jquery&#x27;:&#x27;$&#x27; //告诉rollup 全局变量$即是jquery&#125;\n\n执行打包指令可以直接在执行终端输入rollup -c默认执行 rollup.config.js 文件，也可以在 package.json 文件里的 scripts 属性配置指令：\n1234567891011121314&#123;  &quot;scripts&quot;: &#123;    &quot;build-browser&quot;: &quot;rollup --config browser.rollup.config.js &quot;,、  &#125;,  &quot;dependencies&quot;: &#123;    &quot;@babel/runtime&quot;: &quot;^7.14.6&quot;,    &quot;@rollup/plugin-json&quot;: &quot;^4.1.0&quot;,    &quot;rollup-plugin-cleanup&quot;: &quot;^3.2.1&quot;,    &quot;rollup-plugin-sizes&quot;: &quot;^1.0.4&quot;,    &quot;tti-polyfill&quot;: &quot;^0.2.2&quot;  &#125;&#125;\n\nrollup 指令命令行常用的参数包括：\n\n-c。指定 rollup 的配置文件。\n-w。监听源文件是否有改动，如果有改动，重新打包。\n-f。-f 参数是–format 的缩写，它表示生成代码的格式。\n-o。-o 指定了输出的路径执行npm run build-browser即可打包完成，控制台会显示输出结果\n\n输出代码格式说明通过配置文件，我们可以指定其输出 amd , cjs , esm , iife , umd , system 六种格式的文件。\namd“Asynchronous Module Definition”的缩写，意思就是”异步模块定义”。打包后的代码其核心内容是一个全局方法 define。\ndefine 方法可以有三个入参，以文章说不清 rollup 能输出哪 6 种格式 😥 差点被鄙视中的代码为例，分别是：\n\n模块名称 Test，如果没有指定不会出现\n[exports, lodash] 分别表示模块的输出和外部依赖\n代表模块的实际内容的一个匿名函数，一个以 exports 和 lodash 作为入参的方法。\n\n运行方法调用打包后的模块内容时，需要执行以下操作：\n\n在浏览器内引入 require.js\n通过 requirejs.config 方法定义全局的依赖\n通过 requirejs.define 注册模块\n通过 requirejs() 完成模块引入\n\n适合场景只需要在浏览器端使用的场景。\ncjsCommonJS 标准。是为了解决 node.js 在模块化上的缺失， 于 2009 年 10 月提出。所以并不能用于浏览器上。\n运行方法js 文件里使用 require 方法引入打包文件\n适合场景只需要在服务器端使用的场景。\nesm遵循 es6 模块化语法，通过 export 命令显式指定输出的代码，再通过 import 命令输入。\n运行方法如果需要在浏览器上使用，需要用&lt;script type=&quot;module&quot;&gt;标签才能支持模块引入语法，用import ... from ...导入代码。\n适合场景\n还会被引用、二次编译的场景（如组件库等）\n浏览器调试场景如 vite.js 的开发时\n对浏览器兼容性非常宽松的场景。\n\niifeIIFE 的全称是 “immediately invoked function expression”，即自执行函数。打包出来是一个匿名函数，对外部的依赖通过入参的形式传入该函数\n运行方法如果它没有其他依赖，只需要去引入文件，然后在 window 上取打包时命名的模块名即可。\njquery 就是典型的自执行函数模式，当你引入http://cdn.bootcss.com/jquery/3.3.1/jquery.min.js文件后，它就会挂在到 window.$ 上，可以直接在 js 文件使用 jquery 语法如$(&#39;.input&#39;).addClass(&#39;test&#39;)\n特点优点：\n\n通过闭包营造了一个“私有”命名空间，防止影响全局，并防止被从外部修改私有变量。\n简单易懂\n对代码体积的影响不大缺点：\n输出的变量可能影响全局变量；引入依赖包时依赖全局变量。\n需要使用者自行维护 script 标签的加载顺序。\n\n适合场景适合部分场景作为 SDK 进行使用，尤其是需要把自己挂到 window 上的场景。\numdumd 主要是处理兼容性问题，可以让模块同时兼容让模块同时兼容 AMD、CommonJs 和浏览器变量挂载的规范。\n运行方法\n在浏览器端，它的运行方式可以和 amd 完全一致，也可以采用 iife 的调用方式\n在 node.js 端，它则和 CommonJS 的运行方式完全一致\n\n适合场景既可能在浏览器端也可能在 node.js 里使用的场景\nsystem采用了 SystemJS 代码语法。由于很少使用该语法，这里暂时不展开。\n常用插件resolve 插件安装指令1npm i -D @rollup/plugin-node-resolve\n\n注释\n123 i  是 install 的简写-S 就是 --save 的简写，安装的插件会被写入到 dependencies 区块里面去，在生产环境也存在对该包的依赖-D 就是 --save-dev 的简写， 安装的插件会被写入到 devDependencies 域里面去，即插件只用于开发环境\n\n作用将我们编写的源码与依赖的第三方库代码进行合并，打包后的代码里会出现引用模块的代码。在使用 resolve 模块下，如果希望依赖的模块不被打包，保持外部引用状态时，就需要 config 文件使用 external 属性，来告诉 rollup.js 哪些是外部的类库。\ncommonJs 插件安装指令1npm i -D @rollup/plugin-commonjs\n\n作用rollup 编译源码中的模块引用默认只支持 ES6+的模块方式 import&#x2F;export。然而大量的 npm 模块是基于 CommonJS 模块方式，为支持这些模块的引入，支持 commonjs 语法的插件应运而生。\nbabel 插件安装指令1npm i -D @rollup/plugin-babel\n\n安装完成后在根目录文件夹下添加.babelrc 文件，配置内容\n12345678910111213&#123;  // 开启默认预设  &quot;presets&quot;: [    [      &quot;@babel/env&quot;,      &#123;        &quot;modules&quot;: false  // 关闭 esm 转化，统一交由 rollup 处理，防止冲突      &#125;    ]  ],  &quot;plugins&quot;: [&quot;@babel/plugin-transform-runtime&quot;]&#125;\n\n完成后安装插件安装@babel&#x2F;core 和 @babel&#x2F;preset-env\n作用将代码中的 es6 语法转为 es5，防止打包后的模块在部分浏览器中无法正常运行\ntypescript 插件安装指令1npm i -D @rollup/plugin-typescript\n\n该模块依赖于 tslib 和 typescript 模块，所以还需要再安装这两个组件。安装完后还需我们新建 tsconfig 配置，完成后才可在 package.json 的 plugins 配置该插件\n作用可以编译打包 ts 文件\nterser 插件安装指令1npm i -D rollup-plugin-terser\n\n作用压缩代码。rollup 中虽然也有 rollup-plugin-uglify 插件，但只适用于 es5 语法，所以还是需要 terser\n参考资料（1）Rollup 打包工具的使用（超详细，超基础，附代码截图超简单）（2）说不清 rollup 能输出哪 6 种格式 😥 差点被鄙视（3）一文带你快速上手 Rollup\n","dateCreated":"2022-08-08T20:14:13+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-08-08T20:14:13+08:00","description":"rollup 使用指南和相关知识梳理。","headline":"rollup打包工具使用","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/","keywords":"rollup, 前端打包工具"}</script>
     <meta name="description" content="rollup 使用指南和相关知识梳理。">
-<meta property="og:type" content="article">
+<meta property="og:type" content="blog">
 <meta property="og:title" content="rollup打包工具使用">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/08/08/rollup/index.html">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="rollup 使用指南和相关知识梳理。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-08T12:14:13.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.826Z">
+<meta property="article:modified_time" content="2025-08-19T14:27:34.463Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="rollup">
 <meta property="article:tag" content="前端打包工具">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
-  
-  <title>rollup打包工具使用 - 小白的文件整理箱</title>
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+    <!--STYLES END-->
+    
 
+    
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/unknown404.github.io/js/utils.js" ></script>
-  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+    
+        
+    
 </head>
 
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
-<body>
-  
 
-  <header>
+    
+        
+            
+        
     
 
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/unknown404.github.io/">
-      <strong>小白的文件整理箱</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/about/">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
     </div>
-  </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
 </nav>
 
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="rollup打包工具使用"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-08-08 20:14" pubdate>
-          2022年8月8日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          4.6k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          39 分钟
-        
-      </span>
-    
-
-    
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">rollup打包工具使用</h1>
             
-            
-              <div class="markdown-body">
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
                 
-                <p>rollup 使用指南和相关知识梳理。</p>
-<span id="more"></span>
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            rollup打包工具使用
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-08T20:14:13+08:00">
+	
+		    8月 08, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/">前端技术体系</a>
 
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>rollup 使用指南和相关知识梳理。</p>
+<span id="more"></span>
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#rollup-%E6%A6%82%E8%BF%B0"><span class="toc-text">rollup 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rollup-%E4%BD%BF%E7%94%A8"><span class="toc-text">rollup 使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-rollup-%E5%B7%A5%E5%85%B7"><span class="toc-text">安装 rollup 工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%89%93%E5%8C%85%E6%96%87%E4%BB%B6"><span class="toc-text">配置打包文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#input"><span class="toc-text">input</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#output"><span class="toc-text">output</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#plugins"><span class="toc-text">plugins</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#external"><span class="toc-text">external</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#global"><span class="toc-text">global</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E6%89%93%E5%8C%85%E6%8C%87%E4%BB%A4"><span class="toc-text">执行打包指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E4%BB%A3%E7%A0%81%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E"><span class="toc-text">输出代码格式说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#amd"><span class="toc-text">amd</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%96%B9%E6%B3%95"><span class="toc-text">运行方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E5%90%88%E5%9C%BA%E6%99%AF"><span class="toc-text">适合场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cjs"><span class="toc-text">cjs</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%96%B9%E6%B3%95-1"><span class="toc-text">运行方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E5%90%88%E5%9C%BA%E6%99%AF-1"><span class="toc-text">适合场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#esm"><span class="toc-text">esm</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%96%B9%E6%B3%95-2"><span class="toc-text">运行方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E5%90%88%E5%9C%BA%E6%99%AF-2"><span class="toc-text">适合场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iife"><span class="toc-text">iife</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%96%B9%E6%B3%95-3"><span class="toc-text">运行方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E7%82%B9"><span class="toc-text">特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E5%90%88%E5%9C%BA%E6%99%AF-3"><span class="toc-text">适合场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#umd"><span class="toc-text">umd</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%96%B9%E6%B3%95-4"><span class="toc-text">运行方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E5%90%88%E5%9C%BA%E6%99%AF-4"><span class="toc-text">适合场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#system"><span class="toc-text">system</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%8F%92%E4%BB%B6"><span class="toc-text">常用插件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#resolve-%E6%8F%92%E4%BB%B6"><span class="toc-text">resolve 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-text">作用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#commonJs-%E6%8F%92%E4%BB%B6"><span class="toc-text">commonJs 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4-1"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8-1"><span class="toc-text">作用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#babel-%E6%8F%92%E4%BB%B6"><span class="toc-text">babel 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4-2"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8-2"><span class="toc-text">作用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#typescript-%E6%8F%92%E4%BB%B6"><span class="toc-text">typescript 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4-3"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8-3"><span class="toc-text">作用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#terser-%E6%8F%92%E4%BB%B6"><span class="toc-text">terser 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%8C%87%E4%BB%A4-4"><span class="toc-text">安装指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8-4"><span class="toc-text">作用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
 
 <h2 id="rollup-概述"><a href="#rollup-概述" class="headerlink" title="rollup 概述"></a>rollup 概述</h2><p>rollup 是一个 js 模块打包器。与 webpack 相比，rollup 更适合打包库，而 webpack 适合打包项目；同体积的代码条件下 rollup 打包的代码体检要小于 webpack。rollup 对于代码的 Tree-shaking 和 ES6 模块有着先天的算法优势上的支持，而 webpack 在代码分割、静态资源导入及热模块替换(HMR)有着更多优势。</p>
 <h2 id="rollup-使用"><a href="#rollup-使用" class="headerlink" title="rollup 使用"></a>rollup 使用</h2><h3 id="安装-rollup-工具"><a href="#安装-rollup-工具" class="headerlink" title="安装 rollup 工具"></a>安装 rollup 工具</h3><p>创建一个新的空工程，打开命令行执行<code>npm install --global rollup </code>指令。指令执行完成后项目的结构变为：</p>
-<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs actionscript">├── node_modules<br>└── <span class="hljs-keyword">package</span>.json<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">├── node_modules</span><br><span class="line">└── package.json</span><br></pre></td></tr></table></figure>
 
 <p>此时工程里已经预装了一些插件，允许我们用 cli 命令来打包。但复杂的工程中这种方式就比较麻烦。所以需要配置文件。</p>
-<h3 id="配置打包文件"><a href="#配置打包文件" class="headerlink" title="配置打包文件"></a>配置打包文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs es6">import babel from &quot;@rollup/plugin-babel&quot;;<br>import commonjs from &quot;rollup-plugin-commonjs&quot;;<br>import resolve from &quot;@rollup/plugin-node-resolve&quot;;<br>import size from &quot;rollup-plugin-sizes&quot;;<br>import &#123; terser &#125; from &quot;rollup-plugin-terser&quot;;<br>import cleanup from &quot;rollup-plugin-cleanup&quot;;<br><br>export default &#123;<br>  input: &quot;./index.js&quot;,<br>  output: [<br>    &#123;<br>      file: &quot;./dist/dofin.js&quot;,<br>      format: &quot;umd&quot;,<br>      name: &quot;DOFIN&quot;,<br>    &#125;,<br>    &#123;<br>      file: &quot;./dist/dofin.min.js&quot;,<br>      format: &quot;iife&quot;,<br>      name: &quot;DOFIN&quot;,<br>      plugins: [terser()],<br>    &#125;,<br>  ],<br>  plugins: [<br>    resolve(),<br>    size(),<br>    cleanup(&#123;<br>      comments: &quot;none&quot;,<br>    &#125;),<br>    babel(&#123;<br>      babelHelpers: &quot;runtime&quot;,<br>      exclude: &quot;node_modules/**&quot;,<br>    &#125;),<br>    commonjs(),<br>  ],<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="配置打包文件"><a href="#配置打包文件" class="headerlink" title="配置打包文件"></a>配置打包文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">import babel from &quot;@rollup/plugin-babel&quot;;</span><br><span class="line">import commonjs from &quot;rollup-plugin-commonjs&quot;;</span><br><span class="line">import resolve from &quot;@rollup/plugin-node-resolve&quot;;</span><br><span class="line">import size from &quot;rollup-plugin-sizes&quot;;</span><br><span class="line">import &#123; terser &#125; from &quot;rollup-plugin-terser&quot;;</span><br><span class="line">import cleanup from &quot;rollup-plugin-cleanup&quot;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  input: &quot;./index.js&quot;,</span><br><span class="line">  output: [</span><br><span class="line">    &#123;</span><br><span class="line">      file: &quot;./dist/dofin.js&quot;,</span><br><span class="line">      format: &quot;umd&quot;,</span><br><span class="line">      name: &quot;DOFIN&quot;,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      file: &quot;./dist/dofin.min.js&quot;,</span><br><span class="line">      format: &quot;iife&quot;,</span><br><span class="line">      name: &quot;DOFIN&quot;,</span><br><span class="line">      plugins: [terser()],</span><br><span class="line">    &#125;,</span><br><span class="line">  ],</span><br><span class="line">  plugins: [</span><br><span class="line">    resolve(),</span><br><span class="line">    size(),</span><br><span class="line">    cleanup(&#123;</span><br><span class="line">      comments: &quot;none&quot;,</span><br><span class="line">    &#125;),</span><br><span class="line">    babel(&#123;</span><br><span class="line">      babelHelpers: &quot;runtime&quot;,</span><br><span class="line">      exclude: &quot;node_modules/**&quot;,</span><br><span class="line">    &#125;),</span><br><span class="line">    commonjs(),</span><br><span class="line">  ],</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>以上述某一配置文件 rollup.config.js 为例，该文件通常需要需要的核心参数包括：</p>
 <h4 id="input"><a href="#input" class="headerlink" title="input"></a>input</h4><p>打包文件入口</p>
@@ -297,10 +268,10 @@
 </ul>
 <h4 id="plugins"><a href="#plugins" class="headerlink" title="plugins"></a>plugins</h4><p>使用的插件</p>
 <h4 id="external"><a href="#external" class="headerlink" title="external"></a>external</h4><p>使用的外部依赖，不会被打包进输出文件</p>
-<h4 id="global"><a href="#global" class="headerlink" title="global"></a>global</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">global:&#123;<br>    <span class="hljs-string">&#x27;jquery&#x27;</span>:<span class="hljs-string">&#x27;$&#x27;</span> <span class="hljs-regexp">//</span>告诉rollup 全局变量$即是jquery<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="global"><a href="#global" class="headerlink" title="global"></a>global</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">global:&#123;</span><br><span class="line">    &#x27;jquery&#x27;:&#x27;$&#x27; //告诉rollup 全局变量$即是jquery</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="执行打包指令"><a href="#执行打包指令" class="headerlink" title="执行打包指令"></a>执行打包指令</h3><p>可以直接在执行终端输入<code>rollup -c</code>默认执行 rollup.config.js 文件，也可以在 package.json 文件里的 scripts 属性配置指令：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs perl">&#123;<br><br>  <span class="hljs-string">&quot;scripts&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;build-browser&quot;</span>: <span class="hljs-string">&quot;rollup --config browser.rollup.config.js &quot;</span>,<br>、  &#125;,<br>  <span class="hljs-string">&quot;dependencies&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;@babel/runtime&quot;</span>: <span class="hljs-string">&quot;^7.14.6&quot;</span>,<br>    <span class="hljs-string">&quot;@rollup/plugin-json&quot;</span>: <span class="hljs-string">&quot;^4.1.0&quot;</span>,<br>    <span class="hljs-string">&quot;rollup-plugin-cleanup&quot;</span>: <span class="hljs-string">&quot;^3.2.1&quot;</span>,<br>    <span class="hljs-string">&quot;rollup-plugin-sizes&quot;</span>: <span class="hljs-string">&quot;^1.0.4&quot;</span>,<br>    <span class="hljs-string">&quot;tti-polyfill&quot;</span>: <span class="hljs-string">&quot;^0.2.2&quot;</span><br>  &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">  &quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;build-browser&quot;: &quot;rollup --config browser.rollup.config.js &quot;,</span><br><span class="line">、  &#125;,</span><br><span class="line">  &quot;dependencies&quot;: &#123;</span><br><span class="line">    &quot;@babel/runtime&quot;: &quot;^7.14.6&quot;,</span><br><span class="line">    &quot;@rollup/plugin-json&quot;: &quot;^4.1.0&quot;,</span><br><span class="line">    &quot;rollup-plugin-cleanup&quot;: &quot;^3.2.1&quot;,</span><br><span class="line">    &quot;rollup-plugin-sizes&quot;: &quot;^1.0.4&quot;,</span><br><span class="line">    &quot;tti-polyfill&quot;: &quot;^0.2.2&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>rollup 指令命令行常用的参数包括：</p>
 <ul>
@@ -354,399 +325,361 @@
 </ul>
 <h4 id="适合场景-4"><a href="#适合场景-4" class="headerlink" title="适合场景"></a>适合场景</h4><p>既可能在浏览器端也可能在 node.js 里使用的场景</p>
 <h3 id="system"><a href="#system" class="headerlink" title="system"></a>system</h3><p>采用了 SystemJS 代码语法。由于很少使用该语法，这里暂时不展开。</p>
-<h2 id="常用插件"><a href="#常用插件" class="headerlink" title="常用插件"></a>常用插件</h2><h3 id="resolve-插件"><a href="#resolve-插件" class="headerlink" title="resolve 插件"></a>resolve 插件</h3><h4 id="安装指令"><a href="#安装指令" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">npm i -D @rollup/plugin-<span class="hljs-keyword">node</span><span class="hljs-title">-resolve</span><br></code></pre></td></tr></table></figure>
+<h2 id="常用插件"><a href="#常用插件" class="headerlink" title="常用插件"></a>常用插件</h2><h3 id="resolve-插件"><a href="#resolve-插件" class="headerlink" title="resolve 插件"></a>resolve 插件</h3><h4 id="安装指令"><a href="#安装指令" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -D @rollup/plugin-node-resolve</span><br></pre></td></tr></table></figure>
 
 <p><strong>注释</strong></p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css"> <span class="hljs-selector-tag">i</span>  是 install 的简写<br>-S 就是 <span class="hljs-attr">--save</span> 的简写，安装的插件会被写入到 dependencies 区块里面去，在生产环境也存在对该包的依赖<br>-D 就是 <span class="hljs-attr">--save-dev</span> 的简写， 安装的插件会被写入到 devDependencies 域里面去，即插件只用于开发环境<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> i  是 install 的简写</span><br><span class="line">-S 就是 --save 的简写，安装的插件会被写入到 dependencies 区块里面去，在生产环境也存在对该包的依赖</span><br><span class="line">-D 就是 --save-dev 的简写， 安装的插件会被写入到 devDependencies 域里面去，即插件只用于开发环境</span><br></pre></td></tr></table></figure>
 
 <h4 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h4><p>将我们编写的源码与依赖的第三方库代码进行合并，打包后的代码里会出现引用模块的代码。在使用 resolve 模块下，如果希望依赖的模块不被打包，保持外部引用状态时，就需要 config 文件使用 external 属性，来告诉 rollup.js 哪些是外部的类库。</p>
-<h3 id="commonJs-插件"><a href="#commonJs-插件" class="headerlink" title="commonJs 插件"></a>commonJs 插件</h3><h4 id="安装指令-1"><a href="#安装指令-1" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-built_in">npm</span> i -D @rollup/plugin-commonjs<br></code></pre></td></tr></table></figure>
+<h3 id="commonJs-插件"><a href="#commonJs-插件" class="headerlink" title="commonJs 插件"></a>commonJs 插件</h3><h4 id="安装指令-1"><a href="#安装指令-1" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -D @rollup/plugin-commonjs</span><br></pre></td></tr></table></figure>
 
 <h4 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h4><p>rollup 编译源码中的模块引用默认只支持 ES6+的模块方式 import&#x2F;export。然而大量的 npm 模块是基于 CommonJS 模块方式，为支持这些模块的引入，支持 commonjs 语法的插件应运而生。</p>
-<h3 id="babel-插件"><a href="#babel-插件" class="headerlink" title="babel 插件"></a>babel 插件</h3><h4 id="安装指令-2"><a href="#安装指令-2" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-built_in">npm</span> i -D @rollup/plugin-babel<br></code></pre></td></tr></table></figure>
+<h3 id="babel-插件"><a href="#babel-插件" class="headerlink" title="babel 插件"></a>babel 插件</h3><h4 id="安装指令-2"><a href="#安装指令-2" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -D @rollup/plugin-babel</span><br></pre></td></tr></table></figure>
 
 <p>安装完成后在根目录文件夹下添加.babelrc 文件，配置内容</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs awk"><br>&#123;<br>  <span class="hljs-regexp">//</span> 开启默认预设<br>  <span class="hljs-string">&quot;presets&quot;</span>: [<br>    [<br>      <span class="hljs-string">&quot;@babel/env&quot;</span>,<br>      &#123;<br>        <span class="hljs-string">&quot;modules&quot;</span>: false  <span class="hljs-regexp">//</span> 关闭 esm 转化，统一交由 rollup 处理，防止冲突<br>      &#125;<br>    ]<br>  ],<br>  <span class="hljs-string">&quot;plugins&quot;</span>: [<span class="hljs-string">&quot;@babel/plugin-transform-runtime&quot;</span>]<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  // 开启默认预设</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [</span><br><span class="line">      &quot;@babel/env&quot;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;modules&quot;: false  // 关闭 esm 转化，统一交由 rollup 处理，防止冲突</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [&quot;@babel/plugin-transform-runtime&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>完成后安装插件安装@babel&#x2F;core 和 @babel&#x2F;preset-env</p>
 <h4 id="作用-2"><a href="#作用-2" class="headerlink" title="作用"></a>作用</h4><p>将代码中的 es6 语法转为 es5，防止打包后的模块在部分浏览器中无法正常运行</p>
-<h3 id="typescript-插件"><a href="#typescript-插件" class="headerlink" title="typescript 插件"></a>typescript 插件</h3><h4 id="安装指令-3"><a href="#安装指令-3" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-built_in">npm</span> i -D @rollup/plugin-typescript<br></code></pre></td></tr></table></figure>
+<h3 id="typescript-插件"><a href="#typescript-插件" class="headerlink" title="typescript 插件"></a>typescript 插件</h3><h4 id="安装指令-3"><a href="#安装指令-3" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -D @rollup/plugin-typescript</span><br></pre></td></tr></table></figure>
 
 <p>该模块依赖于 tslib 和 typescript 模块，所以还需要再安装这两个组件。安装完后还需我们新建 tsconfig 配置，完成后才可在 package.json 的 plugins 配置该插件</p>
 <h4 id="作用-3"><a href="#作用-3" class="headerlink" title="作用"></a>作用</h4><p>可以编译打包 ts 文件</p>
-<h3 id="terser-插件"><a href="#terser-插件" class="headerlink" title="terser 插件"></a>terser 插件</h3><h4 id="安装指令-4"><a href="#安装指令-4" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-built_in">npm</span> i -D rollup-plugin-terser<br></code></pre></td></tr></table></figure>
+<h3 id="terser-插件"><a href="#terser-插件" class="headerlink" title="terser 插件"></a>terser 插件</h3><h4 id="安装指令-4"><a href="#安装指令-4" class="headerlink" title="安装指令"></a>安装指令</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -D rollup-plugin-terser</span><br></pre></td></tr></table></figure>
 
 <h4 id="作用-4"><a href="#作用-4" class="headerlink" title="作用"></a>作用</h4><p>压缩代码。rollup 中虽然也有 rollup-plugin-uglify 插件，但只适用于 es5 语法，所以还是需要 terser</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904058394771470">Rollup 打包工具的使用（超详细，超基础，附代码截图超简单）</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7051236803344334862">说不清 rollup 能输出哪 6 种格式 😥 差点被鄙视</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6869551115420041229">一文带你快速上手 Rollup</a></p>
 
-                
-              </div>
             
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
 
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-  <a href="/unknown404.github.io/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/" class="category-chain-item">前端技术体系</a>
-  
-  
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/rollup/" rel="tag">rollup</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/%E5%89%8D%E7%AB%AF%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/" rel="tag">前端打包工具</a>
 
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/unknown404.github.io/tags/rollup/">#rollup</a>
-      
-        <a href="/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/">#前端打包工具</a>
-      
-    </div>
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>rollup打包工具使用</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/08/08/rollup/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>小白的文件整理箱</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年8月8日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
-
-
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/08/18/toolFunc/" title="工具函数">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">工具函数</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/06/18/javascript/" title="Javascript基础">
-                        <span class="hidden-mobile">Javascript基础</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
             </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/18/toolFunc/"
+                    data-tooltip="工具函数"
+                    aria-label="上一篇: 工具函数"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/18/javascript/"
+                    data-tooltip="Javascript基础"
+                    aria-label="下一篇: Javascript基础"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/18/toolFunc/"
+                    data-tooltip="工具函数"
+                    aria-label="上一篇: 工具函数"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/06/18/javascript/"
+                    data-tooltip="Javascript基础"
+                    aria-label="下一篇: Javascript基础"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/08/rollup/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
 
             
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header">
-    <i class="iconfont icon-list"></i>
-    <span>目录</span>
-  </p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
+        
 
 
     
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
+        
     
 
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
         </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
 </div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
 
     
 
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unknown404.github.io/js/events.js" ></script>
-<script  src="/unknown404.github.io/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
 
 
 
-
-  
-    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
-  
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script  src="/unknown404.github.io/js/local-search.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unknown404.github.io/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
+    </body>
 </html>

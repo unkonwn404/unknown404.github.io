@@ -1,288 +1,259 @@
 
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
+<html lang="zh-cn">
+    
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
-  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="小白的文件整理箱">
-  <meta name="keywords" content="">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="小白的文件整理箱">
+    <title>依赖包管理工具比较 - 小白的文件整理箱</title>
+    <meta name="author" content="小白的文件整理箱">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/unknown_404/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小白的文件整理箱","sameAs":[],"image":"icon.png"},"articleBody":"前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。\n\n\n\nnpm最早出现的安装包工具， Node.js 标准的软件包管理器。\n版本控制npm 是围绕着语义版本控制（semver）的思想而设计的。大致的准则为：\n\n版本号由三部分组成：major.minor.patch，即主版本号.次版本号.修补版本号。\n主版本号：更改时代表了一个破坏兼容性的大变化。\n次版本号：更改时不会破坏任何内容，增加了新功能。\n修补版本号：更改时表示做了向后兼容的缺陷修复。\n\n\n版本是严格递增的，如该例所示：16.2.0 -&gt; 16.3.0 -&gt; 16.3.1\n修补版本号有时后面可能还会有先行版本号，例如 1.0.0-alpha.1。常用的先行版本一般为 alpha（内部先行版），beta（公开测试版），rc（候选版），stable（稳定版）\n\n版本控制符使用 npm install 时，会发现 package.json 文件的版本号前面默认出现符号^，该符号即为版本控制符。常见的版本控制符包括：\n\n~ 会匹配最近的小版本依赖包，比如 ~1.2.3 会匹配所有 1.2.x 版本，但是不包括 1.3.0\n^ 会匹配最新的大版本依赖包（npm i 默认的版本控制符），比如 ^1.2.3 会匹配所有 1.x.x 的包，包括 1.3.0，但是不包括 2.0.0\n* 安装最新版本的依赖包，比如 *1.2.3 会匹配 x.x.x除此之外还有其他版本控制方法：\n\n123456789101112131415&#123; &quot;dependencies&quot; :  &#123; &quot;foo&quot; : &quot;1.0.0 - 2.9999.9999&quot;,// 大于等于1.0.0 小于 2.9999.9999  &quot;bar&quot; : &quot;&gt;=1.0.2 &lt;2.1.2&quot;, // 比较清晰  左闭右开  &quot;baz&quot; : &quot;&gt;1.0.2 &lt;=2.3.4&quot;, // 左开右闭  &quot;boo&quot; : &quot;2.0.1&quot;, // 规定版本  &quot;qux&quot; : &quot;&lt;1.0.0 || &gt;=2.3.1 &lt;2.4.5 || &gt;=2.5.2 &lt;3.0.0&quot;, // 表达式也算清晰  &quot;asd&quot; : &quot;http://asdf.com/asdf.tar.gz&quot;, // 指定下载地址代替版本  &quot;til&quot; : &quot;^1.2.3&quot;, // 同一主版本号，不小于1.2.3 即 1.x.y  x&gt;=2 y&gt;=3  &quot;elf&quot; : &quot;~1.2.3&quot;,  // 同一主版本和次版本号 即1.2.x x&gt;= 2  &quot;two&quot; : &quot;2.x&quot; , // 这个比较形象，x&gt;=0  即2.0.0 以上均可  &quot;thr&quot; : &quot;3.3.x&quot; , // 同上 x&gt;= 0  即3.3.0 以上  &quot;lat&quot; : &quot;latest&quot;,  // 最新版本  &quot;dyl&quot; : &quot;file:../dyl&quot;,  // 从本地下载  &#125;&#125;\n\npackage-lock.json早期的 npm 没有锁定包版本的功能，如果某个依赖包发布了不兼容或者有 bug 版本，部署上线时项目就可能会发生问题。针对这一问题 yarn 提出了固化版本的方案，而 npm 在^5.x.x.x 以后才有的 package-lock.json。不同版本 npm 对 package-lock.json 的实现是不同的。是在一直迭代和发展的：\n\nnpm 5.0.x 版本，不管 package.json 怎么变，npm i 时都会根据 lock 文件下载。\n5.1.0 版本后 npm install 会无视 lock 文件 去下载最新的 npm 包\n5.4.2 版本如果改了 package.json，且 package.json 和 lock 文件不同，那么执行 npm i 时 npm 会根据 package 中的版本号以及语义含义去下载最新的包，并更新至 lock。如果两者是同一状态，那么执行 npm i 都会根据 lock 下载，不会理会 package 实际包的版本是否有新。\n\npackage-lock.json 的文件格式如下：\n1234567891011121314151617181920212223242526272829303132...&quot;@ant-design/colors&quot;: &#123;    &quot;version&quot;: &quot;4.0.5&quot;,    &quot;resolved&quot;: &quot;http://npm.internal.focus.cn:80/@ant-design%2fcolors/-/colors-4.0.5.tgz&quot;,    &quot;integrity&quot;: &quot;sha1-19EA11Rcyo9iSVRgSmiS/Ei6Wq4=&quot;,    &quot;requires&quot;: &#123;    &quot;tinycolor2&quot;: &quot;^1.4.1&quot;    &#125;&#125;,&quot;@ant-design/icons&quot;: &#123;    &quot;version&quot;: &quot;4.6.2&quot;,    &quot;resolved&quot;: &quot;https://registry.npmjs.org/@ant-design/icons/-/icons-4.6.2.tgz&quot;,    &quot;integrity&quot;: &quot;sha512-QsBG2BxBYU/rxr2eb8b2cZ4rPKAPBpzAR+0v6rrZLp/lnyvflLH3tw1vregK+M7aJauGWjIGNdFmUfpAOtw25A==&quot;,    &quot;requires&quot;: &#123;    &quot;@ant-design/colors&quot;: &quot;^6.0.0&quot;,    &quot;@ant-design/icons-svg&quot;: &quot;^4.0.0&quot;,    &quot;@babel/runtime&quot;: &quot;^7.11.2&quot;,    &quot;classnames&quot;: &quot;^2.2.6&quot;,    &quot;rc-util&quot;: &quot;^5.9.4&quot;    &#125;,    &quot;dependencies&quot;: &#123;    &quot;@ant-design/colors&quot;: &#123;        &quot;version&quot;: &quot;6.0.0&quot;,        &quot;resolved&quot;: &quot;https://registry.npmjs.org/@ant-design/colors/-/colors-6.0.0.tgz&quot;,        &quot;integrity&quot;: &quot;sha512-qAZRvPzfdWHtfameEGP2Qvuf838NhergR35o+EuVyB5XvSA98xod5r4utvi4TJ3ywmevm290g9nsCG5MryrdWQ==&quot;,        &quot;requires&quot;: &#123;        &quot;@ctrl/tinycolor&quot;: &quot;^3.4.0&quot;        &#125;    &#125;    &#125;&#125;,...\n\n可以看到，安装包需要的依赖包，如果顶级依赖满足需求的，则不再安装，仅有 requires 属性；如果不满足，则会在对应文件夹下面根据依赖安装符合版本，如上面的文件里的@ant-design&#x2F;icons，内部仍有 dependencies 属性。\n依赖关系npm 2.xnpm2.x 版本安装依赖包时会安装每一个包所依赖的所有依赖项，依赖项的依赖包也会安装在其 node_modules 目录下。如下图所示，即 node_modules 存在嵌套。\n123456.└──node_modules        ├──test1        └──test2            └──node_modules                    └──test3\n\n这样的处理方式造成了两个问题：\n\n多个包之间难免会有公共的依赖，这样嵌套的话，同样的依赖会复制很多次，会占据比较大的磁盘空间。\nwindows 的文件路径最长是 260 多个字符，这样嵌套是会超过 windows 路径的长度限制的。\n\nnpm 3+同 yarn 一样采用了扁平化依赖的方式解决问题。与之前的目录相比，现在的文件夹结构更接近于\n12345.└──node_modules        ├──test1        ├──test2        └──test3\n\n所有的依赖都被拍平到 node_modules 目录下，不再有很深层次的嵌套关系。这样在安装新的包时，根据 node require 机制，会不停往上级的 node_modules 当中去找，如果找到相同版本的包就不会重新安装，解决了大量包重复安装的问题，而且依赖层级也不会太深。但扁平化依赖方法存在的问题包括：\n\n依赖结构的不确定性。\n扁平化算法本身的复杂性很高，耗时较长。\n项目中仍然可以非法访问没有声明过依赖的包依赖结构的不确定性是如果声明的依赖包 test1、test2 同时依赖另一个包 test3，但是是不同版本的时候，扁平化的结果可能有两种。\n\nnpm2.x 下 test1、test2 依赖包结构\n12345678.└──node_modules        ├──test1        |   └──node_modules        |           └──test3@1.0.1        └──test2            └──node_modules                    └──test3@1.0.2\n\nnpm3+下 test1、test2 安装结果 1\n1234567.└──node_modules        ├──test1        └──test2        |   └──node_modules        |           └──test3@1.0.2        └──test3@1.0.1\n\nnpm3+下 test1、test2 安装结果 2\n1234567.└──node_modules        ├──test1        |   └──node_modules        |           └──test3@1.0.1        ├──test2        └──test3@1.0.2\n\n两种结果都有可能存在，实际安装时取决于 test1 和 test2 在 package.json 中的位置，如果 test1 声明在前面，那么就是前面的结构，否则是后面的结构。为了解决依赖结构的不确定性的问题，npm 5.x 推出 package-lock.json，保证第一次安装以后 node_modules 以后在添加依赖或者重装时也不会变。\nyarnyarn 是在 npm2.x 版本没有很好的优化方案时提出的，主要用于解决嵌套超过 windows 路径的长度限制的 node_modules。虽然现在 npm 也日益趋同 yarn，但在安装速度上 yarn 还是优于 npm\n版本控制默认依赖都会生成 yarn.lock 文件，该文件会通过包名+版本来确定具体信息。yarn.lock 文件格式如下，yarn 用的是自己设计的格式，语法上有点像 YAML，# 开头的行是注释。依赖的依赖不会被记录在 dependencies，依赖包的依赖版本如果不存在语义冲突则会合并信息\n1234567891011&quot;@angular-devkit/core@12.2.10&quot;:  version &quot;12.2.10&quot;  resolved &quot;http://npm.internal.focus.cn:80/@angular-devkit%2fcore/-/core-12.2.10.tgz#3da62eceef3904f92cd3f860618b4ae513029ce2&quot;  integrity sha1-PaYuzu85BPks0/hgYYtK5RMCnOI=  dependencies:    ajv &quot;8.6.2&quot;    ajv-formats &quot;2.1.0&quot;    fast-json-stable-stringify &quot;2.1.0&quot;    magic-string &quot;0.25.7&quot;    rxjs &quot;6.6.7&quot;    source-map &quot;0.7.3&quot;\n\nYarn 仅以 flatten 格式 描述各个包之间的依赖关系，并依赖于其当前实现来创建目录结构。这意味着如果其内部算法发生变化，结构也会发生变化。\n依赖关系同 npm 基本一样，其共有的问题是：如果你有 100 个项目使用了某个依赖（dependency），就会有 100 份该依赖的副本保存在硬盘上\npnpm同 npm 和 Yarn，都属于 Javascript 包管理安装工具，它较 npm 和 Yarn 在性能上得到很大提升，被称为快速的，节省磁盘空间的包管理工具。\n依赖关系为了解决 npm、yarn 安装时依赖可能复制多次、占用磁盘空间的问题，pnpm 采用了全局仓库保存依赖、项目通过 link 的方式访问内容。\n\n\n当执行 pnpm install 时，项目的 node_modules 文件夹下除了安装的包名 bar、其依赖保持原有的树状、不进行提升，还会有.pnpm 目录，目录下是以展平结构管理每个版本包的源码内容，以硬链接方式指向 pnpm-store 中的文件地址。pnpm-store 是全局的 store，存储所有 npm 包，同一版本的包仅存储一份内容，甚至不同版本的包也仅存储 diff 内容。如上图所示一个包的寻找需要经过三层结构：node_modules/bar &gt; 软链接 node_modules/.pnpm/bar@1.0.0/node_modules/bar &gt; 硬链接 ~/.pnpm-store/v3/files/00/xxxxxx。\n备注：软链接和硬链接在 Linux 系统中，内核为每一个新创建的文件分配一个 Inode(索引结点)，每个文件都有一个惟一的 inode 号。文件属性保存在索引结点里，在访问文件时，索引结点被复制到内存在，从而实现文件的快速访问。Linux 中包括两种链接：硬链接(Hard Link)和软链接(Soft Link)，软链接又称为符号链接（Symbolic link）。硬链接说白了是一个指针，指向文件索引节点，系统并不为它重新分配 inode，他将与源文件共用一个 inode。软链接相当于 windows 的快捷方式，软链接文件会将 inode 指向源文件的 block，原文件＆链接文件拥有不同的 inode 号\n参考文献（1）关于现代包管理器的深度思考——为什么现在我更推荐 pnpm 而不是 npm&#x2F;yarn?（2）yarn or npm 版本固化如何选择（3）pnpm 是凭什么对 npm 和 yarn 降维打击的（4）该用 pnpm 了，“快、准、狠”。\n","dateCreated":"2022-08-23T22:06:42+08:00","dateModified":"2025-08-19T22:27:34+08:00","datePublished":"2022-08-23T22:06:42+08:00","description":"前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。","headline":"依赖包管理工具比较","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"},"publisher":{"@type":"Organization","name":"小白的文件整理箱","sameAs":[],"image":"icon.png","logo":{"@type":"ImageObject","url":"icon.png"}},"url":"https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/","keywords":"前端依赖包管理, npm, yarn, pnpm"}</script>
     <meta name="description" content="前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。">
-<meta property="og:type" content="article">
+<meta property="og:type" content="blog">
 <meta property="og:title" content="依赖包管理工具比较">
-<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2022/08/23/packageInfo/index.html">
+<meta property="og:url" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/index.html">
 <meta property="og:site_name" content="小白的文件整理箱">
 <meta property="og:description" content="前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/pnpm.png">
+<meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/pnpm.png">
 <meta property="article:published_time" content="2022-08-23T14:06:42.000Z">
-<meta property="article:modified_time" content="2024-11-14T08:45:28.776Z">
+<meta property="article:modified_time" content="2025-08-19T14:27:34.452Z">
 <meta property="article:author" content="小白的文件整理箱">
-<meta property="article:tag" content="npm">
 <meta property="article:tag" content="前端依赖包管理">
+<meta property="article:tag" content="npm">
 <meta property="article:tag" content="yarn">
 <meta property="article:tag" content="pnpm">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://unkonwn404.github.io/unknown404.github.io/img/pnpm.png">
-  
-  
-  
-  <title>依赖包管理工具比较 - 小白的文件整理箱</title>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/pnpm.png">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://unknown-four-hundred-and-four.gitee.io/unknown_404/assets/images/icon.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/unknown_404/assets/css/style-vo5jmbxj15zt93zntj1ihwqzu9hdvmnmejczcuo2xhw61kjgn1r311vpwjcv.min.css">
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+    <!--STYLES END-->
+    
 
+    
 
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/unknown404.github.io/js/utils.js" ></script>
-  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+    
+        
+    
 </head>
 
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
-<body>
-  
 
-  <header>
+    
+        
+            
+        
     
 
-<div class="header-inner" style="height: 70vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/unknown404.github.io/">
-      <strong>小白的文件整理箱</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/unknown404.github.io/about/">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/unknown_404/"
+            aria-label=""
+        >
+            小白的文件整理箱
+        </a>
     </div>
-  </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /unknown_404/#about"
+            >
+        
+        
+            <img class="header-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/unknown_404/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">小白的文件整理箱</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>名もない今日を愛しさで彩る〜</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/unknown_404/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
 </nav>
 
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="依赖包管理工具比较"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-08-23 22:06" pubdate>
-          2022年8月23日 晚上
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          6.1k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          52 分钟
-        
-      </span>
-    
-
-    
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">依赖包管理工具比较</h1>
             
-            
-              <div class="markdown-body">
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
                 
-                <p>前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。</p>
-<span id="more"></span>
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            依赖包管理工具比较
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-23T22:06:42+08:00">
+	
+		    8月 23, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/unknown_404/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a>
 
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>前端常用的包依赖管理工具有 npm、yarn 以及近期非常受欢迎的 pnpm，本文主要也是对比这几个工具之间的区别。</p>
+<span id="more"></span>
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#npm"><span class="toc-text">npm</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="toc-text">版本控制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E7%AC%A6"><span class="toc-text">版本控制符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#package-lock-json"><span class="toc-text">package-lock.json</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB"><span class="toc-text">依赖关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#npm-2-x"><span class="toc-text">npm 2.x</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#npm-3"><span class="toc-text">npm 3+</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#yarn"><span class="toc-text">yarn</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6-1"><span class="toc-text">版本控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB-1"><span class="toc-text">依赖关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pnpm"><span class="toc-text">pnpm</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB-2"><span class="toc-text">依赖关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%87%E6%B3%A8%EF%BC%9A%E8%BD%AF%E9%93%BE%E6%8E%A5%E5%92%8C%E7%A1%AC%E9%93%BE%E6%8E%A5"><span class="toc-text">备注：软链接和硬链接</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
 
 <h2 id="npm"><a href="#npm" class="headerlink" title="npm"></a>npm</h2><p>最早出现的安装包工具， Node.js 标准的软件包管理器。</p>
 <h3 id="版本控制"><a href="#版本控制" class="headerlink" title="版本控制"></a>版本控制</h3><p>npm 是围绕着<a target="_blank" rel="noopener" href="https://semver.org/">语义版本控制（semver）</a>的思想而设计的。大致的准则为：</p>
@@ -302,7 +273,7 @@
 <li><code>^ </code>会匹配最新的大版本依赖包（npm i 默认的版本控制符），比如 ^1.2.3 会匹配所有 1.x.x 的包，包括 1.3.0，但是不包括 2.0.0</li>
 <li><code>* </code>安装最新版本的依赖包，比如 *1.2.3 会匹配 x.x.x<br>除此之外还有其他版本控制方法：</li>
 </ul>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs awk">&#123; <span class="hljs-string">&quot;dependencies&quot;</span> :<br>  &#123; <span class="hljs-string">&quot;foo&quot;</span> : <span class="hljs-string">&quot;1.0.0 - 2.9999.9999&quot;</span>,<span class="hljs-regexp">//</span> 大于等于<span class="hljs-number">1.0</span>.<span class="hljs-number">0</span> 小于 <span class="hljs-number">2.9999</span>.<span class="hljs-number">9999</span><br>  <span class="hljs-string">&quot;bar&quot;</span> : <span class="hljs-string">&quot;&gt;=1.0.2 &lt;2.1.2&quot;</span>, <span class="hljs-regexp">//</span> 比较清晰  左闭右开<br>  <span class="hljs-string">&quot;baz&quot;</span> : <span class="hljs-string">&quot;&gt;1.0.2 &lt;=2.3.4&quot;</span>, <span class="hljs-regexp">//</span> 左开右闭<br>  <span class="hljs-string">&quot;boo&quot;</span> : <span class="hljs-string">&quot;2.0.1&quot;</span>, <span class="hljs-regexp">//</span> 规定版本<br>  <span class="hljs-string">&quot;qux&quot;</span> : <span class="hljs-string">&quot;&lt;1.0.0 || &gt;=2.3.1 &lt;2.4.5 || &gt;=2.5.2 &lt;3.0.0&quot;</span>, <span class="hljs-regexp">//</span> 表达式也算清晰<br>  <span class="hljs-string">&quot;asd&quot;</span> : <span class="hljs-string">&quot;http://asdf.com/asdf.tar.gz&quot;</span>, <span class="hljs-regexp">//</span> 指定下载地址代替版本<br>  <span class="hljs-string">&quot;til&quot;</span> : <span class="hljs-string">&quot;^1.2.3&quot;</span>, <span class="hljs-regexp">//</span> 同一主版本号，不小于<span class="hljs-number">1.2</span>.<span class="hljs-number">3</span> 即 <span class="hljs-number">1</span>.x.y  x&gt;=<span class="hljs-number">2</span> y&gt;=<span class="hljs-number">3</span><br>  <span class="hljs-string">&quot;elf&quot;</span> : <span class="hljs-string">&quot;~1.2.3&quot;</span>,  <span class="hljs-regexp">//</span> 同一主版本和次版本号 即<span class="hljs-number">1.2</span>.x x&gt;= <span class="hljs-number">2</span><br>  <span class="hljs-string">&quot;two&quot;</span> : <span class="hljs-string">&quot;2.x&quot;</span> , <span class="hljs-regexp">//</span> 这个比较形象，x&gt;=<span class="hljs-number">0</span>  即<span class="hljs-number">2.0</span>.<span class="hljs-number">0</span> 以上均可<br>  <span class="hljs-string">&quot;thr&quot;</span> : <span class="hljs-string">&quot;3.3.x&quot;</span> , <span class="hljs-regexp">//</span> 同上 x&gt;= <span class="hljs-number">0</span>  即<span class="hljs-number">3.3</span>.<span class="hljs-number">0</span> 以上<br>  <span class="hljs-string">&quot;lat&quot;</span> : <span class="hljs-string">&quot;latest&quot;</span>,  <span class="hljs-regexp">//</span> 最新版本<br>  <span class="hljs-string">&quot;dyl&quot;</span> : <span class="hljs-string">&quot;file:../dyl&quot;</span>,  <span class="hljs-regexp">//</span> 从本地下载<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123; &quot;dependencies&quot; :</span><br><span class="line">  &#123; &quot;foo&quot; : &quot;1.0.0 - 2.9999.9999&quot;,// 大于等于1.0.0 小于 2.9999.9999</span><br><span class="line">  &quot;bar&quot; : &quot;&gt;=1.0.2 &lt;2.1.2&quot;, // 比较清晰  左闭右开</span><br><span class="line">  &quot;baz&quot; : &quot;&gt;1.0.2 &lt;=2.3.4&quot;, // 左开右闭</span><br><span class="line">  &quot;boo&quot; : &quot;2.0.1&quot;, // 规定版本</span><br><span class="line">  &quot;qux&quot; : &quot;&lt;1.0.0 || &gt;=2.3.1 &lt;2.4.5 || &gt;=2.5.2 &lt;3.0.0&quot;, // 表达式也算清晰</span><br><span class="line">  &quot;asd&quot; : &quot;http://asdf.com/asdf.tar.gz&quot;, // 指定下载地址代替版本</span><br><span class="line">  &quot;til&quot; : &quot;^1.2.3&quot;, // 同一主版本号，不小于1.2.3 即 1.x.y  x&gt;=2 y&gt;=3</span><br><span class="line">  &quot;elf&quot; : &quot;~1.2.3&quot;,  // 同一主版本和次版本号 即1.2.x x&gt;= 2</span><br><span class="line">  &quot;two&quot; : &quot;2.x&quot; , // 这个比较形象，x&gt;=0  即2.0.0 以上均可</span><br><span class="line">  &quot;thr&quot; : &quot;3.3.x&quot; , // 同上 x&gt;= 0  即3.3.0 以上</span><br><span class="line">  &quot;lat&quot; : &quot;latest&quot;,  // 最新版本</span><br><span class="line">  &quot;dyl&quot; : &quot;file:../dyl&quot;,  // 从本地下载</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h4 id="package-lock-json"><a href="#package-lock-json" class="headerlink" title="package-lock.json"></a>package-lock.json</h4><p>早期的 npm 没有锁定包版本的功能，如果某个依赖包发布了不兼容或者有 bug 版本，部署上线时项目就可能会发生问题。针对这一问题 yarn 提出了固化版本的方案，而 npm 在^5.x.x.x 以后才有的 package-lock.json。<br>不同版本 npm 对 package-lock.json 的实现是不同的。是在一直迭代和发展的：</p>
 <ol>
@@ -311,11 +282,11 @@
 <li>5.4.2 版本如果改了 package.json，且 package.json 和 lock 文件不同，那么执行 npm i 时 npm 会根据 package 中的版本号以及语义含义去下载最新的包，并更新至 lock。<br>如果两者是同一状态，那么执行 npm i 都会根据 lock 下载，不会理会 package 实际包的版本是否有新。</li>
 </ol>
 <p>package-lock.json 的文件格式如下：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs perl">...<br><span class="hljs-string">&quot;@ant-design/colors&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;version&quot;</span>: <span class="hljs-string">&quot;4.0.5&quot;</span>,<br>    <span class="hljs-string">&quot;resolved&quot;</span>: <span class="hljs-string">&quot;http://npm.internal.focus.cn:80/@ant-design%2fcolors/-/colors-4.0.5.tgz&quot;</span>,<br>    <span class="hljs-string">&quot;integrity&quot;</span>: <span class="hljs-string">&quot;sha1-19EA11Rcyo9iSVRgSmiS/Ei6Wq4=&quot;</span>,<br>    <span class="hljs-string">&quot;requires&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;tinycolor2&quot;</span>: <span class="hljs-string">&quot;^1.4.1&quot;</span><br>    &#125;<br>&#125;,<br><span class="hljs-string">&quot;@ant-design/icons&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;version&quot;</span>: <span class="hljs-string">&quot;4.6.2&quot;</span>,<br>    <span class="hljs-string">&quot;resolved&quot;</span>: <span class="hljs-string">&quot;https://registry.npmjs.org/@ant-design/icons/-/icons-4.6.2.tgz&quot;</span>,<br>    <span class="hljs-string">&quot;integrity&quot;</span>: <span class="hljs-string">&quot;sha512-QsBG2BxBYU/rxr2eb8b2cZ4rPKAPBpzAR+0v6rrZLp/lnyvflLH3tw1vregK+M7aJauGWjIGNdFmUfpAOtw25A==&quot;</span>,<br>    <span class="hljs-string">&quot;requires&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;@ant-design/colors&quot;</span>: <span class="hljs-string">&quot;^6.0.0&quot;</span>,<br>    <span class="hljs-string">&quot;@ant-design/icons-svg&quot;</span>: <span class="hljs-string">&quot;^4.0.0&quot;</span>,<br>    <span class="hljs-string">&quot;@babel/runtime&quot;</span>: <span class="hljs-string">&quot;^7.11.2&quot;</span>,<br>    <span class="hljs-string">&quot;classnames&quot;</span>: <span class="hljs-string">&quot;^2.2.6&quot;</span>,<br>    <span class="hljs-string">&quot;rc-util&quot;</span>: <span class="hljs-string">&quot;^5.9.4&quot;</span><br>    &#125;,<br>    <span class="hljs-string">&quot;dependencies&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;@ant-design/colors&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;version&quot;</span>: <span class="hljs-string">&quot;6.0.0&quot;</span>,<br>        <span class="hljs-string">&quot;resolved&quot;</span>: <span class="hljs-string">&quot;https://registry.npmjs.org/@ant-design/colors/-/colors-6.0.0.tgz&quot;</span>,<br>        <span class="hljs-string">&quot;integrity&quot;</span>: <span class="hljs-string">&quot;sha512-qAZRvPzfdWHtfameEGP2Qvuf838NhergR35o+EuVyB5XvSA98xod5r4utvi4TJ3ywmevm290g9nsCG5MryrdWQ==&quot;</span>,<br>        <span class="hljs-string">&quot;requires&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;@ctrl/tinycolor&quot;</span>: <span class="hljs-string">&quot;^3.4.0&quot;</span><br>        &#125;<br>    &#125;<br>    &#125;<br>&#125;,<br>...<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">&quot;@ant-design/colors&quot;: &#123;</span><br><span class="line">    &quot;version&quot;: &quot;4.0.5&quot;,</span><br><span class="line">    &quot;resolved&quot;: &quot;http://npm.internal.focus.cn:80/@ant-design%2fcolors/-/colors-4.0.5.tgz&quot;,</span><br><span class="line">    &quot;integrity&quot;: &quot;sha1-19EA11Rcyo9iSVRgSmiS/Ei6Wq4=&quot;,</span><br><span class="line">    &quot;requires&quot;: &#123;</span><br><span class="line">    &quot;tinycolor2&quot;: &quot;^1.4.1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br><span class="line">&quot;@ant-design/icons&quot;: &#123;</span><br><span class="line">    &quot;version&quot;: &quot;4.6.2&quot;,</span><br><span class="line">    &quot;resolved&quot;: &quot;https://registry.npmjs.org/@ant-design/icons/-/icons-4.6.2.tgz&quot;,</span><br><span class="line">    &quot;integrity&quot;: &quot;sha512-QsBG2BxBYU/rxr2eb8b2cZ4rPKAPBpzAR+0v6rrZLp/lnyvflLH3tw1vregK+M7aJauGWjIGNdFmUfpAOtw25A==&quot;,</span><br><span class="line">    &quot;requires&quot;: &#123;</span><br><span class="line">    &quot;@ant-design/colors&quot;: &quot;^6.0.0&quot;,</span><br><span class="line">    &quot;@ant-design/icons-svg&quot;: &quot;^4.0.0&quot;,</span><br><span class="line">    &quot;@babel/runtime&quot;: &quot;^7.11.2&quot;,</span><br><span class="line">    &quot;classnames&quot;: &quot;^2.2.6&quot;,</span><br><span class="line">    &quot;rc-util&quot;: &quot;^5.9.4&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;dependencies&quot;: &#123;</span><br><span class="line">    &quot;@ant-design/colors&quot;: &#123;</span><br><span class="line">        &quot;version&quot;: &quot;6.0.0&quot;,</span><br><span class="line">        &quot;resolved&quot;: &quot;https://registry.npmjs.org/@ant-design/colors/-/colors-6.0.0.tgz&quot;,</span><br><span class="line">        &quot;integrity&quot;: &quot;sha512-qAZRvPzfdWHtfameEGP2Qvuf838NhergR35o+EuVyB5XvSA98xod5r4utvi4TJ3ywmevm290g9nsCG5MryrdWQ==&quot;,</span><br><span class="line">        &quot;requires&quot;: &#123;</span><br><span class="line">        &quot;@ctrl/tinycolor&quot;: &quot;^3.4.0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <p>可以看到，安装包需要的依赖包，如果顶级依赖满足需求的，则不再安装，仅有 requires 属性；如果不满足，则会在对应文件夹下面根据依赖安装符合版本，如上面的文件里的@ant-design&#x2F;icons，内部仍有 dependencies 属性。</p>
 <h3 id="依赖关系"><a href="#依赖关系" class="headerlink" title="依赖关系"></a>依赖关系</h3><h4 id="npm-2-x"><a href="#npm-2-x" class="headerlink" title="npm 2.x"></a>npm 2.x</h4><p>npm2.x 版本安装依赖包时会安装每一个包所依赖的所有依赖项，依赖项的依赖包也会安装在其 node_modules 目录下。如下图所示，即 node_modules 存在嵌套。</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc"><span class="hljs-bullet">.</span><br><span class="hljs-bullet"></span>└──node<span class="hljs-emphasis">_modules</span><br><span class="hljs-emphasis">        ├──test1</span><br><span class="hljs-emphasis">        └──test2</span><br><span class="hljs-emphasis">            └──node_</span>modules<br><span class="hljs-code">                    └──test3</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└──node_modules</span><br><span class="line">        ├──test1</span><br><span class="line">        └──test2</span><br><span class="line">            └──node_modules</span><br><span class="line">                    └──test3</span><br></pre></td></tr></table></figure>
 
 <p>这样的处理方式造成了两个问题：</p>
 <ol>
@@ -323,7 +294,7 @@
 <li>windows 的文件路径最长是 260 多个字符，这样嵌套是会超过 windows 路径的长度限制的。</li>
 </ol>
 <h4 id="npm-3"><a href="#npm-3" class="headerlink" title="npm 3+"></a>npm 3+</h4><p>同 yarn 一样采用了扁平化依赖的方式解决问题。与之前的目录相比，现在的文件夹结构更接近于</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc"><span class="hljs-bullet">.</span><br><span class="hljs-bullet"></span>└──node_modules<br><span class="hljs-code">        ├──test1</span><br><span class="hljs-code">        ├──test2</span><br><span class="hljs-code">        └──test3</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└──node_modules</span><br><span class="line">        ├──test1</span><br><span class="line">        ├──test2</span><br><span class="line">        └──test3</span><br></pre></td></tr></table></figure>
 
 <p>所有的依赖都被拍平到 node_modules 目录下，不再有很深层次的嵌套关系。这样在安装新的包时，根据 node require 机制，会不停往上级的 node_modules 当中去找，如果找到相同版本的包就不会重新安装，解决了大量包重复安装的问题，而且依赖层级也不会太深。<br>但扁平化依赖方法存在的问题包括：</p>
 <ul>
@@ -332,399 +303,359 @@
 <li>项目中仍然可以非法访问没有声明过依赖的包<br>依赖结构的不确定性是如果声明的依赖包 test1、test2 同时依赖另一个包 test3，但是是不同版本的时候，扁平化的结果可能有两种。</li>
 </ul>
 <p><em>npm2.x 下 test1、test2 依赖包结构</em></p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs 1c">.<br>└──node_modules<br>        ├──test1<br>        <span class="hljs-string">|   └──node_modules</span><br>        <span class="hljs-string">|           └──test3@1.0.1</span><br>        └──test2<br>            └──node_modules<br>                    └──test3@<span class="hljs-number">1.0</span>.<span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└──node_modules</span><br><span class="line">        ├──test1</span><br><span class="line">        |   └──node_modules</span><br><span class="line">        |           └──test3@1.0.1</span><br><span class="line">        └──test2</span><br><span class="line">            └──node_modules</span><br><span class="line">                    └──test3@1.0.2</span><br></pre></td></tr></table></figure>
 
 <p><em>npm3+下 test1、test2 安装结果 1</em></p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs 1c">.<br>└──node_modules<br>        ├──test1<br>        └──test2<br>        <span class="hljs-string">|   └──node_modules</span><br>        <span class="hljs-string">|           └──test3@1.0.2</span><br>        └──test3@<span class="hljs-number">1.0</span>.<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└──node_modules</span><br><span class="line">        ├──test1</span><br><span class="line">        └──test2</span><br><span class="line">        |   └──node_modules</span><br><span class="line">        |           └──test3@1.0.2</span><br><span class="line">        └──test3@1.0.1</span><br></pre></td></tr></table></figure>
 
 <p><em>npm3+下 test1、test2 安装结果 2</em></p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs 1c">.<br>└──node_modules<br>        ├──test1<br>        <span class="hljs-string">|   └──node_modules</span><br>        <span class="hljs-string">|           └──test3@1.0.1</span><br>        ├──test2<br>        └──test3@<span class="hljs-number">1.0</span>.<span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└──node_modules</span><br><span class="line">        ├──test1</span><br><span class="line">        |   └──node_modules</span><br><span class="line">        |           └──test3@1.0.1</span><br><span class="line">        ├──test2</span><br><span class="line">        └──test3@1.0.2</span><br></pre></td></tr></table></figure>
 
 <p>两种结果都有可能存在，实际安装时取决于 test1 和 test2 在 package.json 中的位置，如果 test1 声明在前面，那么就是前面的结构，否则是后面的结构。<br>为了解决依赖结构的不确定性的问题，npm 5.x 推出 package-lock.json，保证第一次安装以后 node_modules 以后在添加依赖或者重装时也不会变。</p>
 <h2 id="yarn"><a href="#yarn" class="headerlink" title="yarn"></a>yarn</h2><p>yarn 是在 npm2.x 版本没有很好的优化方案时提出的，主要用于解决嵌套超过 windows 路径的长度限制的 node_modules。虽然现在 npm 也日益趋同 yarn，但在安装速度上 yarn 还是优于 npm</p>
 <h3 id="版本控制-1"><a href="#版本控制-1" class="headerlink" title="版本控制"></a>版本控制</h3><p>默认依赖都会生成 yarn.lock 文件，该文件会通过包名+版本来确定具体信息。<br>yarn.lock 文件格式如下，yarn 用的是自己设计的格式，语法上有点像 YAML，# 开头的行是注释。依赖的依赖不会被记录在 dependencies，依赖包的依赖版本如果不存在语义冲突则会合并信息</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-string">&quot;@angular-devkit/core@12.2.10&quot;</span>:<br>  version <span class="hljs-string">&quot;12.2.10&quot;</span><br>  resolved <span class="hljs-string">&quot;http://npm.internal.focus.cn:80/@angular-devkit%2fcore/-/core-12.2.10.tgz#3da62eceef3904f92cd3f860618b4ae513029ce2&quot;</span><br>  integrity sha1-PaYuzu85BPks<span class="hljs-number">0</span>/hgYYtK5RMCnOI=<br>  dependencies:<br>    ajv <span class="hljs-string">&quot;8.6.2&quot;</span><br>    ajv-formats <span class="hljs-string">&quot;2.1.0&quot;</span><br>    fast-json-stable-stringify <span class="hljs-string">&quot;2.1.0&quot;</span><br>    magic-string <span class="hljs-string">&quot;0.25.7&quot;</span><br>    rxjs <span class="hljs-string">&quot;6.6.7&quot;</span><br>    source-<span class="hljs-keyword">map</span> <span class="hljs-string">&quot;0.7.3&quot;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&quot;@angular-devkit/core@12.2.10&quot;:</span><br><span class="line">  version &quot;12.2.10&quot;</span><br><span class="line">  resolved &quot;http://npm.internal.focus.cn:80/@angular-devkit%2fcore/-/core-12.2.10.tgz#3da62eceef3904f92cd3f860618b4ae513029ce2&quot;</span><br><span class="line">  integrity sha1-PaYuzu85BPks0/hgYYtK5RMCnOI=</span><br><span class="line">  dependencies:</span><br><span class="line">    ajv &quot;8.6.2&quot;</span><br><span class="line">    ajv-formats &quot;2.1.0&quot;</span><br><span class="line">    fast-json-stable-stringify &quot;2.1.0&quot;</span><br><span class="line">    magic-string &quot;0.25.7&quot;</span><br><span class="line">    rxjs &quot;6.6.7&quot;</span><br><span class="line">    source-map &quot;0.7.3&quot;</span><br></pre></td></tr></table></figure>
 
 <p>Yarn 仅以 flatten 格式 描述各个包之间的依赖关系，并依赖于其当前实现来创建目录结构。这意味着如果其内部算法发生变化，结构也会发生变化。</p>
 <h3 id="依赖关系-1"><a href="#依赖关系-1" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>同 npm 基本一样，其共有的问题是：如果你有 100 个项目使用了某个依赖（dependency），就会有 100 份该依赖的副本保存在硬盘上</p>
 <h2 id="pnpm"><a href="#pnpm" class="headerlink" title="pnpm"></a>pnpm</h2><p>同 npm 和 Yarn，都属于 Javascript 包管理安装工具，它较 npm 和 Yarn 在性能上得到很大提升，被称为快速的，节省磁盘空间的包管理工具。</p>
-<h3 id="依赖关系-2"><a href="#依赖关系-2" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>为了解决 npm、yarn 安装时依赖可能复制多次、占用磁盘空间的问题，pnpm 采用了全局仓库保存依赖、项目通过 link 的方式访问内容。<br><img src="/unknown404.github.io/img/pnpm.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<h3 id="依赖关系-2"><a href="#依赖关系-2" class="headerlink" title="依赖关系"></a>依赖关系</h3><p>为了解决 npm、yarn 安装时依赖可能复制多次、占用磁盘空间的问题，pnpm 采用了全局仓库保存依赖、项目通过 link 的方式访问内容。</p>
+<div class="figure center" style="width:;"><img class="fig-img" src="pnpm.png" alt=""></div><div style="clear:both;"></div>
+
 <p>当执行 pnpm install 时，项目的 node_modules 文件夹下除了安装的包名 bar、其依赖保持原有的树状、不进行提升，还会有.pnpm 目录，目录下是以展平结构管理每个版本包的源码内容，以硬链接方式指向 pnpm-store 中的文件地址。pnpm-store 是全局的 store，存储所有 npm 包，同一版本的包仅存储一份内容，甚至不同版本的包也仅存储 diff 内容。<br>如上图所示一个包的寻找需要经过三层结构：<code>node_modules/bar</code> &gt; 软链接 <code>node_modules/.pnpm/bar@1.0.0/node_modules/bar</code> &gt; 硬链接 <code>~/.pnpm-store/v3/files/00/xxxxxx</code>。</p>
 <h4 id="备注：软链接和硬链接"><a href="#备注：软链接和硬链接" class="headerlink" title="备注：软链接和硬链接"></a>备注：软链接和硬链接</h4><p>在 Linux 系统中，内核为每一个新创建的文件分配一个 Inode(索引结点)，每个文件都有一个惟一的 inode 号。文件属性保存在索引结点里，在访问文件时，索引结点被复制到内存在，从而实现文件的快速访问。<br>Linux 中包括两种链接：硬链接(Hard Link)和软链接(Soft Link)，软链接又称为符号链接（Symbolic link）。<br>硬链接说白了是一个指针，指向文件索引节点，系统并不为它重新分配 inode，他将与源文件共用一个 inode。<br>软链接相当于 windows 的快捷方式，软链接文件会将 inode 指向源文件的 block，原文件＆链接文件拥有不同的 inode 号</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6932046455733485575">关于现代包管理器的深度思考——为什么现在我更推荐 pnpm 而不是 npm&#x2F;yarn?</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904022718038024">yarn or npm 版本固化如何选择</a><br>（3）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7127295203177676837">pnpm 是凭什么对 npm 和 yarn 降维打击的</a><br>（4）<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/bZ7AVSjBcZrZ3I387_esmg">该用 pnpm 了，“快、准、狠”。</a></p>
 
-                
-              </div>
             
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
 
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
-  
-  
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/npm/" rel="tag">npm</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/pnpm/" rel="tag">pnpm</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/yarn/" rel="tag">yarn</a> <a class="tag tag--primary tag--small t-none-link" href="/unknown_404/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/" rel="tag">前端依赖包管理</a>
 
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/unknown404.github.io/tags/npm/">#npm</a>
-      
-        <a href="/unknown404.github.io/tags/%E5%89%8D%E7%AB%AF%E4%BE%9D%E8%B5%96%E5%8C%85%E7%AE%A1%E7%90%86/">#前端依赖包管理</a>
-      
-        <a href="/unknown404.github.io/tags/yarn/">#yarn</a>
-      
-        <a href="/unknown404.github.io/tags/pnpm/">#pnpm</a>
-      
-    </div>
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>依赖包管理工具比较</div>
-      <div>https://unkonwn404.github.io/unknown404.github.io/2022/08/23/packageInfo/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>小白的文件整理箱</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2022年8月23日</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
-
-
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/08/29/es6/" title="ES6语法">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">ES6语法</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/unknown404.github.io/2022/08/18/koroHeader/" title="koroFileHeader使用技巧">
-                        <span class="hidden-mobile">koroFileHeader使用技巧</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
             </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/29/es6/"
+                    data-tooltip="ES6语法"
+                    aria-label="上一篇: ES6语法"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/18/koroHeader/"
+                    data-tooltip="koroFileHeader使用技巧"
+                    aria-label="下一篇: koroFileHeader使用技巧"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2025 小白的文件整理箱. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/29/es6/"
+                    data-tooltip="ES6语法"
+                    aria-label="上一篇: ES6语法"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/unknown_404/2022/08/18/koroHeader/"
+                    data-tooltip="koroFileHeader使用技巧"
+                    aria-label="下一篇: koroFileHeader使用技巧"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://unknown-four-hundred-and-four.gitee.io/unknown_404/2022/08/23/packageInfo/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
 
             
-          </article>
         </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header">
-    <i class="iconfont icon-list"></i>
-    <span>目录</span>
-  </p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
+        
 
 
     
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
+        
     
 
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
         </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
+        
+            <img id="about-card-picture" src="/unknown_404/assets/images/icon.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">小白的文件整理箱</h4>
+        
+            <div id="about-card-bio"><p>名もない今日を愛しさで彩る〜</p>
 </div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>菜鸟级摸鱼工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shadow Border
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/unknown_404/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/unknown_404/assets/js/script-irmmn5vm0sjepvpgu6objy6omsq5bczmrikvesy6zimdmfxahwktrnvtwcfk.min.js"></script>
+
+<!--SCRIPTS END-->
+
 
     
 
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/unknown404.github.io/js/events.js" ></script>
-<script  src="/unknown404.github.io/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
 
 
 
-
-  
-    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
-  
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    window.tocbot.init(Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script  src="/unknown404.github.io/js/local-search.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/unknown404.github.io/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
+    </body>
 </html>
