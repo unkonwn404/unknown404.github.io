@@ -24,7 +24,7 @@
 <meta property="og:description" content="自 chatgpt 面世以来，ai 相关的产品层出不穷，如何用好 ai、让它更好的为自己服务也是一大新课题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-09-11T09:08:59.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:35:45.674Z">
+<meta property="article:modified_time" content="2025-10-09T12:57:34.327Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="AGI">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k 字
+          2.5k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          13 分钟
+          22 分钟
         
       </span>
     
@@ -289,6 +289,80 @@
 <h3 id="Agent-应用"><a href="#Agent-应用" class="headerlink" title="Agent 应用"></a>Agent 应用</h3><p>目前各大企业都提供了制作 agent 的平台，比较有名的有字节的 coze、钉钉的 AI 助理、Dify 等，主要可以分为以下几类</p>
 <h4 id="AI-插件"><a href="#AI-插件" class="headerlink" title="AI+插件"></a>AI+插件</h4><p>特点：提供为模型写人设（即 prompt）的功能，可替换模型、添加插件、数据库，以及配置好后的对话调试</p>
 <h4 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h4><p>特点：可以设置节点，处理一些复杂的任务：例如实现跳转和循环、根据多次输入的内容进行作答的场景；对不同类问题的回答有不同的输出格式要求的场景</p>
+<h3 id="AI-应用搭建工具"><a href="#AI-应用搭建工具" class="headerlink" title="AI 应用搭建工具"></a>AI 应用搭建工具</h3><h4 id="dify"><a href="#dify" class="headerlink" title="dify"></a>dify</h4><p>项目地址：github.com&#x2F;langgenius&#x2F;dify</p>
+<p>架构与特点：</p>
+<ul>
+<li>模块化设计，支持 OpenAI、阿里云通义千问等模型</li>
+<li>内置文档解析、向量化和语义检索</li>
+<li>图形化界面与插件热部署支持快速集成</li>
+</ul>
+<p>适用场景：<br>知识库问答、客户智能客服、多模态内容生成局限：多 Agent 协作能力有限，开源模型支持不如专业框架</p>
+<h4 id="n8n"><a href="#n8n" class="headerlink" title="n8n"></a>n8n</h4><p>项目地址：github.com&#x2F;n8n-io&#x2F;n8n.git</p>
+<p>架构与特点：</p>
+<ul>
+<li>可视化节点拖拽构建工作流</li>
+<li>支持 400+应用 API 集成</li>
+<li>原生 AI 支持，可调用自定义模型</li>
+</ul>
+<p>适用场景：<br>企业营销、财务自动化、客服沟通局限：不适合构建复杂生产级智能体系统</p>
+<h4 id="coze"><a href="#coze" class="headerlink" title="coze"></a>coze</h4><p>项目地址：<a target="_blank" rel="noopener" href="http://www.coze.cn/">www.coze.cn/</a></p>
+<p>架构与特点：</p>
+<ul>
+<li>可视化工作流，拖拽式操作无需编程</li>
+<li>内置 60+插件，支持多种应用场景</li>
+<li>支持长期记忆和定时任务，增强体验</li>
+</ul>
+<p>适用场景：<br>聊天机器人、文案生成、自动化工作流局限：深度多 Agent 协作有限，企业级功能仍在完善</p>
+<table>
+  <thead>
+    <tr>
+      <td>特性</td>
+      <td><b>Dify</b></td>
+      <td><b>n8n</b></td>
+      <td><b>Coze</b></td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>核心定位</b></td>
+      <td><b>LLM应用开发平台</b></td>
+      <td><b>通用自动化工具</b></td>
+      <td><b>AI Bot构建平台</b></td>
+    </tr>
+    <tr>
+      <td><b>主要任务</b></td>
+      <td>构建、编排和管理基于<b>大模型</b>的应用，如聊天机器人、Agent。</td>
+      <td>连接和自动化<b>不同应用</b>和服务之间的工作流。</td>
+      <td>快速创建和部署<b>聊天机器人</b>和<b>AI Agent</b>。</td>
+    </tr>
+    <tr>
+      <td><b>技术栈</b></td>
+      <td>LLM、RAG、提示词编排、数据集管理。</td>
+      <td>各类应用API、HTTP请求、编程逻辑、工作流节点。</td>
+      <td>大模型、AI能力（如知识库、插件、记忆）。</td>
+    </tr>
+    <tr>
+      <td><b>主要用户</b></td>
+      <td>希望快速开发和部署AI应用的开发者、产品经理。</td>
+      <td>需要集成和自动化业务流程的技术人员、运营人员。</td>
+      <td>对技术了解不多、想快速创建机器人和非技术用户。</td>
+    </tr>
+    <tr>
+      <td><b>核心价值</b></td>
+      <td>降低开发AI应用的门槛，让LLM应用可控、可定制。</td>
+      <td>提高效率，消除重复手动任务，连接应用生态。</td>
+      <td>提供了零门槛的界面，将复杂的大模型功能封装成易用的模块。</td>
+    </tr>
+    <tr>
+      <td><b>应用场景</b></td>
+      <td><b>智能客服、AI Agent、内容生成</b>工具。</td>
+      <td><b>数据同步、跨平台通知</b>、文件处理自动化。</td>
+      <td><b>客服机器人、闲聊机器人、个人助理</b>、社媒自动化。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>总结来说，n8n 正在打造”AI 节点市场”，让全球开发者共享自动化模块，未来你只需拖拽几下，就能实现复杂的 AI 工作流。<br>Dify 深耕企业级 AI 应用，正在开发行业专属模板，让医疗、金融、法律等垂直领域的 AI 应用开发变得更简单。<br>Coze 背靠字节跳动，正在打造”AI 应用超市”，未来可能一键部署到抖音、今日头条等平台，让普通人也能用 AI 创业赚钱。</p>
 <h2 id="prompt"><a href="#prompt" class="headerlink" title="prompt"></a>prompt</h2><h3 id="什么是-prompt（提示词）？"><a href="#什么是-prompt（提示词）？" class="headerlink" title="什么是 prompt（提示词）？"></a>什么是 prompt（提示词）？</h3><p>提示词在人工智能领域是一种特定的输入，用于激发 AI 系统进行特定的思考或行为。它们可以是问题、指令或描述，旨在引导 AI 理解用户的意图并作出相应的反应。提示词的设计需要考虑到 AI 的理解和生成能力，确保它们能够激发出期望的输出</p>
 <h2 id="MCP"><a href="#MCP" class="headerlink" title="MCP"></a>MCP</h2><p>MCP（模型上下文协议）是由 Anthropic 公司提出的一种新技术，通过标准化接口，确保 AI 模型（如 Claude）与外部工具、数据源之间可以无缝协作，解决了传统数据孤岛带来的限制，提升了 AI 模型的性能与响应的准确性。</p>
 <h3 id="MCP-结构"><a href="#MCP-结构" class="headerlink" title="MCP 结构"></a>MCP 结构</h3><p>MCP Server：提供特定功能的服务器。<br>MCP Client：通过 MCP 协议与服务器进行通讯的客户端。<br>数据源：包括文件、数据库记录、API 响应等。</p>

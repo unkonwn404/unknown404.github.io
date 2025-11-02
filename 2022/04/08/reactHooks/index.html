@@ -24,7 +24,7 @@
 <meta property="og:description" content="记录常用的 React 钩子的使用方法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-04-08T06:47:53.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:35:45.732Z">
+<meta property="article:modified_time" content="2025-09-05T08:29:23.074Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.4k 字
+          7.6k 字
         
       </span>
     
@@ -310,7 +310,7 @@
 <p>组件库 ahook 的 useLatest 就是利用 useRef 这一特性。其源码为：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useRef &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;<br><br><span class="hljs-comment">// 通过 useRef，保持每次获取到的都是最新的值</span><br><span class="hljs-keyword">function</span> useLatest&lt;T&gt;(<span class="hljs-attr">value</span>: T) &#123;<br>  <span class="hljs-keyword">const</span> ref = <span class="hljs-title function_">useRef</span>(value);<br>  ref.<span class="hljs-property">current</span> = value;<br>  <span class="hljs-keyword">return</span> ref;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> useLatest;<br></code></pre></td></tr></table></figure>
 
-<h2 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h2><p>允许你在函数组件中执行一些副作用操作，比如数据获取、订阅事件、手动修改 DOM 等。</p>
+<h2 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h2><p>允许你在函数组件中执行一些副作用操作，比如数据获取、订阅事件、手动修改 DOM 等。 useEffect 存储在 Fiber 节点上，在commit阶段同一调度执行。使用 Object.is()比较依赖变化，才重新执行 useEffect；更新时先执行上次 effect 的清理函数，再执行 useEffect 传入的回调，存储清理函数。</p>
 <p>使用示例：</p>
 <figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs arcade">useEffect(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;<br>    ...<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;<br>&#125;,[variable])<br></code></pre></td></tr></table></figure>
 

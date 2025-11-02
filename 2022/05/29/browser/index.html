@@ -24,7 +24,7 @@
 <meta property="og:description" content="浏览器相关知识点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-29T13:04:09.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:35:45.684Z">
+<meta property="article:modified_time" content="2025-10-26T02:54:42.948Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.1k 字
+          4.2k 字
         
       </span>
     
@@ -326,9 +326,10 @@
 <li><strong>disk cache</strong></li>
 <li><strong>push cache</strong>：上述 3 种缓存都未命中时使用，只存在于会话中</li>
 </ol>
-<h3 id="缓存策略"><a href="#缓存策略" class="headerlink" title="缓存策略"></a>缓存策略</h3><h4 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h4><ol>
+<h3 id="缓存策略"><a href="#缓存策略" class="headerlink" title="缓存策略"></a>缓存策略</h3><p>强缓存和协商缓存可以同时配置，当两者同时存在时，强缓存的优先级更高</p>
+<h4 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h4><ol>
 <li>expires：http1.0 产物，格林威治时间</li>
-<li>cache-control：http1.1 产物，max-age 单位 s<br>cache-control其他属性：</li>
+<li>cache-control：http1.1 产物，max-age 单位 s<br>cache-control 其他属性：</li>
 </ol>
 <ul>
 <li>no-cache：浏览器会存储资源，但在下一次访问时会向服务器发起验证请求</li>
@@ -342,12 +343,12 @@
 </ol>
 <h4 id="刷新操作对缓存内容影响"><a href="#刷新操作对缓存内容影响" class="headerlink" title="刷新操作对缓存内容影响"></a>刷新操作对缓存内容影响</h4><p>正常操作（地址栏输入 url，跳转链接，前进后退等）：强制缓存有效，协商缓存有效。<br>手动刷新（f5，点击刷新按钮，右键菜单刷新）：强制缓存失效，协商缓存有效。<br>强制刷新（ctrl + f5，shift+command+r）：强制缓存失效，协商缓存失效。</p>
 <h2 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h2><p>浏览器一个 tab 就是一个进程</p>
-<h3 id="回流-vs-重绘"><a href="#回流-vs-重绘" class="headerlink" title="回流 vs 重绘"></a>回流 vs 重绘</h3><p>回流：布局或元素几何属性改变<br>重绘：节点更改外观、不影响布局</p>
+<h3 id="回流-vs-重绘"><a href="#回流-vs-重绘" class="headerlink" title="回流 vs 重绘"></a>回流 vs 重绘</h3><p>回流：布局或元素几何属性改变，计算量大，纯 CPU 任务，不会直接用到 GPU<br>重绘：节点更改外观、不影响布局，依赖 CPU 栅格化，但最终必须交给 GPU 渲染</p>
 <p>重绘不会引起回流，回流一定会导致重绘</p>
 <p>减少回流的方法：<br>1）transform 代替 top<br>2）visibility：hidden 代替 display：none<br>3）不用 table 布局<br>4）避免 css 表达式<br>5）动画选择 requestAnimationFrame</p>
 <h3 id="浏览器从输入-URL-到返回页面的过程"><a href="#浏览器从输入-URL-到返回页面的过程" class="headerlink" title="浏览器从输入 URL 到返回页面的过程"></a>浏览器从输入 URL 到返回页面的过程</h3><p>1）DNS 解析网址<br>2）tcp3 次握手建立连接，发送 http 请求<br>3）解析 html 文件转换为 dom 树<br>4）解析 css 生成 css dom 树<br>5）dom 树和 css dom 树结合生成 render 树（过滤掉 display：none、head、script 等结构）<br>6）根据 render 树布局，gpu 绘制、合成图层，显示在屏幕</p>
 <h4 id="为什么分图层渲染"><a href="#为什么分图层渲染" class="headerlink" title="为什么分图层渲染"></a>为什么分图层渲染</h4><ol>
-<li>某些元素分离到独立图层可以利用 GPU 加速，提高渲染性能（eg. css动画，canvas绘制，webgl）。</li>
+<li>某些元素分离到独立图层可以利用 GPU 加速，提高渲染性能（eg. css 动画，canvas 绘制，webgl）。</li>
 <li>减少重绘</li>
 <li>处理动画：使用 CSS 的 3D 转换或动画时，浏览器通常会将这些元素提升到新的图层，以便更好地处理三维效果。</li>
 </ol>

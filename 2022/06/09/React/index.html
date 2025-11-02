@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle-detail.jpeg">
 <meta property="article:published_time" content="2022-06-09T12:47:30.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:35:45.674Z">
+<meta property="article:modified_time" content="2025-10-08T05:20:51.566Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          13k 字
+          14k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          110 分钟
+          116 分钟
         
       </span>
     
@@ -310,27 +310,69 @@
 <ol start="4">
 <li>无法极致优化</li>
 </ol>
-<h4 id="React-diff-算法原理"><a href="#React-diff-算法原理" class="headerlink" title="React diff 算法原理"></a>React diff 算法原理</h4><ul>
-<li>真实的 DOM 首先会映射为虚拟 DOM；</li>
-<li>当虚拟 DOM 发生变化后，就会根据差距计算生成 patch，这个 patch 是一个结构化的数据，内容包含了增加、更新、移除等；</li>
-<li>根据 patch 去更新真实的 DOM，反馈到用户的界面上。</li>
+<h4 id="React-diff-算法原理"><a href="#React-diff-算法原理" class="headerlink" title="React diff 算法原理"></a>React diff 算法原理</h4><p>React diff 遵循以下规则：</p>
+<ul>
+<li><strong>同级比较，不跨层级</strong>：节点层级不同，直接销毁旧节点及其子树，重新创建新节点。</li>
+<li><strong>同类型节点，复用；不同类型，销毁重建</strong></li>
+<li><strong>列表节点通过 key 进行对比</strong>：React 会根据 key 来判断节点是否“是同一个”，来决定进行增删、移动还是复用操作</li>
 </ul>
 <p>在 React16 之前，React 是直接递归比较 vdom 的，setState 会触发重新渲染，对比渲染出的新旧 vdom，对差异部分进行 dom 操作。<br>在 React16 之后，为了优化性能，会先把 vdom 转换成 fiber，也就是从树转换成链表，然后再渲染。整体渲染流程分成了两个阶段：</p>
 <p><strong>reconciliation 阶段</strong>：从 vdom 转换成 fiber，并且对需要 dom 操作的节点打上 effectTag 的标记，通过 requestIdleCallback 或 Scheduler 分片执行<br><strong>commit 阶段</strong>：对有 effectTag 标记的 fiber 节点进行 dom 操作，并执行所有的 effect 副作用函数。这个阶段是同步的，不可中断，以保证最终的更新操作能应用到实际的 DOM 中。</p>
 <p>从 vdom 转成 fiber 的过程叫做 reconcile（调和），这个过程是可以打断的，由 scheduler 调度执行。</p>
 <p>React 的 diff 算法是分成两次遍历的：<br><strong>第一轮遍历</strong>，一一对比 vdom 和老的 fiber，如果 key 和 type 相同则认为该节点可以复用、处理下一个节点，否则就结束遍历。<br>如果所有的新的 vdom 处理完了，那就把剩下的老 fiber 节点删掉就行。<br>如果还有 vdom 没处理，那就进行第二次遍历；<br><strong>第二轮遍历</strong>，主要是解决节点移动的问题：遍历新的 vdom 节点，每一个都去看看这个节点在旧 fiber 链中的位置（旧位置），如果旧位置在最新固定节点的右边，说明这个节点位置不变，就是可复用，移动过来打上更新的标记，并成为新的固定节点；如果旧位置在最新固定节点的左边，当前这个节点的位置要往右挪。最后把剩下的老 fiber 删掉，剩下的新 vdom 新增。</p>
+<h4 id="vdom-vs-fiber"><a href="#vdom-vs-fiber" class="headerlink" title="vdom vs fiber"></a>vdom vs fiber</h4><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>普通 VNode（React15&#x2F;Vue）</th>
+<th>React Fiber 节点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据结构</td>
+<td>树结构（对象嵌套）</td>
+<td>链表结构（child&#x2F;sibling&#x2F;return）</td>
+</tr>
+<tr>
+<td>描述内容</td>
+<td>UI（标签、属性、子节点）</td>
+<td>UI + 状态 + 优先级 + 更新标记</td>
+</tr>
+<tr>
+<td>遍历方式</td>
+<td>递归遍历</td>
+<td>循环遍历，可中断&#x2F;恢复</td>
+</tr>
+<tr>
+<td>生命周期</td>
+<td>每次更新新建节点</td>
+<td>节点可复用，保存上次渲染结果</td>
+</tr>
+<tr>
+<td>调度能力</td>
+<td>无调度能力</td>
+<td>支持优先级、并发、异步调度</td>
+</tr>
+<tr>
+<td>双缓存机制</td>
+<td>无</td>
+<td>有（current&#x2F;workInProgress）</td>
+</tr>
+</tbody></table>
 <h4 id="React-列表渲染为什么要用-key？"><a href="#React-列表渲染为什么要用-key？" class="headerlink" title="React 列表渲染为什么要用 key？"></a>React 列表渲染为什么要用 key？</h4><p>diff 算法中通过 tag 和 key 来判断是否是同一个节点，因此必须用 key。且<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7099745927413366797">key 值最好不是 index</a>，因为列表依赖的数据长度可能会变化，而使用 index 作为 key 不能表征数据的变化，影响性能；在列表结构内部使用其他元素如 input 时 diff 算法会认为其没有发生变化，因此内部的数据也不会更新<br>key 值也不能是 random、不然会增加 diff 计算量<br>总结：</p>
 <ol>
 <li>减小 diff 算法计算量，提升渲染性能</li>
 <li>避免列表项有状态的组件状态混乱</li>
 </ol>
-<h2 id="React-并发机制"><a href="#React-并发机制" class="headerlink" title="React 并发机制"></a>React 并发机制</h2><p>允许 React 在渲染过程中根据任务的优先级进行调度和中断，从而确保高优先级的更新能够及时渲染</p>
+<h2 id="React-事务机制"><a href="#React-事务机制" class="headerlink" title="React 事务机制"></a>React 事务机制</h2><p>React15 之前用的方案，一次更新是一笔“事务”（Transaction），React 会从根节点递归更新虚拟 DOM → 计算 diff → 同步更新真实 DOM</p>
+<h2 id="React-并发机制"><a href="#React-并发机制" class="headerlink" title="React 并发机制"></a>React 并发机制</h2><p>React 18 引入的新模式，允许 React 在渲染过程中根据任务的优先级进行调度和中断，从而确保高优先级的更新能够及时渲染。在 React 16 中，虽然 Fiber 内部具备了“可中断”的能力，但对开发者暴露的渲染模式依然是“同步模式（legacy mode）”。</p>
 <h3 id="并发机制工作原理"><a href="#并发机制工作原理" class="headerlink" title="并发机制工作原理"></a>并发机制工作原理</h3><ul>
 <li>时间分片</li>
 <li>可中断渲染</li>
 <li>优先调度</li>
 </ul>
 <h3 id="并发启用方式"><a href="#并发启用方式" class="headerlink" title="并发启用方式"></a>并发启用方式</h3><p>要在 React 应用中启用并发模式，需要使用 createRoot API</p>
+<h3 id="优先级声明-API"><a href="#优先级声明-API" class="headerlink" title="优先级声明 API"></a>优先级声明 API</h3><p>startTransition、useDeferredValue</p>
 <h3 id="优先级排序"><a href="#优先级排序" class="headerlink" title="优先级排序"></a>优先级排序</h3><table>
 <thead>
 <tr>
@@ -476,7 +518,8 @@
 <li>如果 useState 返回的是数组，那么使用者可以对数组中的元素命名，代码看起来也比较干净</li>
 <li>如果 useState 返回的是对象，在解构对象的时候必须要和 useState 内部实现返回的对象同名，想要使用多次的话，必须得设置别名才能使用返回值</li>
 </ul>
-<h3 id="为何-Hooks-不能放在条件或循环之内？"><a href="#为何-Hooks-不能放在条件或循环之内？" class="headerlink" title="为何 Hooks 不能放在条件或循环之内？"></a>为何 Hooks 不能放在条件或循环之内？</h3><p>React 内部在执行函数组件时，会维护一个“Hook 调用栈”（本质上是一个数组）。每次组件重新渲染时，React 会根据调用顺序，把 hooks[0] 赋给第一个 useState，hooks[1] 赋给第二个。顺序一旦变了，整个状态系统就乱了。</p>
+<h3 id="为何-Hooks-不能放在条件或循环之内？"><a href="#为何-Hooks-不能放在条件或循环之内？" class="headerlink" title="为何 Hooks 不能放在条件或循环之内？"></a>为何 Hooks 不能放在条件或循环之内？</h3><p>官方要求每次渲染都以相同顺序调用 Hooks。顺序变化会导致状态赋值错乱。因为React依赖Hooks调用顺序的稳定性来关联状态与内存索引‌。<br>React 内部在执行函数组件时，会维护一个“Hook 调用栈”（本质上是一个数组）。每次组件重新渲染时，React 会根据调用顺序，把 hooks[0] 赋给第一个 useState，hooks[1] 赋给第二个。顺序一旦变了，整个状态系统就乱了。</p>
+<h3 id="React-闭包"><a href="#React-闭包" class="headerlink" title="React 闭包"></a>React 闭包</h3><p>React 中的闭包问题主要出现在函数组件和 Hooks 中，是由于 JavaScript 闭包特性与 React 重新渲染机制的结合导致的。解决方式包括：使用函数式 setState 更新、正确设置 useEffect 依赖数组、使用 useRef 保存最新值的引用</p>
 <h2 id="组件间通信"><a href="#组件间通信" class="headerlink" title="组件间通信"></a>组件间通信</h2><h3 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h3><p>父组件-&gt;子组件：通过 props 传递数据给子组件<br>子组件-&gt;父组件：子组件通过调用父组件传来的函数传递数据给父组件</p>
 <h3 id="兄弟组件通信"><a href="#兄弟组件通信" class="headerlink" title="兄弟组件通信"></a>兄弟组件通信</h3><p>可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。</p>
 <h3 id="跨多层次组件通信"><a href="#跨多层次组件通信" class="headerlink" title="跨多层次组件通信"></a>跨多层次组件通信</h3><p>可以使用 Context API</p>
