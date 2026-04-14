@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/pwa/pwa-download.png">
 <meta property="article:published_time" content="2025-08-06T03:30:32.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:35:45.731Z">
+<meta property="article:modified_time" content="2025-11-02T07:40:37.473Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="PWA">
 <meta property="article:tag" content="离线化">
@@ -224,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          9.9k 字
+          10k 字
         
       </span>
     
@@ -235,7 +235,7 @@
         
         
         
-          83 分钟
+          87 分钟
         
       </span>
     
@@ -293,6 +293,11 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;manifest&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;/assets/manifest.json&quot;</span> /&gt;</span><br></code></pre></td></tr></table></figure>
 
 <p>如果浏览器可以找到这个 manifest 文件及里面的 icons 链接，它就会在地址栏里给你显示个按钮，提示用户本网站可以安装为 PWA。<br><img src="/unknown404.github.io/img/pwa/pwa-download.png" srcset="/unknown404.github.io/img/loading.gif" lazyload></p>
+<h4 id="PS：PWA-和-electron-桌面应用区别"><a href="#PS：PWA-和-electron-桌面应用区别" class="headerlink" title="PS：PWA 和 electron 桌面应用区别"></a>PS：PWA 和 electron 桌面应用区别</h4><ol>
+<li>部署与分发方式<br>PWA 可以直接通过网页链接访问，用户可以通过浏览器中的“添加到主屏幕”功能将其安装到设备上，整个过程无需经过应用商店审核。Electron 应用则需要像传统桌面软件一样进行打包分发，生成针对不同操作系统的可执行文件</li>
+<li>性能与资源消耗<br>在资源占用方面，PWA 明显更为轻量，因为它复用设备上已有的浏览器引擎。而 Electron 由于内置了完整的 Chromium 和 Node.js，应用体积较大且内存占用较高。不过，Electron 在访问系统底层功能方面更具优势，能够调用更多原生 API</li>
+<li>平台兼容性与开发成本<br>PWA 具有天然的跨平台特性，能够同时在桌面和移动设备上运行。Electron 虽然也支持跨平台，但主要专注于桌面端，包括 Windows、macOS 和 Linux。从开发角度看，PWA 允许开发者使用标准的 Web 技术栈，而 Electron 在此基础上还融入了 Node.js 生态系统，具备更强大的系统集成能力</li>
+</ol>
 <h3 id="离线化"><a href="#离线化" class="headerlink" title="离线化"></a>离线化</h3><p>离线加载本质上是页面所需的各种 js、css 以及页面本身的 html，都可以缓存到本地，不再从网络上请求。这个能力是通过 Service Worker 来实现的。</p>
 <h4 id="Service-Worker"><a href="#Service-Worker" class="headerlink" title="Service Worker"></a>Service Worker</h4><p>Service Worker 其实也是一个 js 文件（我们下面简称 sw.js），拥有和其他 Web Worker 类似的隔离空间。Service Worker 受到一定的限制，无法直接访问 DOM，只能通过 postMessage() 方法与网页进行通信。</p>
 <h5 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h5><p>注册的流程如下所示：</p>

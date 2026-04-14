@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unkonwn404.github.io/unknown404.github.io/img/life-cycle-detail.jpeg">
 <meta property="article:published_time" content="2022-06-09T12:47:30.000Z">
-<meta property="article:modified_time" content="2025-10-08T05:20:51.566Z">
+<meta property="article:modified_time" content="2025-11-18T02:48:46.056Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -234,7 +234,7 @@
         
         
         
-          116 分钟
+          119 分钟
         
       </span>
     
@@ -508,17 +508,16 @@
 <p>总结：React Hooks 的状态和副作用绑定在 Fiber 节点 上，Fiber 控制 Hooks 在组件中以固定顺序调用</p>
 <h3 id="class-与-hook-区别"><a href="#class-与-hook-区别" class="headerlink" title="class 与 hook 区别"></a>class 与 hook 区别</h3><p><strong>类组件</strong>的根基是 OOP（面向对象编程），所以它有继承、有属性、有内部状态的管理。<br><strong>函数组件</strong>的根基是 FP，也就是函数式编程。它属于“结构化编程”的一种，与数学函数思想类似。也就是假定输入与输出存在某种特定的映射关系，那么输入一定的情况下，输出必然是确定的。</p>
 <ul>
-<li>类组件是可以实现继承的，而函数组件缺少继承的能力。继承比较黑盒，不建议采用。组合优于继承</li>
-<li>类组件 this 模糊性</li>
-<li>函数式组件写法简单，无生命周期函数，类组件划分了明确的生命周期</li>
-<li>类组件在涉及状态管理时代码会显得很复杂，函数式相比之下简单点</li>
+<li>逻辑层：类组件 this 模糊性，函数式组件写法简单，无生命周期函数，类组件划分了明确的生命周期</li>
+<li>工程层：逻辑复用更容易</li>
+<li>性能层：类组件的生命周期模型是同步阻塞的，限制了 React 18 引入的 Concurrent Mode（并发渲染）</li>
 </ul>
 <h3 id="useState-要使用数组而不是对象"><a href="#useState-要使用数组而不是对象" class="headerlink" title="useState 要使用数组而不是对象"></a>useState 要使用数组而不是对象</h3><p>数组解构可以重命名</p>
 <ul>
 <li>如果 useState 返回的是数组，那么使用者可以对数组中的元素命名，代码看起来也比较干净</li>
 <li>如果 useState 返回的是对象，在解构对象的时候必须要和 useState 内部实现返回的对象同名，想要使用多次的话，必须得设置别名才能使用返回值</li>
 </ul>
-<h3 id="为何-Hooks-不能放在条件或循环之内？"><a href="#为何-Hooks-不能放在条件或循环之内？" class="headerlink" title="为何 Hooks 不能放在条件或循环之内？"></a>为何 Hooks 不能放在条件或循环之内？</h3><p>官方要求每次渲染都以相同顺序调用 Hooks。顺序变化会导致状态赋值错乱。因为React依赖Hooks调用顺序的稳定性来关联状态与内存索引‌。<br>React 内部在执行函数组件时，会维护一个“Hook 调用栈”（本质上是一个数组）。每次组件重新渲染时，React 会根据调用顺序，把 hooks[0] 赋给第一个 useState，hooks[1] 赋给第二个。顺序一旦变了，整个状态系统就乱了。</p>
+<h3 id="为何-Hooks-不能放在条件或循环之内？"><a href="#为何-Hooks-不能放在条件或循环之内？" class="headerlink" title="为何 Hooks 不能放在条件或循环之内？"></a>为何 Hooks 不能放在条件或循环之内？</h3><p>官方要求每次渲染都以相同顺序调用 Hooks。顺序变化会导致状态赋值错乱。因为 React 依赖 Hooks 调用顺序的稳定性来关联状态与内存索引 ‌。<br>React 内部在执行函数组件时，会维护一个“Hook 调用栈”（本质上是一个数组）。每次组件重新渲染时，React 会根据调用顺序，把 hooks[0] 赋给第一个 useState，hooks[1] 赋给第二个。顺序一旦变了，整个状态系统就乱了。</p>
 <h3 id="React-闭包"><a href="#React-闭包" class="headerlink" title="React 闭包"></a>React 闭包</h3><p>React 中的闭包问题主要出现在函数组件和 Hooks 中，是由于 JavaScript 闭包特性与 React 重新渲染机制的结合导致的。解决方式包括：使用函数式 setState 更新、正确设置 useEffect 依赖数组、使用 useRef 保存最新值的引用</p>
 <h2 id="组件间通信"><a href="#组件间通信" class="headerlink" title="组件间通信"></a>组件间通信</h2><h3 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h3><p>父组件-&gt;子组件：通过 props 传递数据给子组件<br>子组件-&gt;父组件：子组件通过调用父组件传来的函数传递数据给父组件</p>
 <h3 id="兄弟组件通信"><a href="#兄弟组件通信" class="headerlink" title="兄弟组件通信"></a>兄弟组件通信</h3><p>可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件。</p>
@@ -528,7 +527,39 @@
 <li>Context 对象的 Consumer 组件可以接收当前的 context 值，并返回一个 React 节点。传递给函数的 value 值等价于组件树上方离这个 context 最近的 Provider 提供的 value 值。如果没有对应的 Provider，value 参数等同于传递给 createContext() 的 defaultValue。</li>
 <li>挂载在 class 上的 contextType 属性可以赋值为由 React.createContext() 创建的 Context 对象。此属性可以让你使用 this.context 来获取最近 Context 上的值。</li>
 </ul>
+<p>缺点：</p>
+<ul>
+<li>所有使用 useContext 的组件都会在 Provider 值变化时全部重新渲染；</li>
+<li>不方便做复杂逻辑（例如异步请求、副作用、模块化拆分）；</li>
+<li>调试困难，数据流跟踪不直观。</li>
+</ul>
 <h3 id="任意组件"><a href="#任意组件" class="headerlink" title="任意组件"></a>任意组件</h3><p>可以通过 Redux 或者 Event Bus 解决，另外如果你不怕麻烦的话，可以使用这种方式解决上述所有的通信情况</p>
+<h4 id="eventBus"><a href="#eventBus" class="headerlink" title="eventBus"></a>eventBus</h4><p>优点</p>
+<ul>
+<li>解耦性高：组件之间不需要层级关系；</li>
+<li>快速灵活：可以跨模块通信；</li>
+<li>适用于临时性、松散的交互场景。</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>状态不可追踪，难以调试；</li>
+<li>事件订阅&#x2F;解绑容易遗漏导致内存泄漏；</li>
+<li>当通信复杂时，事件命名和依赖关系混乱；</li>
+<li>无状态快照，不适合全局状态管理。</li>
+</ul>
+<h4 id="redux"><a href="#redux" class="headerlink" title="redux"></a>redux</h4><p>优点</p>
+<ul>
+<li>状态集中、可预测；</li>
+<li>社区生态完善（redux-saga、redux-thunk）；</li>
+<li>适合大型应用的模块化管理；</li>
+<li>性能优化成熟（useSelector 精准订阅）。</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>学习成本高；</li>
+<li>样板代码多（action、reducer、store）；</li>
+<li>小型项目使用显得繁琐。</li>
+</ul>
 <h2 id="React-生态"><a href="#React-生态" class="headerlink" title="React 生态"></a>React 生态</h2><h3 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h3><h4 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h4><ul>
 <li>state：数据源存放位置</li>
 <li>action：定义分发行为</li>

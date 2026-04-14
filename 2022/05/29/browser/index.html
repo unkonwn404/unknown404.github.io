@@ -24,7 +24,7 @@
 <meta property="og:description" content="浏览器相关知识点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-29T13:04:09.000Z">
-<meta property="article:modified_time" content="2025-10-26T02:54:42.948Z">
+<meta property="article:modified_time" content="2025-11-02T10:36:05.461Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.2k 字
+          4.7k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          35 分钟
+          39 分钟
         
       </span>
     
@@ -371,24 +371,72 @@
 </ul>
 <h3 id="事件委托"><a href="#事件委托" class="headerlink" title="事件委托"></a>事件委托</h3><p>利用事件冒泡原理将监听注册在父元素上<br>优点：1）减少事件注册、减少内存消耗 2）新增对象时不需要加监听事件</p>
 <h3 id="常见事件"><a href="#常见事件" class="headerlink" title="常见事件"></a>常见事件</h3><p>event.preventDefault()：阻止默认事件<br>event.stopPropagation()：阻止冒泡<br>event.stopImmediatePropagation()：阻止该节点其他注册事件及冒泡</p>
-<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><h3 id="页面渲染优化"><a href="#页面渲染优化" class="headerlink" title="页面渲染优化"></a>页面渲染优化</h3><ul>
-<li>避免 js、css 阻塞：css 影响 renderTree 的构建，会阻塞页面的渲染，因此应该尽早加载；js 可以修改 CSSOM 和 DOM，因此 js 会阻塞页面的解析和渲染，需要放到底部</li>
-<li>减少重绘和回流</li>
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><h3 id="1-资源加载阶段"><a href="#1-资源加载阶段" class="headerlink" title="1. 资源加载阶段"></a>1. 资源加载阶段</h3><h4 id="构建层面"><a href="#构建层面" class="headerlink" title="构建层面"></a>构建层面</h4><ul>
+<li><p>代码分包（splitChunks &#x2F; dynamic import）</p>
+</li>
+<li><p>Tree-Shaking、Scope Hoisting</p>
+</li>
+<li><p>压缩与 Gzip &#x2F; Brotli</p>
+</li>
+<li><p>图片体积压缩（webp、avif、雪碧图、懒加载）</p>
+</li>
 </ul>
-<h3 id="JS-优化"><a href="#JS-优化" class="headerlink" title="JS 优化"></a>JS 优化</h3><ul>
-<li><p>使用防抖和节流</p>
+<h4 id="网络层面"><a href="#网络层面" class="headerlink" title="网络层面"></a>网络层面</h4><ul>
+<li><p>CDN 加速，配置缓存头（Cache-Control, ETag）</p>
+</li>
+<li><p>预请求&#x2F;预加载（<link rel="preload/prefetch">）</p>
+</li>
+<li><p>DNS 预解析、HTTP&#x2F;2、多路复用</p>
+</li>
+</ul>
+<h4 id="首屏优化"><a href="#首屏优化" class="headerlink" title="首屏优化"></a>首屏优化</h4><ul>
+<li><p>SSR&#x2F;SSG（减少白屏）</p>
+</li>
+<li><p>Skeleton 骨架屏</p>
+</li>
+</ul>
+<h3 id="2-渲染与交互阶段"><a href="#2-渲染与交互阶段" class="headerlink" title="2. 渲染与交互阶段"></a>2. 渲染与交互阶段</h3><h4 id="减少重排重绘"><a href="#减少重排重绘" class="headerlink" title="减少重排重绘"></a>减少重排重绘</h4><ul>
+<li><p>避免频繁操作 DOM</p>
+</li>
+<li><p>批量更新样式（使用 classList 或 requestAnimationFrame）</p>
+</li>
+<li><p>用 transform 替代 top&#x2F;left 移动元素</p>
+</li>
+</ul>
+<h4 id="渲染优化"><a href="#渲染优化" class="headerlink" title="渲染优化"></a>渲染优化</h4><ul>
+<li><p>虚拟列表（大量数据渲染）</p>
+</li>
+<li><p>IntersectionObserver 控制懒加载渲染</p>
+</li>
+<li><p>图片懒加载（loading&#x3D;”lazy”）</p>
+</li>
+</ul>
+<h4 id="交互优化"><a href="#交互优化" class="headerlink" title="交互优化"></a>交互优化</h4><ul>
+<li><p>防抖&#x2F;节流（resize、scroll）</p>
 <div class="note note-info">
             <p>  <strong>防抖（debounce）</strong><br>  不管事件触发频率多高，一定在事件触发 n 秒后才执行，如果你在一个事件触发的 n 秒内又触发了这个事件，就以新的事件的时间为准，n 秒后才执行，总之，触发完事件 n 秒内不再触发事件，n 秒后再执行。<br>  <em>应用场景</em></p><ol><li>窗口大小变化，调整样式</li><li>搜索框，输入后 1000 毫秒搜索</li><li>表单验证，输入 1000 毫秒后验证</li></ol><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">debounce</span>(<span class="hljs-params">event, time</span>) &#123;<br>  <span class="hljs-keyword">let</span> timer = <span class="hljs-literal">null</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) &#123;<br>    <span class="hljs-built_in">clearTimeout</span>(timer);<br>    timer = <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>      event.<span class="hljs-title function_">apply</span>(<span class="hljs-variable language_">this</span>, args);<br>    &#125;, time);<br>  &#125;;<br>&#125;<br><br></code></pre></td></tr></table></figure><p><strong>节流（throttle）</strong><br>不管事件触发频率多高，只在单位时间内执行一次。</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-comment">// 第一次必触发，最后一次不会触发</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">throttle</span>(<span class="hljs-params">event, time</span>) &#123;<br>  <span class="hljs-keyword">let</span> pre = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>() - pre &gt; time) &#123;<br>      pre = <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>();<br>      event.<span class="hljs-title function_">apply</span>(<span class="hljs-variable language_">this</span>, args);<br>    &#125;<br>  &#125;<br>&#125;<br><span class="hljs-comment">// 第一次事件不会触发，最后一次一定触发</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">throttle</span>(<span class="hljs-params">event, time</span>) &#123;<br>  <span class="hljs-keyword">let</span> timer = <span class="hljs-literal">null</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) &#123;<br>    <span class="hljs-keyword">if</span> (!timer) &#123;<br>      timer = <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>        timer = <span class="hljs-literal">null</span>;<br>        event.<span class="hljs-title function_">apply</span>(<span class="hljs-variable language_">this</span>, args);<br>      &#125;, time);<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
           </div>
 </li>
-<li><p>使用 css 动画代替 js 动画</p>
+<li><p>Worker 分离计算任务</p>
 </li>
-<li><p>使用事件委托</p>
+<li><p>使用动画库（如 requestAnimationFrame 或 GPU 加速）</p>
 </li>
 </ul>
-<h3 id="css-优化"><a href="#css-优化" class="headerlink" title="css 优化"></a>css 优化</h3><ul>
-<li>雪碧图</li>
-<li>懒加载</li>
+<h3 id="3-运行阶段（监控与防劣化）"><a href="#3-运行阶段（监控与防劣化）" class="headerlink" title="3. 运行阶段（监控与防劣化）"></a>3. 运行阶段（监控与防劣化）</h3><h4 id="性能监控"><a href="#性能监控" class="headerlink" title="性能监控"></a>性能监控</h4><ul>
+<li><p>PerformanceObserver 采集指标（FP、FCP、LCP、CLS、FID）</p>
+</li>
+<li><p>异常捕获：window.onerror、unhandledrejection、资源加载错误</p>
+</li>
+</ul>
+<h4 id="优化策略"><a href="#优化策略" class="headerlink" title="优化策略"></a>优化策略</h4><ul>
+<li><p>懒加载路由与模块</p>
+</li>
+<li><p>资源按需加载</p>
+</li>
+<li><p>长列表回收&#x2F;分页渲染</p>
+</li>
+<li><p>防止内存泄漏（事件解绑、避免闭包滥用）</p>
+</li>
 </ul>
 
                 
