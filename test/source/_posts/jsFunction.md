@@ -43,28 +43,22 @@ function compose(...funcs) {
 
 ### 3.限制并发请求数
 
-```JavaScript
+```js
 function multiRequest(urls = [], maxNum) {
   // 请求总数量
   const len = urls.length;
   // 根据请求数量创建一个数组来保存请求的结果
   const result = new Array(len).fill(false);
-  // 当前完成的数量
-  let count = 0;
-
+  let count = 0; // 下一个要请求的索引
+  let finished = 0; // 已完成的请求数
   return new Promise((resolve, reject) => {
     // 请求maxNum个
-    while (count < maxNum) {
+    while (finished < maxNum) {
       next();
     }
     function next() {
       let current = count++;
-      // 处理边界条件
-      if (current >= len) {
-        // 请求全部完成就将promise置为成功状态, 然后将result作为promise值返回
-        !result.includes(false) && resolve(result);
-        return;
-      }
+
       const url = urls[current];
       console.log(`开始 ${current}`, new Date().toLocaleString());
       fetch(url)
@@ -72,21 +66,37 @@ function multiRequest(urls = [], maxNum) {
           // 保存请求结果
           result[current] = res;
           console.log(`完成 ${current}`, new Date().toLocaleString());
-          // 请求没有全部完成, 就递归
-          if (current < len) {
-            next();
-          }
         })
         .catch((err) => {
           console.log(`结束 ${current}`, new Date().toLocaleString());
           result[current] = err;
-          // 请求没有全部完成, 就递归
-          if (current < len) {
+        })
+        .finally(() => {
+          finished++;
+          if (finished == len) {
+            resolve(result);
+          } else {
             next();
           }
         });
     }
   });
+}
+```
+
+**扩展**：请求如果还要加上重试次数，则需要调整 next 内的逻辑，设计重连逻辑函数
+
+```js
+function requestWithRetry(url, retry) {
+  let time = 0;
+  while (time < retry) {
+    try {
+      return fetch(url);
+    } catch (err) {
+      time++;
+      if (time > retry) throw err;
+    }
+  }
 }
 ```
 
@@ -219,7 +229,9 @@ class EventEmitter {
   }
 }
 ```
+
 ### 7.实现一个带并发限制的异步调度器 Scheduler，保证同时运行的任务最多有两个。完善下面代码中的 Scheduler 类，使得以下程序能正确输出。
+
 ```
 class Scheduler {
   add(promiseCreator) { ... }
@@ -242,59 +254,112 @@ addTask(400, '4')
 
 // 打印顺序是：2 3 1 4
 ```
-实现方法：题目中scheduler.add(() => timeout(time))之后接的是then，说明add方法一定是一个Promise。add方法可以被立即调用，但是不一定会立即执行，说明维护了一个队列，存放我们的任务。
+
+实现方法：题目中 scheduler.add(() => timeout(time))之后接的是 then，说明 add 方法一定是一个 Promise。add 方法可以被立即调用，但是不一定会立即执行，说明维护了一个队列，存放我们的任务。
 另外，同时运行的任务最多有两个，说明要维护一个变量存放正在运行的任务数量。
 
 ```js
 class Scheduler {
-  constructor() {
-    this.queue = []; // 存储等待执行的任务
-    this.running = 0; // 当前正在执行的任务数
-    this.maxConcurrent = 2; // 最大并发数
-  }
+     constructor(){
+         this.queue=[]
+         this.maxCount = 2
+         this.running=0
+     }
+     run(){
+         if(this.queue.length==0||this.running>=this.maxCount)return
+         const {promiseCreator,resolve} = this.queue.shift()
+         this.running++
+         promiseCreator().then((res)=>{
+             resolve(res)
+         }).finally(()=>{
+             this.running--
+             this.run()
+         })
+     }
+  add(promiseCreator) { 
+      return new Promise(resolve=>{
+          this.queue.push({promiseCreator,resolve})
+          this.run()
+      })
+   }
+  // ...
+}
+const timeout = (time) => new Promise(resolve => {
+  setTimeout(resolve, time)
+})
 
-  add(promiseCreator) {
-    return new Promise((resolve) => {
-      this.queue.push(() => promiseCreator().then(resolve));
-      this.runNext(); // 尝试运行下一个任务
-    });
-  }
-
-  runNext() {
-    if (this.running >= this.maxConcurrent || this.queue.length === 0) {
-      return; // 超过并发限制或无任务时直接返回
-    }
-
-    this.running++; // 增加当前运行的任务数
-    const task = this.queue.shift(); // 取出队列中的第一个任务
-    task().finally(() => {
-      this.running--; // 当前任务完成后减少计数
-      this.runNext(); // 继续运行下一个任务
-    });
-  }
+const scheduler = new Scheduler()
+const addTask = (time, order) => {
+  scheduler.add(() => timeout(time))
+    .then(() => console.log(order))
 }
 
-// 工具函数，模拟延迟
-const timeout = (time) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
-
-// 实例化 Scheduler
-const scheduler = new Scheduler();
-
-// 添加任务
-const addTask = (time, order) => {
-  scheduler.add(() => timeout(time)).then(() => console.log(order));
-};
-
-// 调用任务
-addTask(1000, '1');
-addTask(500, '2');
-addTask(300, '3');
-addTask(400, '4');
+addTask(1000, '1')
+addTask(500, '2')
+addTask(300, '3')
+addTask(400, '4')
 ```
 
+### 8.实现一个 useInterval
+
+思路：需要注意的点有：1.使用 useRef 保存回调函数引用，确保定时器中总是调用最新的回调；2.在 useEffect 的清理函数中正确清除定时器
+
+```js
+const useInterval = (delay, callback) => {
+  const funcRef = useRef();
+  useEffect(() => {
+    funcRef.current = callback;
+  }, [callback]);
+  useEffect(() => {
+    if (delay) {
+      const timer = setInterval(() => {
+        funcRef.current();
+      }, delay);
+      return clearInterval(timer);
+    }
+  }, [delay]);
+};
+```
+
+### 9.手写 Vue 双向绑定
+
+```js
+//vue 2
+function defineReactiveKey(obj, key, val) {
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get() {
+      console.log(`get ${key}`);
+      return val;
+    },
+    set(value) {
+      if (val !== value) {
+        console.log(`set ${key} to ${value}`);
+        val = value;
+      }
+    },
+  });
+}
+//vue 3
+function reactive(obj) {
+  return new Proxy(obj, {
+    get(obj, key, receiver) {
+      const res = Reflect.get(obj, key, receiver);
+      console.log(`get ${key}`);
+      return res;
+    },
+    set(obj, key, value, receiver) {
+      const res = Reflect.set(obj, key, value, receiver);
+      if (value !== obj[key]) {
+        console.log(`set ${key} to ${value}`);
+      }
+      return res;
+    },
+  });
+}
+```
+Vue3里使用了与Object结构类似的Reflect（只是多了receiver 触发这个操作的对象），是为了防止在 Proxy handler 里直接用 target[key] = value，有可能再次触发 set 拦截，导致死循环
 ## 参考资料
 
 （1）[字节跳动面试之如何用 JS 实现 Ajax 并发请求控制](https://www.jb51.net/article/211898.htm)

@@ -58,11 +58,14 @@ tags:
 
 ### 缓存策略
 
+强缓存和协商缓存可以同时配置，当两者同时存在时，强缓存的优先级更高
+
 #### 强缓存
 
 1. expires：http1.0 产物，格林威治时间
 2. cache-control：http1.1 产物，max-age 单位 s
-cache-control其他属性：
+   cache-control 其他属性：
+
 - no-cache：浏览器会存储资源，但在下一次访问时会向服务器发起验证请求
 - no-store：完全不缓存资源
 
@@ -84,8 +87,8 @@ cache-control其他属性：
 
 ### 回流 vs 重绘
 
-回流：布局或元素几何属性改变
-重绘：节点更改外观、不影响布局
+回流：布局或元素几何属性改变，计算量大，纯 CPU 任务，不会直接用到 GPU
+重绘：节点更改外观、不影响布局，依赖 CPU 栅格化，但最终必须交给 GPU 渲染
 
 重绘不会引起回流，回流一定会导致重绘
 
@@ -107,7 +110,7 @@ cache-control其他属性：
 
 #### 为什么分图层渲染
 
-1. 某些元素分离到独立图层可以利用 GPU 加速，提高渲染性能（eg. css动画，canvas绘制，webgl）。
+1. 某些元素分离到独立图层可以利用 GPU 加速，提高渲染性能（eg. css 动画，canvas 绘制，webgl）。
 2. 减少重绘
 3. 处理动画：使用 CSS 的 3D 转换或动画时，浏览器通常会将这些元素提升到新的图层，以便更好地处理三维效果。
 
@@ -170,14 +173,53 @@ event.stopImmediatePropagation()：阻止该节点其他注册事件及冒泡
 
 ## 性能优化
 
-### 页面渲染优化
+### 1. 资源加载阶段
 
-- 避免 js、css 阻塞：css 影响 renderTree 的构建，会阻塞页面的渲染，因此应该尽早加载；js 可以修改 CSSOM 和 DOM，因此 js 会阻塞页面的解析和渲染，需要放到底部
-- 减少重绘和回流
+#### 构建层面
 
-### JS 优化
+- 代码分包（splitChunks / dynamic import）
 
-- 使用防抖和节流
+- Tree-Shaking、Scope Hoisting
+
+- 压缩与 Gzip / Brotli
+
+- 图片体积压缩（webp、avif、雪碧图、懒加载）
+
+#### 网络层面
+
+- CDN 加速，配置缓存头（Cache-Control, ETag）
+
+- 预请求/预加载（<link rel="preload/prefetch">）
+
+- DNS 预解析、HTTP/2、多路复用
+
+#### 首屏优化
+
+- SSR/SSG（减少白屏）
+
+- Skeleton 骨架屏
+
+### 2. 渲染与交互阶段
+
+#### 减少重排重绘
+
+- 避免频繁操作 DOM
+
+- 批量更新样式（使用 classList 或 requestAnimationFrame）
+
+- 用 transform 替代 top/left 移动元素
+
+#### 渲染优化
+
+- 虚拟列表（大量数据渲染）
+
+- IntersectionObserver 控制懒加载渲染
+
+- 图片懒加载（loading="lazy"）
+
+#### 交互优化
+
+- 防抖/节流（resize、scroll）
   {% note info %}
 
   **防抖（debounce）**
@@ -231,10 +273,24 @@ function throttle(event, time) {
 
 {% endnote %}
 
-- 使用 css 动画代替 js 动画
-- 使用事件委托
+- Worker 分离计算任务
 
-### css 优化
+- 使用动画库（如 requestAnimationFrame 或 GPU 加速）
 
-- 雪碧图
-- 懒加载
+### 3. 运行阶段（监控与防劣化）
+
+#### 性能监控
+
+- PerformanceObserver 采集指标（FP、FCP、LCP、CLS、FID）
+
+- 异常捕获：window.onerror、unhandledrejection、资源加载错误
+
+#### 优化策略
+
+- 懒加载路由与模块
+
+- 资源按需加载
+
+- 长列表回收/分页渲染
+
+- 防止内存泄漏（事件解绑、避免闭包滥用）

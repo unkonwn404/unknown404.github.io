@@ -249,7 +249,7 @@ function object(o){
 
 ### 寄生式继承
 
-基本思路：创建一个仅用于封装继承过程的函数，该函数在内部以某种方式增强对象，最后返回这个对象。（Object.create原理类似object函数）
+基本思路：创建一个仅用于封装继承过程的函数，该函数在内部以某种方式增强对象，最后返回这个对象。（Object.create 原理类似 object 函数）
 特点：在主要考虑对象而不是自定义类型和构造函数的情况下，实现简单的继承；缺点类似构造函数继承
 
 ### 寄生组合型继承
@@ -386,7 +386,7 @@ function create(){
 
 定义：可以获取其他函数内变量的函数
 优点：1.可创建私有变量；2.防止全局变量污染；3.模仿块级作用域
-缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、dom监听未取消、闭包循环引用）
+缺点：容易内存泄露（eg.意外的全局变量、定时器未及时清理、dom 监听未取消、闭包循环引用）
 
 ### 偏函数与柯里化
 
@@ -464,6 +464,8 @@ xhr.send(null);
 
 - macrotasks(宏任务):script(整体代码)、setTimeout、setInterval、setImmediate、I/O、UI rendering
 - microtasks(微任务):process.nextTick、Promises、Object.observe、MutationObserver
+
+宏任务与微任务的区分主要是为了解决JavaScript单线程环境下异步任务的执行优先级问题，确保紧急任务能够及时处理
 
 ##### 浏览器循环机制
 

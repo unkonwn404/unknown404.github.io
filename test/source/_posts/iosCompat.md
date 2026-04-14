@@ -1,5 +1,5 @@
 ---
-title: 移动端开发时的系统兼容性问题
+title: 前端开发时的系统兼容性问题
 date: 2023-10-27 21:10:36
 categories:
   - 踩坑经历
@@ -12,7 +12,7 @@ tags:
 
 <!-- more -->
 
-# 浏览器篇
+# 移动端浏览器篇
 
 ## 问题 1: ios 系统输入框 disabled 状态样式过浅
 
@@ -204,3 +204,34 @@ document.addEventListener("visibilitychange", () => {
 ## 问题 1: 弹窗滚动穿透问题（即弹窗出现时页面还可以做滚动操作）
 
 解决方法：跟使用的技术及小程序平台有关，如果只有[微信小程序](https://developers.weixin.qq.com/community/develop/doc/d615c9a8957a00225ae66b65a8c2bd01?highLine=%25E6%25BB%259A%25E5%258A%25A8%25E7%25A9%25BF%25E9%2580%258F)可以用官方提供的 page-meta，或者在弹窗上增加 catchtouchmove 属性；如果使用了跨端框架（例如[Taro](https://taro-docs.jd.com/docs/vue-overall#taro-3-%E5%9C%A8%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%AB%AF%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6)），可能这些属性不生效，只能通过改变页面样式如固定高度、溢出隐藏等来禁止页面的滚动
+
+# pc浏览器
+
+## 问题 1: 设置overflow：auto样式时滑动块在hover时会变粗、样式难看
+
+解决方法：在设置该样式的模块下增加下面的样式。高度不怎么好调，建议放弃
+
+```less
+.container {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+```

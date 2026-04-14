@@ -136,6 +136,30 @@ interface IPerson extends IName { age: number };
 
 3. 接口具有声明合并的行为，type 没有
 
+## keyof vs typeof
+
+| 关键字   | 作用                                    | 使用场景                       |
+| -------- | --------------------------------------- | ------------------------------ |
+| `typeof` | 获取 **值的类型**                       | 把一个变量的类型抽取出来复用   |
+| `keyof`  | 获取 **类型的所有键名**（组成联合类型） | 约束对象 key，或做索引访问类型 |
+```ts
+const person = {
+  name: 'Tom',
+  age: 18
+};
+
+type Person = typeof person;    // { name: string; age: number }
+type PersonKeys = keyof Person; // "name" | "age"
+
+// 约束函数参数必须是 person 的 key
+function getValue(obj: Person, key: PersonKeys) {
+  return obj[key];
+}
+
+getValue(person, 'name'); // ✅
+getValue(person, 'xxx');  // ❌ 报错
+```
+
 ## 运算符使用
 
 ### 非空断言运算符 !

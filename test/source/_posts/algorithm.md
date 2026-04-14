@@ -385,6 +385,33 @@ const flatObj = flattenObject(nestedObj);
 console.log(flatObj);
 ```
 
+#### 对象恢复
+
+思路：对象展开的逆方法，同样也是递归实现，逐层拆 key
+
+```js
+function recoverObj(obj) {
+  let res = {};
+  for (let key in obj) {
+    let keyArr = key.split(".");
+    if (keyArr.length == 1) {
+      res[keyArr[0]] = obj[keyArr[0]];
+    } else {
+      const outerKey = keyArr.shift();
+      const innerKey = keyArr.join(".");
+      let tmp = {};
+      tmp[innerKey] = obj[key];
+      if (!res[outerKey]) {
+        res[outerKey] = {};
+      }
+      res[outerKey] = { ...res[outerKey], ...recoverObj(tmp) };
+    }
+  }
+  return res;
+}
+console.log(recoverObj({ "a.b.c": 1, "a.d": 2, e: 3 }));
+```
+
 ### 二叉树
 
 特点：每个节点最多有两个子树的树结构，通常子树被称作“左子树”和“右子树”。
@@ -797,6 +824,36 @@ var isValid = function(s) {
         }
     }
     return stack.length === 0
+};
+```
+
+### hash
+
+#### LRU
+
+```js
+function lru(capacity) {
+  this.content = new Map();
+  this.capacity = capacity;
+}
+lru.prototype.put = function (key, value) {
+  if (this.content.has(key)) {
+    this.content.delete(key);
+  }
+  this.content.set(key, value);
+  if (this.content.size() > this.capacity) {
+    const firstKey = this.content.keys().next().value;
+    this.content.delete(firstKey);
+  }
+};
+lru.prototype.get = function (key) {
+  const res = null;
+  if (this.content.has(key)) {
+    res = this.content.get(key);
+    this.content.delete(key);
+    this.content.set(key, res);
+  }
+  return res;
 };
 ```
 

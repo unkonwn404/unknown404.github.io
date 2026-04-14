@@ -44,8 +44,8 @@ tags:
 
 ## script 标签中 defer 和 async 的区别
 
-**defer**：script 下载不会打断 html 解析，在 html 解析完成之后 script 会按顺序执行
-**async**：script 下载会打断 html 解析，先加载完先执行
+**defer**：script 下载完成后不会打断 html 解析，在 html 解析完成之后 script 会按顺序执行
+**async**：script 下载完成后会打断 html 解析，先加载完先执行
 
 # CSS
 
