@@ -1,0 +1,8 @@
+# GitHub Pages config
+url: https://unkonwn404.github.io/unknown404.github.io
+root: /unknown404.github.io/
+
+deploy:
+  type: git
+  repository: https://github.com/unkonwn404/unknown404.github.io.git
+  branch: main

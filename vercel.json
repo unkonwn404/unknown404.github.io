@@ -1,0 +1,5 @@
+{
+  "installCommand": "cd test && npm install",
+  "buildCommand": "cd test && npm run build:vercel",
+  "outputDirectory": "test/public"
+}

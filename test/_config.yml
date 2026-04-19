@@ -13,7 +13,8 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://unkonwn404.github.io/unknown404.github.io
+url: https://unknown404-github-io.vercel.app
+root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -99,12 +100,6 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: fluid
 
-# Deployment
-## Docs: https://hexo.io/docs/one-command-deployment
-deploy:
-  type: git
-  repository: https://github.com/unkonwn404/unknown404.github.io.git
-  branch: main
 feed:
     type: atom
     path: atom.xml

@@ -3,13 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "hexo generate",
+    "build": "npm run build:vercel",
+    "build:github": "hexo clean && hexo generate --config _config.yml,_config.github.yml",
+    "build:vercel": "node tools/build-vercel.cjs",
     "clean": "hexo clean",
-    "deploy": "hexo deploy",
+    "deploy": "hexo clean && hexo deploy --generate --config _config.yml,_config.github.yml",
     "server": "hexo server",
-    "refresh": "hexo clean && hexo generate && hexo server",
+    "refresh": "npm run build && hexo server",
     "test": "node tranquilpeak2fluid.js",
-    "push": "hexo clean & hexo deploy"
+    "push": "npm run deploy"
   },
   "hexo": {
     "version": "6.0.0"
