@@ -1,5 +1,5 @@
 {
-  "installCommand": "cd test && npm install",
+  "installCommand": "cd test && npm install --no-package-lock --registry=https://registry.npmjs.org",
   "buildCommand": "cd test && npm run build:vercel",
   "outputDirectory": "test/public"
 }
