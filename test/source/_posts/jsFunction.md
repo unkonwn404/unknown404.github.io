@@ -45,40 +45,40 @@ function compose(...funcs) {
 
 ```js
 function multiRequest(urls = [], maxNum) {
-  // 请求总数量
   const len = urls.length;
-  // 根据请求数量创建一个数组来保存请求的结果
-  const result = new Array(len).fill(false);
-  let count = 0; // 下一个要请求的索引
-  let finished = 0; // 已完成的请求数
-  return new Promise((resolve, reject) => {
-    // 请求maxNum个
-    while (finished < maxNum) {
-      next();
-    }
-    function next() {
-      let current = count++;
 
-      const url = urls[current];
-      console.log(`开始 ${current}`, new Date().toLocaleString());
-      fetch(url)
+  if (!len) return Promise.resolve([]);
+
+  const result = new Array(len);
+  let count = 0;
+  let finished = 0;
+
+  return new Promise((resolve) => {
+    function next() {
+      const current = count++;
+
+      if (current >= len) return;
+
+      fetch(urls[current])
         .then((res) => {
-          // 保存请求结果
           result[current] = res;
-          console.log(`完成 ${current}`, new Date().toLocaleString());
         })
         .catch((err) => {
-          console.log(`结束 ${current}`, new Date().toLocaleString());
           result[current] = err;
         })
         .finally(() => {
           finished++;
-          if (finished == len) {
+
+          if (finished === len) {
             resolve(result);
           } else {
             next();
           }
         });
+    }
+
+    for (let i = 0; i < Math.min(maxNum, len); i++) {
+      next();
     }
   });
 }

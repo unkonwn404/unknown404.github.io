@@ -199,6 +199,116 @@ document.addEventListener("visibilitychange", () => {
 });
 ```
 
+## 问题16:全屏fixed组件在ios情况下键盘弹出时组件会整体向上平移
+
+原因：根据[这篇文章](https://juejin.cn/post/6961757804491178014)，这是系统固有特性，ios和android对webview的定义不同导致的：android在键盘弹起时webview会压缩高度，而ios会将webview上移
+解决方法：wap是无法监听键盘高度的，只能换一个思路，利用viewport API特性，在输入框focus的情况下获取当前可见视口的高度，blur的时候再更新一次。
+
+```vue
+<template>
+  <div class="full-screen-container" v-show="visible" :style="containerStyle">
+    <!-- .... -->
+    <input
+      ref="editArea"
+      class="edit-area"
+      @focus="onInputFocus"
+      @blur="onInputBlur"
+    />
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      visible: false,
+      viewportHeight: 0,
+      viewportWidth: 0,
+      viewportOffsetTop: 0,
+      viewportOffsetLeft: 0,
+    };
+  },
+  computed: {
+    containerStyle() {
+      const style = {};
+      if (isIosH5 && this.visible) {
+        style.top = `${this.viewportOffsetTop}px`;
+        style.left = `${this.viewportOffsetLeft}px`;
+        style.width = `${this.viewportWidth || window.innerWidth}px`;
+        style.height = `${this.viewportHeight || window.innerHeight}px`;
+        style.bottom = "auto";
+        style.right = "auto";
+        console.log("containerStyle", style);
+      }
+      return style;
+    },
+  },
+
+  methods: {
+    updateViewport() {
+      if (typeof window === "undefined") return;
+      const vv = window.visualViewport;
+      const prev = this.viewportHeight;
+      this.viewportHeight = vv ? vv.height : window.innerHeight;
+      this.viewportWidth = vv ? vv.width : window.innerWidth;
+      this.viewportOffsetTop = vv ? vv.offsetTop : 0;
+      this.viewportOffsetLeft = vv ? vv.offsetLeft : 0;
+    },
+
+    // ========== Focus / Blur ==========
+    onInputFocus() {
+      if (isIosH5) {
+        this.updateViewport();
+      }
+    },
+    onInputBlur() {
+      if (isIosH5) {
+        this.updateViewport();
+      }
+    },
+  },
+};
+</script>
+```
+
+## 问题17:涉及页面滚动阈值判断时，ios浏览器向上滚动到顶部时有橡皮回弹，会导致向上滑动一点距离执行样式调整的操作失效
+
+原因： 阈值的判断涉及向上的趋势和滑动高度、回弹会导致页面不符合条件失效。
+解决方法：
+把阈值判断的工作分为几步：
+
+### **1. 基础数据提取与方向判断**
+
+- 获取当前滚动位置 `scrollTop`（归一化处理负值）
+- 和上一次滚动位置比较，判断是**向上滑动** (`isUpward`) 还是**向下滑动** (`isDownward`)
+- 特殊处理 iOS 机型的弹性回弹场景
+
+### **2. 头部折叠逻辑【向下滑】**
+
+触发条件（同时满足）：
+
+- `scrollTop >= foldAt`（超过指定阈值）
+- `isDownward`（向下滚动）
+- `canRefold`（距离上次展开超过冷却时间 260ms）
+
+效果：隐藏 header，记录折叠时间戳，清空之前的上滑累计
+
+### **3. 头部展开逻辑【向上滑】**
+
+触发前置检查：
+
+- 当前已处于折叠态 (`headerHidden === true`)
+- 滚动位置接近顶部 (eg. `scrollTop <= 20px`)
+- 向上滑动
+
+进一步判断（防止抖动）：
+
+- **冷却时间检查**：折叠后 200ms 内不允许立即展开
+- **最小位移检查**：累计上滑距离至少 16px
+
+全部满足后 → 设置 `headerHidden = false`，记录展开时间戳
+
+
 # 小程序篇
 
 ## 问题 1: 弹窗滚动穿透问题（即弹窗出现时页面还可以做滚动操作）

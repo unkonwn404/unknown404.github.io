@@ -319,3 +319,4 @@ useEffect(() => {
 3. https://juejin.cn/post/6862559324632252430#heading-7
 4. https://hub.fastgit.org/kisslove/web-monitoring/blob/e06d28312a17d8a09dbc2997a437f952075c8868/backend_server/business/site.js#L111
 5. https://juejin.cn/post/6960919409267474439#heading-4
+6. [腾讯三面：说说前端监控平台/监控SDK的架构设计和难点亮点？](https://juejin.cn/post/7108660942686126093#heading-19)

@@ -219,3 +219,7 @@ Taro.request({
 
 ## 16.百度小程序输入一段文字后输入框掉到键盘下面了
 原因：似乎是因为频繁使用vuex全局更新输入的内容、会在一段typing完成后输入框失焦，所以样式变为无键盘样式，但是此时键盘并没有消息。为什么会导致这个问题暂时不明
+
+## 17.Taro.getSystemInfoSync().platform === 'ios'的判断在生命周期里可以正常判断，在script常量里不能
+原因：Taro.getSystemInfoSync 在生命周期中能正常判断，是因为此时运行在真实终端环境，Taro runtime 已完成初始化；
+而在 script 顶层定义常量时，代码会在模块初始化阶段执行，可能发生在构建期或 runtime 未 ready 的阶段，导致获取到的系统信息不准确或为空。

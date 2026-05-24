@@ -393,6 +393,80 @@ git push global <branch-name>
 如果是本地初始化的工程可以先拉取远程仓库某一分支，使用 git merge 指令将本地工程的代码合到远程仓库。
 根据网上资料可以使用`git pull --rebase global <branch-name>`解决将本地代码推到远程仓库时报错`error: failed to push some refs to XXX`。实际操作的时候出现了很多错误，不得不取消了 rebase 操作。究其原因应该是该方法只适用于远程库与本地库代码没有同步的情况，而不是本地代码和远程代码完全无关的情况。
 
+## worktree 常见使用方法
+
+`git worktree` 可以让一个仓库同时对应多个工作区。简单来说，就是在同一个本地仓库基础上，再开出一个或多个独立的目录，每个目录都可以切到不同分支上开发，适合并行处理多个任务。
+
+### 基本概念
+
+- 一个仓库可以挂载多个 worktree
+- 每个 worktree 都有自己独立的工作区
+- 不同 worktree 可以切到不同分支，互不影响
+- 同一个分支不能同时被两个 worktree 使用
+
+### 常用命令
+
+查看当前仓库已经挂载了哪些 worktree：
+
+```bash
+git worktree list
+```
+
+新增一个 worktree，并在指定目录检出一个新分支：
+
+```bash
+git worktree add ../project-feature feature/login
+```
+
+如果分支已经存在，也可以直接切过去：
+
+```bash
+git worktree add ../project-hotfix hotfix/xxx
+```
+
+移除不再使用的 worktree：
+
+```bash
+git worktree remove ../project-feature
+```
+
+清理已经失效的 worktree 记录：
+
+```bash
+git worktree prune
+```
+
+### 并行开发场景
+
+#### 场景一：一个人同时处理两个任务
+
+比如当前 `develop` 分支正在做需求 A，但线上又来了一个紧急 bug，需要从 `master` 拉一个修复分支。
+
+这时可以这样做：
+
+```bash
+git worktree add ../project-bugfix master
+```
+
+然后在 `../project-bugfix` 目录里专门修 bug，原来的目录继续做需求 A。这样就不用来回 `git stash`、`checkout`，切换成本会低很多。
+
+#### 场景二：多个分支同时联调
+
+有时候你需要：
+
+- 一个目录跑主功能分支
+- 另一个目录跑兼容分支
+- 再开一个目录专门看历史版本或排查问题
+
+`worktree` 的好处就是每个目录互不干扰，可以同时打开多个 VS Code 窗口并行开发，日志、依赖、运行状态也更清晰。
+
+### 使用注意
+
+- 删除 worktree 目录前，最好先确认里面没有未提交修改
+- 如果手动删了 worktree 目录，记得执行 `git worktree prune`
+- 开发完成后及时删除不用的 worktree，避免目录太多不好管理
+- 如果你想在多个目录里切换同一个分支，先确认该分支没有被其他 worktree 占用
+
 ## 参考资料
 
 （1）[commit 规范+commitlint+CHANGELOG 自动生成一条龙服务](https://juejin.cn/post/6934292467160514567#heading-0)
@@ -401,3 +475,4 @@ git push global <branch-name>
 （4）[我在工作中是如何使用 git 的](https://juejin.cn/post/6974184935804534815)
 （5）[DAY11-git cherry-pick 和 revert](https://ithelp.ithome.com.tw/articles/10244481)
 （6）["Please enter a commit message for your changes"](https://stackoverflow.com/questions/73012357/please-enter-a-commit-message-for-your-changes)
+（7）[3 个命令 7 个步骤，学会 git worktree 并行开发](https://juejin.cn/post/7633718886635356210)
