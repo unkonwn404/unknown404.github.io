@@ -1,0 +1,855 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="记录 Vercel AI SDK 的核心组成、网关能力，以及在前端中如何做流式渲染。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vercel SDK 初步解读">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2026/05/27/vercelSDK/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="记录 Vercel AI SDK 的核心组成、网关能力，以及在前端中如何做流式渲染。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-27T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-23T08:04:12.408Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="Vercel">
+<meta property="article:tag" content="AI SDK">
+<meta property="article:tag" content="流式渲染">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Vercel SDK 初步解读 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Vercel SDK 初步解读"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-05-27 10:00" pubdate>
+          2026年5月27日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Vercel SDK 初步解读</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最近在了解大模型能力时，发现Vercel AI SDK 是一个比较顺手的方案。它把「模型调用」「流式输出」「前端交互」这几块做了比较好的封装，适合快速搭建聊天、生成式内容和智能体类应用。</p>
+<h2 id="1-SDK-组成"><a href="#1-SDK-组成" class="headerlink" title="1. SDK 组成"></a>1. SDK 组成</h2><p>如果把 Vercel AI SDK 理解成一个“前后端一体化的 AI 开发工具箱”，它大致可以拆成下面几层：</p>
+<h3 id="1-1-模型接入层"><a href="#1-1-模型接入层" class="headerlink" title="1.1 模型接入层"></a>1.1 模型接入层</h3><p>这一层负责对接不同厂商的大模型，比如 OpenAI、Anthropic、Google Gemini、DeepSeek 等。SDK 会把不同供应商的调用方式包装成统一接口，避免项目里到处写适配逻辑。</p>
+<p>常见能力包括：</p>
+<ol>
+<li>统一的模型调用方式。</li>
+<li>统一的消息格式。</li>
+<li>统一的流式响应处理。</li>
+</ol>
+<h3 id="1-2-服务端能力层"><a href="#1-2-服务端能力层" class="headerlink" title="1.2 服务端能力层"></a>1.2 服务端能力层</h3><p>服务端通常负责：</p>
+<ol>
+<li>持有密钥，避免把模型 Key 暴露到浏览器。</li>
+<li>做鉴权、限流、日志记录。</li>
+<li>统一处理工具调用、上下文拼接和错误兜底。</li>
+</ol>
+<p>这一层一般会放在 Next.js API Route、Server Action，或者任意后端服务里。</p>
+<h3 id="1-3-前端交互层"><a href="#1-3-前端交互层" class="headerlink" title="1.3 前端交互层"></a>1.3 前端交互层</h3><p>前端负责把服务端返回的流式内容逐步渲染到页面上。Vercel AI SDK 在这一层提供了比较完整的 React Hook 和 UI 支持，例如：</p>
+<ol>
+<li><code>useChat</code>：管理消息列表、输入框、发送状态。</li>
+<li><code>useCompletion</code>：适合单轮文本补全场景。</li>
+<li><code>streamText</code> 相关能力：用于把模型输出变成可流式传输的数据。</li>
+</ol>
+<h3 id="1-4-一个典型调用链"><a href="#1-4-一个典型调用链" class="headerlink" title="1.4 一个典型调用链"></a>1.4 一个典型调用链</h3><p>可以把整个流程理解成下面这样：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs text">用户输入<br>  -&gt; 前端发送请求<br>  -&gt; 服务端组装上下文、调用模型<br>  -&gt; 模型返回流式内容<br>  -&gt; 服务端把流返回给前端<br>  -&gt; 前端逐段渲染<br></code></pre></td></tr></table></figure>
+
+<p>这种分层的好处是很清晰：前端只关心展示，服务端只关心能力和安全，模型层只负责生成。</p>
+<h2 id="2-AI-网关"><a href="#2-AI-网关" class="headerlink" title="2. AI 网关"></a>2. AI 网关</h2><p>在系统架构中，前端用户发来的请求要先经过网关，网关会统一处理用户认证、拦截恶意请求、控制流量、监控统计请求等等，然后把请求转发到后端服务器进行处理。<br>而AI网关，可以理解为 AI SDK 生态里一层统一的模型访问入口。它的核心价值不是“再造一个模型”，而是把多家模型供应商的调用方式收拢到一个标准入口里。在用户向AI发送请求时AI 网关会完成用户鉴权、限流控制、安全防护、故障转移、负载均衡、监控统计等一系列复杂的操作，并且将请求转发给 AI 大模型进行处理。</p>
+<h3 id="2-1-为什么需要网关"><a href="#2-1-为什么需要网关" class="headerlink" title="2.1 为什么需要网关"></a>2.1 为什么需要网关</h3><p>如果项目里直接对接多个模型供应商，通常会遇到这些问题：</p>
+<ol>
+<li>每家厂商 API 形态不一样。</li>
+<li>流式返回格式不统一。</li>
+<li>工具调用、消息结构、错误处理都要重复适配。</li>
+<li>切换模型时，业务代码改动会很大。</li>
+</ol>
+<p>网关层的作用，就是把这些差异抹平。</p>
+<h3 id="2-2-网关解决什么问题"><a href="#2-2-网关解决什么问题" class="headerlink" title="2.2 网关解决什么问题"></a>2.2 网关解决什么问题</h3><ol>
+<li>统一入口<ul>
+<li>业务层只需要面向一个标准接口。</li>
+</ul>
+</li>
+<li>统一鉴权<ul>
+<li>密钥放在服务端，不暴露给客户端。</li>
+</ul>
+</li>
+<li>统一转发<ul>
+<li>根据业务配置选择不同模型供应商。</li>
+</ul>
+</li>
+<li>统一观测<ul>
+<li>更方便记录请求耗时、失败率和成本。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-3-适合放在哪一层"><a href="#2-3-适合放在哪一层" class="headerlink" title="2.3 适合放在哪一层"></a>2.3 适合放在哪一层</h3><p>一般建议把网关能力放在服务端，前端不要直接连模型供应商。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-comment">// 伪代码示意</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">POST</span>(<span class="hljs-params">req: Request</span>) &#123;<br>  <span class="hljs-keyword">const</span> &#123; messages &#125; = <span class="hljs-keyword">await</span> req.<span class="hljs-title function_">json</span>();<br><br>  <span class="hljs-comment">// 这里可以做鉴权、限流、日志、上下文拼接</span><br>  <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> <span class="hljs-title function_">streamText</span>(&#123;<br>    <span class="hljs-attr">model</span>: <span class="hljs-string">&quot;your-model&quot;</span>,<br>    messages,<br>  &#125;);<br><br>  <span class="hljs-keyword">return</span> result.<span class="hljs-title function_">toDataStreamResponse</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样做的好处是：</p>
+<ol>
+<li>Key 更安全。</li>
+<li>更容易切模型。</li>
+<li>方便接入埋点、审计和缓存。</li>
+</ol>
+<h3 id="2-4-实际使用建议"><a href="#2-4-实际使用建议" class="headerlink" title="2.4 实际使用建议"></a>2.4 实际使用建议</h3><p>如果你的项目是聊天机器人、智能写作、内容生成器这类场景，网关层最好再补上：</p>
+<ol>
+<li>请求频率限制。</li>
+<li>用户级别配额。</li>
+<li>敏感词或内容审查。</li>
+<li>模型降级策略。</li>
+</ol>
+<p>这样即使模型服务不稳定，应用也不会直接“炸掉”。</p>
+<p>对于不同项目，AI网关的需求度也是不一样的。<br><strong>个人项目</strong><br>只需要简单地调用单个 AI 模型，直接调用 API 就够了。<br><strong>个人或团队的小项目</strong><br>需要用到 AI 网关的特性（比如集成多个模型），可以选用 Vercel AI Gateway<br><strong>企业级应用</strong><br>对安全性和稳定性要求很高，选用 Higress 或者 Kong更合适</p>
+<ul>
+<li>Kong AI Gateway：Kong 本身就是一个很成熟的 API 网关，现在专门为 AI 场景做了增强，企业级功能比较完善。</li>
+<li>Higress AI：阿里云开源的 AI 网关，支持 100 多种大模型的统一协议转换，提供语义缓存、令牌限流、MCP 转换等企业级功能，适合有复杂 AI 集成需求的企业。<br> 我来帮你在 AI 网关部分增加一个关于 AI 网关和 AI 中转站区别的辨析。让我先看一下当前文档的结构，找到合适的位置插入内容。</li>
+</ul>
+<p>Read <a href="file:///Users/danhuipeng/Desktop/githubLoad/unknown_404/test/source/_posts/vercelSDK.md#50-50"></a>, lines 50 to 120</p>
+<p>Read <a href="file:///Users/danhuipeng/Desktop/githubLoad/unknown_404/test/source/_posts/vercelSDK.md#120-120"></a>, lines 120 to 160</p>
+<p>现在我了解了文档结构。我将在 2.4 节之后、”## 3. 流式渲染”之前，新增一个 2.5 节来辨析 AI 网关和 AI 中转站的区别。</p>
+<p>以下是建议插入的内容：</p>
+<hr>
+<p>在 <code>## 2. AI 网关</code> 章节中，建议在 <strong>2.4 实际使用建议</strong> 之后、<code>## 3. 流式渲染</code> 之前，新增以下小节：</p>
+<h3 id="2-5-AI-网关-vs-AI-中转站：概念辨析"><a href="#2-5-AI-网关-vs-AI-中转站：概念辨析" class="headerlink" title="2.5 AI 网关 vs AI 中转站：概念辨析"></a>2.5 AI 网关 vs AI 中转站：概念辨析</h3><p>在实际开发中，很多人容易把”AI 网关”和”AI 中转站”混为一谈，因为两者都涉及”请求转发”。但它们的定位、能力和适用场景有明显区别。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>AI 网关</th>
+<th>AI 中转站</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心定位</strong></td>
+<td>企业级流量治理与安全防护平台</td>
+<td>轻量级 API 代理与密钥封装</td>
+</tr>
+<tr>
+<td><strong>主要功能</strong></td>
+<td>鉴权、限流、负载均衡、监控、熔断、灰度发布、协议转换</td>
+<td>隐藏原始 API Key、统一请求路径、简单代理转发</td>
+</tr>
+<tr>
+<td><strong>安全能力</strong></td>
+<td>多层防护（WAF、敏感词过滤、内容审查、IP 黑白名单）</td>
+<td>仅隐藏 Key，无额外安全机制</td>
+</tr>
+<tr>
+<td><strong>可观测性</strong></td>
+<td>完整的链路追踪、指标采集、告警通知</td>
+<td>基本无日志或仅有简单请求记录</td>
+</tr>
+<tr>
+<td><strong>模型管理</strong></td>
+<td>支持多模型路由、降级、权重分配、A&#x2F;B 测试</td>
+<td>通常只代理单一模型或固定几个接口</td>
+</tr>
+<tr>
+<td><strong>部署方式</strong></td>
+<td>独立部署，常作为基础设施层</td>
+<td>轻量服务，可嵌入现有项目</td>
+</tr>
+<tr>
+<td><strong>典型代表</strong></td>
+<td>Vercel AI Gateway、Kong、Higress、APISIX</td>
+<td>各类第三方中转 API 服务（如某些”免费代理”站点）</td>
+</tr>
+</tbody></table>
+<h4 id="什么时候该用哪个？"><a href="#什么时候该用哪个？" class="headerlink" title="什么时候该用哪个？"></a>什么时候该用哪个？</h4><p><strong>选 AI 中转站的场景：</strong></p>
+<ul>
+<li>个人开发者想快速在项目中接入海外模型，又不想自己处理网络问题。</li>
+<li>只需要隐藏 API Key，对安全、监控、限流没有额外要求。</li>
+<li>项目规模小，成本敏感，不想引入复杂的基础设施。</li>
+</ul>
+<blockquote>
+<p>⚠️ 注意：使用第三方中转站存在数据泄露风险——你的请求会经过对方服务器，敏感信息可能被记录或滥用。</p>
+</blockquote>
+<p><strong>选 AI 网关的场景：</strong></p>
+<ul>
+<li>团队或企业级应用，需要对 AI 调用做统一治理。</li>
+<li>需要多模型切换、流量分发、熔断降级等高可用能力。</li>
+<li>有合规要求，需要完整的审计日志和内容安全审查。</li>
+<li>希望自建中转能力，同时保证数据不出内网。</li>
+</ul>
+<h4 id="本质区别一句话总结"><a href="#本质区别一句话总结" class="headerlink" title="本质区别一句话总结"></a>本质区别一句话总结</h4><blockquote>
+<p><strong>AI 中转站解决的是”能不能连上”的问题，AI 网关解决的是”怎么安全、稳定、可控地大规模使用”的问题。</strong></p>
+</blockquote>
+<h2 id="3-流式渲染"><a href="#3-流式渲染" class="headerlink" title="3. 流式渲染"></a>3. 流式渲染</h2><p>Vercel AI SDK 最值得用的一点，就是流式渲染体验比较顺滑。对用户来说，最直观的感受就是“内容一边生成一边出现”，而不是等模型全部返回后一次性展示。</p>
+<h3 id="3-1-为什么要流式渲染"><a href="#3-1-为什么要流式渲染" class="headerlink" title="3.1 为什么要流式渲染"></a>3.1 为什么要流式渲染</h3><p>流式渲染有几个明显优势：</p>
+<ol>
+<li>首屏反馈更快。</li>
+<li>用户感知延迟更低。</li>
+<li>适合长文本生成和问答场景。</li>
+<li>更像真实对话体验。</li>
+</ol>
+<h3 id="3-2-服务端流式返回"><a href="#3-2-服务端流式返回" class="headerlink" title="3.2 服务端流式返回"></a>3.2 服务端流式返回</h3><p>服务端通常会把模型输出包装成流，再返回给前端。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">import</span> &#123; streamText &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;ai&quot;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">POST</span>(<span class="hljs-params">req: Request</span>) &#123;<br>  <span class="hljs-keyword">const</span> &#123; messages &#125; = <span class="hljs-keyword">await</span> req.<span class="hljs-title function_">json</span>();<br><br>  <span class="hljs-keyword">const</span> result = <span class="hljs-title function_">streamText</span>(&#123;<br>    <span class="hljs-attr">model</span>: <span class="hljs-string">&quot;your-model&quot;</span>,<br>    messages,<br>  &#125;);<br><br>  <span class="hljs-keyword">return</span> result.<span class="hljs-title function_">toDataStreamResponse</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的关键点不是某个具体函数名，而是思路：</p>
+<ol>
+<li>模型侧尽量以流的形式输出。</li>
+<li>服务端把流继续往前端透传。</li>
+<li>前端按增量更新 UI。</li>
+</ol>
+<h3 id="3-3-前端逐步渲染"><a href="#3-3-前端逐步渲染" class="headerlink" title="3.3 前端逐步渲染"></a>3.3 前端逐步渲染</h3><p>前端可以通过 hook 维护消息状态，然后把模型返回的文本一点点拼到界面上。</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs tsx"><span class="hljs-keyword">import</span> &#123; useChat &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;ai/react&quot;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">ChatPage</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> &#123; messages, input, handleInputChange, handleSubmit, isLoading &#125; =<br>    <span class="hljs-title function_">useChat</span>();<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">        &#123;messages.map((message) =&gt; (</span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;message.id&#125;</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>&#123;message.role&#125;:<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span> &#123;message.content&#125;</span><br><span class="language-xml">          <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span><br><span class="language-xml">        ))&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml"></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">onSubmit</span>=<span class="hljs-string">&#123;handleSubmit&#125;</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&#123;input&#125;</span> <span class="hljs-attr">onChange</span>=<span class="hljs-string">&#123;handleInputChange&#125;</span> /&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">disabled</span>=<span class="hljs-string">&#123;isLoading&#125;</span>&gt;</span></span><br><span class="language-xml">          发送</span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-4-流式渲染的几个细节"><a href="#3-4-流式渲染的几个细节" class="headerlink" title="3.4 流式渲染的几个细节"></a>3.4 流式渲染的几个细节</h3><ol>
+<li>需要处理断流和重试。</li>
+<li>需要处理首包延迟。</li>
+<li>需要处理“正在生成中”的状态展示。</li>
+<li>如果有 Markdown 渲染，要注意增量内容可能会导致局部语法不完整。</li>
+</ol>
+<h3 id="3-5-一个更贴近业务的思路"><a href="#3-5-一个更贴近业务的思路" class="headerlink" title="3.5 一个更贴近业务的思路"></a>3.5 一个更贴近业务的思路</h3><p>实际项目里，流式渲染通常不是只做“文字滚动显示”，而是还会配合：</p>
+<ol>
+<li>打字机效果。</li>
+<li>生成中骨架屏。</li>
+<li>思考状态提示。</li>
+<li>中途可停止生成。</li>
+</ol>
+<p>这样用户会更明确地知道系统正在工作，也更符合 AI 产品的交互预期。</p>
+<h3 id="3-6-Streamdown-增量渲染md组件"><a href="#3-6-Streamdown-增量渲染md组件" class="headerlink" title="3.6 Streamdown-增量渲染md组件"></a>3.6 Streamdown-增量渲染md组件</h3><p>Vercel 官方专门开源了一个库叫 streamdown，定位是”专为 AI 流式输出设计的 react-markdown 替代品”。<br>streamdown 相比 react-markdown 的核心改进是增量解析——普通 Markdown 解析器每次要拿到完整字符串才能渲染，streamdown 专门处理了流式场景下不完整语法的问题（比如 **粗 还没闭合时不会乱跳）。streamdown用法如下所示：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useChat &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ai-sdk/react&quot;</span>;<br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Streamdown</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;streamdown&quot;</span>;<br><span class="hljs-keyword">import</span> &#123; code &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@streamdown/code&quot;</span>; <span class="hljs-comment">// 代码高亮插件</span><br><span class="hljs-keyword">import</span> &#123; mermaid &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@streamdown/mermaid&quot;</span>; <span class="hljs-comment">// 流程图插件</span><br><span class="hljs-keyword">import</span> &#123; math &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@streamdown/math&quot;</span>; <span class="hljs-comment">// 数学公式插件</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;streamdown/styles.css&quot;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Chat</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> &#123; messages &#125; = <span class="hljs-title function_">useChat</span>();<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      &#123;messages.map((message) =&gt; (</span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;message.id&#125;</span>&gt;</span></span><br><span class="language-xml">          &#123;message.parts.map((part, i) =&gt;</span><br><span class="language-xml">            part.type === &quot;text&quot; ? (</span><br><span class="language-xml">              <span class="hljs-tag">&lt;<span class="hljs-name">Streamdown</span></span></span><br><span class="hljs-tag"><span class="language-xml">                <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;i&#125;</span></span></span><br><span class="hljs-tag"><span class="language-xml">                <span class="hljs-attr">plugins</span>=<span class="hljs-string">&#123;[code,</span> <span class="hljs-attr">mermaid</span>, <span class="hljs-attr">math</span>]&#125; // 按需加插件</span></span><br><span class="hljs-tag"><span class="language-xml">              &gt;</span></span><br><span class="language-xml">                &#123;part.text&#125;</span><br><span class="language-xml">              <span class="hljs-tag">&lt;/<span class="hljs-name">Streamdown</span>&gt;</span></span><br><span class="language-xml">            ) : null,</span><br><span class="language-xml">          )&#125;</span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      ))&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>组件思路：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs scss">输入 Markdown (可能不完整)<br>    ↓<br>remend 预处理 (修复不完整语法)<br>    ↓<br>parseMarkdownIntoBlocks (分块)<br>    ↓<br>displayBlocks 状态更新 (useTransition)<br>    ↓<br>逐块渲染 (Block Component)<br>    ↓<br>最终 <span class="hljs-selector-tag">HTML</span> 输出<br></code></pre></td></tr></table></figure>
+
+<h4 id="步骤-1-Remend-预处理不完整-Markdown"><a href="#步骤-1-Remend-预处理不完整-Markdown" class="headerlink" title="步骤 1: Remend 预处理不完整 Markdown"></a>步骤 1: Remend 预处理不完整 Markdown</h4><p>Remend 做什么？ 它会自动完成：</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs md"><span class="hljs-strong">**incomplete bold → **</span>incomplete bold\<span class="hljs-emphasis">*\*</span><br><span class="hljs-emphasis">*italic → *</span>italic\<span class="hljs-emphasis">*</span><br><span class="hljs-emphasis">`code → `code`</span><br><span class="hljs-emphasis">$$math → $$math$$</span><br><span class="hljs-emphasis">[<span class="hljs-string">link</span>](<span class="hljs-link"> → [link](streamdown:incomplete-link</span>)</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="步骤-2-分块解析-Parse-into-Blocks"><a href="#步骤-2-分块解析-Parse-into-Blocks" class="headerlink" title="步骤 2: 分块解析 (Parse into Blocks)"></a>步骤 2: 分块解析 (Parse into Blocks)</h4><p>分块的目的：</p>
+<p>将 markdown 分成独立的逻辑块（段落、标题、代码块等）<br>处理嵌套 HTML 标签和数学公式<br>允许增量渲染</p>
+<ul>
+<li>Step 1: 特殊情况检查。检查文本是否有脚注，有的话不能分块</li>
+<li>Step 2: Marked Lexer 分解</li>
+</ul>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">const</span> tokens = <span class="hljs-title class_">Lexer</span>.<span class="hljs-title function_">lex</span>(markdown, &#123; <span class="hljs-attr">gfm</span>: <span class="hljs-literal">true</span> &#125;);<br><span class="hljs-comment">// Marked Lexer 生成 tokens，例如：</span><br><span class="hljs-comment">// [</span><br><span class="hljs-comment">//   &#123; type: &#x27;heading&#x27;, raw: &#x27;# Heading\n&#x27; &#125;,</span><br><span class="hljs-comment">//   &#123; type: &#x27;paragraph&#x27;, raw: &#x27;Text\n&#x27; &#125;,</span><br><span class="hljs-comment">//   &#123; type: &#x27;space&#x27;, raw: &#x27;\n&#x27; &#125;,</span><br><span class="hljs-comment">//   &#123; type: &#x27;heading&#x27;, raw: &#x27;## Section\n&#x27; &#125;,</span><br><span class="hljs-comment">//   &#123; type: &#x27;paragraph&#x27;, raw: &#x27;More text\n&#x27; &#125;</span><br><span class="hljs-comment">// ]</span><br><br><span class="hljs-keyword">const</span> <span class="hljs-attr">mergedBlocks</span>: <span class="hljs-built_in">string</span>[] = [];<br><span class="hljs-keyword">const</span> <span class="hljs-attr">htmlStack</span>: <span class="hljs-built_in">string</span>[] = [];<br><span class="hljs-keyword">let</span> previousTokenWasCode = <span class="hljs-literal">false</span>;<br><br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> token <span class="hljs-keyword">of</span> tokens) &#123;<br>  <span class="hljs-keyword">const</span> currentBlock = token.<span class="hljs-property">raw</span>; <span class="hljs-comment">// ← 每个 token 的原始文本</span><br>  <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>Step 3: 后处理 - HTML 块合并。HTML 块可能跨越多个 token（嵌套标签），所以需要追踪开闭标签并合并<br>示例：假设一个html结构分为了三段来传输。<br>Token 1: <div>\n <p> ← openTags&#x3D;2, closeTags&#x3D;0 → htmlStack&#x3D;[‘div’,’p’]<br>Token 2: Content ← 内部，合并<br>Token 3: </p>\n</div> ← closeTags&#x3D;2 → htmlStack&#x3D;[]<br>结果: 1 个块（整个 HTML 结构）</li>
+<li>Step 4: 后处理 - 数学块合并<h4 id="步骤-3-状态管理与-useTransition"><a href="#步骤-3-状态管理与-useTransition" class="headerlink" title="步骤 3: 状态管理与 useTransition"></a>步骤 3: 状态管理与 useTransition</h4></li>
+</ul>
+<h4 id="步骤-4-逐块渲染-Block-Component"><a href="#步骤-4-逐块渲染-Block-Component" class="headerlink" title="步骤 4: 逐块渲染 (Block Component)"></a>步骤 4: 逐块渲染 (Block Component)</h4><p>共享 animatePlugin 实例 - 所有块使用同一个插件<br>深度优先执行 - Block 函数 → rehypeAnimate → 记录字符数<br>状态传递 - 前一个块的 lastRenderCharCount → 下一个块的 prevContentLength<br>独立计算 - 每个块内的位置从 0 开始，与前一个块隔离<br>结果 - 新块的内容总是播放动画，旧块的内容跳过动画</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7566167231128420362">1分钟对接500个大模型？这才叫 AI 开发！</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7604761524977500169">vercel AI SDK 学习</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/Vercel/">#Vercel</a>
+      
+        <a href="/unknown404.github.io/tags/AI-SDK/">#AI SDK</a>
+      
+        <a href="/unknown404.github.io/tags/%E6%B5%81%E5%BC%8F%E6%B8%B2%E6%9F%93/">#流式渲染</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Vercel SDK 初步解读</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2026/05/27/vercelSDK/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年5月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2026/06/16/agentTheory/" title="agent架构知识">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">agent架构知识</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2026/04/26/agentBasic/" title="agent相关概念">
+                        <span class="hidden-mobile">agent相关概念</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

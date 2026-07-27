@@ -1,0 +1,957 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="gitee静态页面练手">
+<meta property="og:type" content="website">
+<meta property="og:title" content="小白的文件整理箱">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="gitee静态页面练手">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="小白的文件整理箱">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 100vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/background.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="小白的文件整理箱"></span>
+          
+        </div>
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div id="board"
+          style="margin-top: 0">
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2026/06/16/agentTheory/" target="_self">
+          agent架构知识
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2026/06/16/agentTheory/" target="_self">
+        <div>
+          1. Agent 模式在大语言模型（LLM）驱动的智能体（Agent）设计中，有几种经典的推理与行动范式，每种范式在复杂任务处理上都有其独特的优势和局限性。 ReAct (Reason + Act)运行特点：ReAct 结合了推理（Reasoning）和行动（Acting）。它引导模型以“Thought -&gt; Action -&gt; Observation”的循环方式运行。在每一步，Age
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-06-16 21:17" pubdate>
+              2026-06-16
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/AI/">#AI</a>
+            
+              <a href="/unknown404.github.io/tags/Agent/">#Agent</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2026/05/27/vercelSDK/" target="_self">
+          Vercel SDK 初步解读
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2026/05/27/vercelSDK/" target="_self">
+        <div>
+          记录 Vercel AI SDK 的核心组成、网关能力，以及在前端中如何做流式渲染。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-05-27 10:00" pubdate>
+              2026-05-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/Vercel/">#Vercel</a>
+            
+              <a href="/unknown404.github.io/tags/AI-SDK/">#AI SDK</a>
+            
+              <a href="/unknown404.github.io/tags/%E6%B5%81%E5%BC%8F%E6%B8%B2%E6%9F%93/">#流式渲染</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2026/04/26/agentBasic/" target="_self">
+          agent相关概念
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2026/04/26/agentBasic/" target="_self">
+        <div>
+          智能体（Agent）概念Agent 可以理解为一种“能自己推进任务的 AI 结构”。它不只是回答问题，而是会先理解目标、再拆解步骤、调用工具、读取上下文、根据结果继续推进，直到把一个任务尽量完整地做完。 如果把普通对话模型看成“问一句答一句”，那 agent 更像“带执行能力的助手”。它通常会围绕一个目标反复进行：  理解任务 规划步骤 获取上下文 调用工具 观察结果 调整下一步动作  总结构如果
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-04-26 15:52" pubdate>
+              2026-04-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/AGI/">#AGI</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2025/08/06/pwa/" target="_self">
+          PWA初识
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2025/08/06/pwa/" target="_self">
+        <div>
+          最近回看同事分享的离线化相关文档，想总结一下。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-08-06 11:30" pubdate>
+              2025-08-06
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/PWA/">#PWA</a>
+            
+              <a href="/unknown404.github.io/tags/%E7%A6%BB%E7%BA%BF%E5%8C%96/">#离线化</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2025/07/01/headlessui/" target="_self">
+          HeadlessUI组件库
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2025/07/01/headlessui/" target="_self">
+        <div>
+          最近开发新项目的时候遇到了一些问题：由于设计绘制的左侧菜单过于个性化，在使用 antd 的 Menu 组件时不得不做了大量调整：包括强行改写 antd 内部 css 样式、每次菜单发生特殊的交互操作时都更新 Menu 的 items 属性的赋值变量。由此产生思考：是否可以使用更基础的功能组件来实现需求、不需要强行复写组件内部的预定样式。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-07-01 17:41" pubdate>
+              2025-07-01
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/headless-ui/">#headless ui</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2025/05/21/sse/" target="_self">
+          SSE接入web、小程序
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2025/05/21/sse/" target="_self">
+        <div>
+          最近调用智能体的方式做出了调整，变更为 SSE 方式。 什么是 SSESSE（Server-Sent Events）是一种浏览器原生支持的服务端向客户端推送数据的技术，非常适合用于实现流式响应。整个响应流程如下：  客户端通过发送一个普通的 HTTP 请求建立连接。 服务端返回一个 Content-Type: text&#x2F;event-stream 的响应。 后续服务端可以不断往这个连接中推
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-21 17:49" pubdate>
+              2025-05-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/">#小程序</a>
+            
+              <a href="/unknown404.github.io/tags/WEB-API/">#WEB API</a>
+            
+              <a href="/unknown404.github.io/tags/sse/">#sse</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2025/04/30/stateManagement/" target="_self">
+          React状态管理最新小结
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2025/04/30/stateManagement/" target="_self">
+        <div>
+          最近突然要从头搭一个 React 项目，构建自己项目的状态管理。对于平常用 umi+dva 一把梭的来说还真不太确定怎么搭会比较好。再加上随着时间变化，当初的新工具也成了老东西不再迭代，像 dva 就痛失了官方网站域名（hhh）。再加上调整一些 mobx 相关的开源项目踩了坑，所以还是决定要来梳理一番。 mobx + mobx state treemobx 是一个非常典型的响应式状态管理工具，即数
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-04-30 11:02" pubdate>
+              2025-04-30
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/React/">#React</a>
+            
+              <a href="/unknown404.github.io/tags/%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/">#状态管理</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2025/03/12/amis/" target="_self">
+          amis初探
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2025/03/12/amis/" target="_self">
+        <div>
+          公司要求用低代码来协助产品搭建一些简单的产品，通过一段时间有限的调研，选择了这个开源项目，开启了一段噩梦。接下来是吐槽时间。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-03-12 15:21" pubdate>
+              2025-03-12
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/%E4%BD%8E%E4%BB%A3%E7%A0%81/">#低代码</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2024/12/08/nuxt3/" target="_self">
+          Nuxt3项目实践踩坑
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2024/12/08/nuxt3/" target="_self">
+        <div>
+          最近因产品需求，需要搭建一个支持 ssr 渲染的项目。在搭建 Nuxt3 项目的过程中，出现了很多问题，在此集中记录一下。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-12-08 12:39" pubdate>
+              2024-12-08
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/Nuxt/">#Nuxt</a>
+            
+              <a href="/unknown404.github.io/tags/ssr/">#ssr</a>
+            
+              <a href="/unknown404.github.io/tags/Vue/">#Vue</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/unknown404.github.io/2024/11/20/electron/" target="_self">
+          electron初步调研
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/unknown404.github.io/2024/11/20/electron/" target="_self">
+        <div>
+          最近需要开发桌面端，需要研究 electron。这里只打算研究最基础的开发。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-11-20 17:29" pubdate>
+              2024-11-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E5%B7%A5%E4%BD%9C%E6%8A%80%E5%B7%A7/" class="category-chain-item">工作技巧</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/unknown404.github.io/tags/electron/">#electron</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <span class="page-number current">1</span><a class="page-number" href="/unknown404.github.io/page/2/#board">2</a><a class="page-number" href="/unknown404.github.io/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/unknown404.github.io/page/9/#board">9</a><a class="extend next" rel="next" href="/unknown404.github.io/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
