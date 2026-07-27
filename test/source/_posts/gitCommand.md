@@ -91,6 +91,21 @@ GNU/Linux/Mac/PowerShell：
 ```
 cat ~/.ssh/id_rsa.pub
 ```
+如果要设置多个 SSH Key，可以使用如下指令：
+```
+ssh-keygen -t rsa -C "xxx@xxx.com" -f ~/.ssh/id_rsa_new
+```
+这样会生成 id_rsa_new 和 id_rsa_new.pub，和id_rsa.pub互不干扰。
+使用该key时可以进行如下配置：
+```
+cat > ~/.ssh/config << 'EOF'
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_rsa_new
+    IdentitiesOnly yes
+EOF
+```
 
 #### 复制 SSH Key
 

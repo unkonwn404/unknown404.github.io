@@ -1204,6 +1204,43 @@ var maxSubArray = function (nums) {
   return max;
 };
 ```
+#### 股票问题2
+情景：给你一个整数数组 prices ，其中 prices[i] 表示某支股票第 i 天的价格。在每一天，你可以决定是否购买和/或出售股票。你在任何时候 最多 只能持有 一股 股票。然而，你可以在 同一天 多次买卖该股票，但要确保你持有的股票不超过一股。返回 你能获得的 最大 利润 。
+思路：设置二维dp表示某天内获得的最大利润，一维表示天数，二维表示是否购入。当天i的最大利润dp[i][0]来自前一天dp[i-1][0]和dp[i-1][1]+prices[i]的最大值比较；而如果当天有买入行为，dp[i][1]应该等于前一天dp[i-1][1]和dp[i-1][0]-prices[i]的最大值比较
+```js
+var maxProfit = function(prices) {
+    let dp=Array.from({length:prices.length},()=>Array(2).fill(-Infinity))
+    dp[0][0]=0,dp[0][1]=-prices[0]
+    for(let i=1;i<prices.length;i++){
+        dp[i][0]=Math.max(dp[i-1][0],dp[i-1][1]+prices[i])
+        dp[i][1]=Math.max(dp[i-1][0]-prices[i],dp[i-1][1])
+    }
+    return dp[prices.length-1][0]
+    
+};
+```
+#### 零钱兑换
+情景：给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+思路：采用自下而上的方式进行思考。若定义 dp(i) 为组成金额 i 所需最少的硬币数量，假设在计算 dp(i) 之前，我们已经计算出 dp(0)−dp(i−1) 的答案。状态转移方程应为
+dp[i]=Math.min(dp[i-coins[0]],...fp[i-coins[coins.length-1]])
+```js
+var coinChange = function(coins, amount) {
+    let dp= Array(amount+1).fill(Infinity)
+    for(let i=0;i<=amount;i++){
+        if(i==0){
+            dp[i]=0
+        }
+        for(let j=0;j<coins.length;j++){
+            if(coins[j]<=i){
+                dp[i]=Math.min(dp[i],dp[i-coins[j]]+1)
+            }
+        }
+    }
+    return dp[amount]==Infinity?-1:dp[amount]
+};
+```
+
 
 ### 广度优先搜索(BFS)
 

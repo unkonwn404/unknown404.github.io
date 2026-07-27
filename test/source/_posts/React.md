@@ -150,6 +150,13 @@ startTransition、useDeferredValue
 | 离屏组件渲染                            | LowPriority          |
 | 预加载、预渲染                          | IdlePriority         |
 
+## React 18 新特性
+
+- Concurrent Rendering，引入并发渲染能力，使渲染过程可中断和恢复。
+- Automatic Batching，自动批处理扩展到 Promise、setTimeout 等异步场景，减少重复渲染。
+- useTransition、useDeferredValue，允许将非紧急更新标记为低优先级任务，提高交互流畅度。
+- Streaming SSR，支持流式服务端渲染，提升首屏加载速度和用户体验。
+
 ## React 事件机制
 
 ### 事件机制特点（以 react 16 为例）

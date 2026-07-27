@@ -254,6 +254,22 @@ React 在性能优化层面做过哪些工作？
 7. react router实现原理
 8. 带重复数的全排列
 
+# anker
+React Hooks常用 Hooks 有哪些？
+useState 和 useCallback 区别
+useEffect 和 useLayoutEffect 区别
+useMemo 和 useCallback 区别,使用场景是什么？
+React版本使用过什么版本？
+React18新特性
+动画卡顿如何定位？用什么工具定位？
+requestAnimationFrame
+首屏优化,如何提升首屏加载速度？
+平时是否使用AI工具？
+如何提高AI输出准确率？
+是否尝试过设计稿生成代码？
+技术选型如何考虑？
+你是否偏向ToC项目？对管理后台是否接受？
+
 
 # 手写板
 
