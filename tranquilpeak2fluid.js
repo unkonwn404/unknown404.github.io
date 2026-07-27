@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const root = path.dirname(__dirname);
+const root = __dirname;
 
 function ergodicMethod(path, fn) {
   let files = fs.readdirSync(path);
@@ -13,11 +13,11 @@ function ergodicMethod(path, fn) {
     }
   });
 }
-ergodicMethod(`${root}/test/source/_posts`, (file) => {
+ergodicMethod(`${root}/source/_posts`, (file) => {
   if (file.match(/\.(jpg|png|jpeg)$/)) {
     console.log(path.basename(path.dirname(file)), "filepath");
     const content = fs.readFileSync(file);
-    const distDirpath = `${root}/test/source/img/${path.basename(
+    const distDirpath = `${root}/source/img/${path.basename(
       path.dirname(file)
     )}`;
     if (!fs.existsSync(distDirpath)) {
@@ -26,7 +26,7 @@ ergodicMethod(`${root}/test/source/_posts`, (file) => {
     fs.writeFileSync(`${distDirpath}/${path.basename(file)}`, content);
   }
 });
-// ergodicMethod(`${root}/test/source/_posts`, (file) => {
+// ergodicMethod(`${root}/source/_posts`, (file) => {
 //   if (file.match(/\.md$/)) {
 //     console.log("reedit", file);
 //     let content = fs.readFileSync(file, "utf-8");
