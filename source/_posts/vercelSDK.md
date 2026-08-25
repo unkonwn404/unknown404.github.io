@@ -132,21 +132,6 @@ export async function POST(req: Request) {
 
 - Kong AI Gateway：Kong 本身就是一个很成熟的 API 网关，现在专门为 AI 场景做了增强，企业级功能比较完善。
 - Higress AI：阿里云开源的 AI 网关，支持 100 多种大模型的统一协议转换，提供语义缓存、令牌限流、MCP 转换等企业级功能，适合有复杂 AI 集成需求的企业。
- 我来帮你在 AI 网关部分增加一个关于 AI 网关和 AI 中转站区别的辨析。让我先看一下当前文档的结构，找到合适的位置插入内容。
-
- 
-
-Read [](file:///Users/danhuipeng/Desktop/githubLoad/unknown_404/test/source/_posts/vercelSDK.md#50-50), lines 50 to 120
-
-Read [](file:///Users/danhuipeng/Desktop/githubLoad/unknown_404/test/source/_posts/vercelSDK.md#120-120), lines 120 to 160
-
-现在我了解了文档结构。我将在 2.4 节之后、"## 3. 流式渲染"之前，新增一个 2.5 节来辨析 AI 网关和 AI 中转站的区别。
-
-以下是建议插入的内容：
-
----
-
-在 `## 2. AI 网关` 章节中，建议在 **2.4 实际使用建议** 之后、`## 3. 流式渲染` 之前，新增以下小节：
 
 ### 2.5 AI 网关 vs AI 中转站：概念辨析
 

@@ -19,6 +19,22 @@ CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deplo
 ### Jenkins
 
 该软件提供了一个易于使用的 Web 界面，可以帮助开发团队快速、高效地构建、测试和交付软件。它与各种版本控制系统（如 Git、Subversion）和构建工具（如 Maven、Gradle）无缝集成，可以轻松地配置和管理项目的构建过程。
+Jenkins打包部署的配置大致包括以下几步：
+
+1. 创建 Job（新建任务）
+   点击左侧 'New Item'，输入项目名称，类型建议选择 'Freestyle project'（自由风格，适合新手）或 'Pipeline'（如果想用脚本化流程，更灵活但学习成本高一些）。刚上手建议先用 Freestyle project。
+2. 配置源码管理（Source Code Management）
+   在任务配置页找到 'Source Code Management'，选择 Git，填入你的仓库地址（如 https://github.com/xxx/xxx.git），如果是私有仓库需要点 'Add' 添加凭据（用户名密码或 SSH Key/Token）。分支默认填 _/main 或 _/master，看你实际分支名。
+3. 配置构建触发器（Build Triggers）
+   可选：如果希望代码 push 后自动构建，勾选 'GitHub hook trigger for GITScm polling'（需要在 GitHub 仓库设置 Webhook 指向 Jenkins）；如果不想用 webhook，可以选 'Poll SCM' 定时轮询，比如填 H/5 \* \* \* \* 表示每5分钟检查一次代码变化。也可以先不配置，纯手动点击构建。
+4. 配置构建步骤 - 前端
+   在 'Build Steps' 里点 'Add build step' -> 'Execute shell'（Linux/Mac）或 'Execute Windows batch command'（Windows）。写入前端构建命令，例如：cd frontend && npm install && npm run build。构建产物通常会生成在 dist 或 build 目录。
+5. 配置构建步骤 - 后端
+   再添加一个 'Execute shell' 步骤，写入后端命令，比如 Java 项目：cd backend && mvn clean package；或 Node 项目：cd backend && npm install && pm2 restart app；根据你的技术栈调整命令。（如果前端打包内容需要后端管理，pm2 侧配置可以在ecosystem.config.cjs增加一个 app -web配置，起用 pm2 内置静态服务器（script: 'serve'），部署机不需要额外安装 serve npm 包）
+6. 配置部署/发布（可选）
+   如果需要自动部署，可以再加一个 shell 步骤，把构建产物拷贝到目标目录或用 scp/rsync 传到服务器，再重启服务（如 systemctl restart xxx 或 pm2 restart xxx）。也可以用 Jenkins 插件如 'Publish Over SSH' 来简化远程部署。
+7. 保存并执行首次构建
+   点击页面下方 'Save' 保存配置，回到项目主页点击左侧 'Build Now'（构建现在）触发第一次构建，可以在 'Build History' 里点进去看 'Console Output' 控制台日志，排查是否报错。
 
 ### gitlab
 
