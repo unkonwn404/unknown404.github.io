@@ -114,6 +114,79 @@ docker export 命令用于将 Docker 容器的文件系统导出为一个 tar �
 
 总之，docker save 适用于备份、迁移整个 Docker 镜像，docker export 适用于容器的临时备份和文件传输。
 
+### docker-compose 相关指令
+
+上面的 docker run 一次只能启动一个容器，参数还得手写一长串。实际项目往往是「前端 + 后端 + 数据库 + nginx」多个容器一起跑，这时候用 docker-compose 把这些容器的配置写进一个 `docker-compose.yml` 里，一条指令全部拉起来。
+
+注意新旧两种写法：老版本是独立的 `docker-compose` 命令，Docker Desktop / 新版 Docker 里已经内置为插件，写成 `docker compose`（中间是空格），两者参数基本一致。
+
+配置文件示例，把前面 nginx 部署的前端项目和一个 node 服务放在一起：
+
+```yaml
+# docker-compose.yml
+services:
+  web:
+    build: . # 用当前目录的 Dockerfile 构建，等价于 docker build .
+    image: vue-init # 构建出来的镜像名
+    container_name: vue-init-container
+    ports:
+      - '8136:80' # 宿主机端口:容器端口，等价于 docker run -p
+    restart: on-failure
+    depends_on:
+      - api # 先启动 api 再启动 web
+
+  api:
+    image: node:20-alpine
+    working_dir: /opt/project
+    volumes:
+      - ./server:/opt/project # 目录挂载，等价于 docker run -v
+    environment:
+      - NODE_ENV=production # 环境变量，等价于 docker run -e
+    command: node index.js
+    ports:
+      - '3000:3000'
+```
+
+常用指令：
+
+```
+# 构建并后台启动所有服务
+# -d 后台运行，不加则日志直接打在当前终端
+# --build 强制重新构建镜像，代码更新后要加，否则会复用旧镜像
+docker compose up -d --build
+
+# 只启动/重启其中某个服务
+docker compose up -d [service_name]
+docker compose restart [service_name]
+
+# 查看当前 compose 项目下容器的状态
+docker compose ps
+
+# 查看日志
+# -f 持续跟踪输出，--tail=100 只看最后100行
+docker compose logs -f --tail=100 [service_name]
+
+# 进入某个服务的容器
+docker compose exec [service_name] /bin/sh
+
+# 停止容器但不删除
+docker compose stop
+
+# 停止并删除容器、网络
+# 加 -v 会一并删除 volume，数据会丢，慎用
+docker compose down
+
+# 校验配置文件，会把最终生效的配置打印出来
+# 排查缩进、变量替换问题很好用
+docker compose config
+```
+
+几个实践中容易踩的点：
+
+- 服务之间可以直接用服务名当域名互相访问（例如 web 里请求 `http://api:3000`），compose 会自动建一个网络做服务发现，不需要写 IP。
+- 只改了代码没改 Dockerfile，`up -d` 默认不会重新构建，必须加 `--build`。
+- `down` 和 `stop` 的区别：`stop` 只是停，容器还在，`down` 会把容器和网络删掉。
+
 ## docker 镜像运行实践：Jenkins 安装
 
 ### Jenkins 简介
@@ -289,6 +362,75 @@ http {
 - 为了提升页面首屏性能，对 html 走协商缓存，css、js 走强缓存；同时采用 name-hash 的打包方式防止上线过程中资源请求错乱
 - 为了减轻服务器压力，不选择将文件存储在 Nginx Web 服务器内某目录下，而是将静态资源部署到 CDN 上，再将 Nginx 上的流量转发到 CDN 上
 - 。。。等等
+
+## docker 部署的适用对象
+
+上面前端静态资源、SSR 服务这类场景用 docker 很顺，因为它们都是**无状态服务**：容器随时销毁重建都不影响正确性，重启就是回到干净初始态。docker 的核心优势（一致环境、随意扩容、快速回滚）恰好都建立在这个前提上。
+
+反过来，容器"随时可丢弃"的特性对有状态服务就变成了负担：
+
+| 类型                                            | 是否适合容器部署                  | 说明                                                             |
+| ----------------------------------------------- | --------------------------------- | ---------------------------------------------------------------- |
+| 前端静态资源、Node/SSR 服务、BFF、API 服务      | 适合                              | 无状态，可以水平扩容、滚动更新                                   |
+| 构建/CI 工具（Jenkins、编译环境）               | 适合                              | 环境依赖复杂，容器隔离收益最大；配置需要挂载出来                 |
+| 数据库、Redis、消息队列                         | 开发/测试适合，生产谨慎           | 有状态，生产更推荐云托管或 k8s StatefulSet，见下                 |
+| 用户上传的文件、日志                            | 数据本身不能放容器里              | 必须挂载到宿主机、对象存储或 CDN                                 |
+
+数据库这类有状态服务，生产环境一般不自己用单机 docker 跑。原因是单机容器等于单点故障，备份与恢复演练、主从复制、连接数和内存调优、磁盘 IO、宿主机宕机后的切换全都得自己兜；这些云数据库已经做完了，自建省下的成本通常抵不过一次事故。真要自建，走 k8s StatefulSet + PVC，或者直接装在 VM 上。所以典型做法是：无状态服务放容器里，数据库在 compose/编排配置里只留一个连接串指向外部托管实例。
+
+## 有状态服务与数据持久化
+
+容器内的数据一共可能落在三个地方，区别决定了数据会不会丢：
+
+| 位置             | 生命周期                          | 用途                                     |
+| ---------------- | --------------------------------- | ---------------------------------------- |
+| 容器可写层       | 随容器删除一起消失                | 临时文件、进程运行时产物                 |
+| 镜像层           | 构建时固化，容器重建即回到快照    | 代码、依赖等构建产物                     |
+| volume / 挂载    | 独立于容器，容器删了数据还在      | 数据库文件、上传文件、日志、配置         |
+
+有两个常见误区：
+
+- **不要把数据 COPY 进镜像。** 镜像层是不可变的构建产物，容器运行期间写入的内容都落在可写层，`docker rm` 之后全丢，重建只会回到 `docker build` 那一刻的快照。
+- **不要指望容器不删就没事。** 升级镜像版本、改 Dockerfile、`docker compose down` 都会重建容器。
+
+正确做法是把需要留存的目录挂出来。两种挂载方式：
+
+```
+# 具名 volume：由 docker 管理，路径在 /var/lib/docker/volumes 下
+# 前面 Jenkins 的例子用的就是这种，jenkins_home 独立于容器存在
+docker run -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk11
+
+# bind mount：直接映射宿主机的具体目录，路径自己指定
+# 适合配置文件、日志这类需要在宿主机直接查看和编辑的内容
+docker run -v /data/mysql:/var/lib/mysql mysql:8
+```
+
+差别在于：volume 由 docker 托管、跨平台行为一致、迁移时用 `docker volume` 相关指令处理；bind mount 路径可控、便于宿主机直接读写，但强依赖宿主机的目录结构和权限设置。**数据用 volume，配置和日志用 bind mount** 是比较省心的默认选择。
+
+写进 compose 里就是：
+
+```yaml
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # 密码走环境变量，不要硬编码进文件
+    volumes:
+      - mysql_data:/var/lib/mysql # 数据：具名 volume
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro # 配置：bind mount，ro 表示只读
+    ports:
+      - '3306:3306'
+
+volumes:
+  mysql_data: # 声明具名 volume，docker compose down 不会删它
+```
+
+几个注意点：
+
+- `docker compose down` 只删容器和网络，具名 volume 会保留；加了 `-v` 才会一起删，数据直接丢，这是生产环境最容易误操作的指令。
+- 挂载了数据 volume 不等于有备份。volume 只防容器重建，不防误删、不防宿主机磁盘损坏，该配的定时备份还是要配（数据库用 `mysqldump`/`pg_dump` 导出到容器外，而不是直接拷 volume 目录里的数据文件——运行中的数据文件拷出来可能是不一致的）。
+- 备份恢复要真的演练过。没验证过能恢复的备份等于没有备份。
+- 挂载数据目录时留意宿主机侧的目录权限和属主，容器内进程往往不是 root，权限不对会直接启动失败。
 
 ## 参考文献
 

@@ -5,6 +5,7 @@ categories:
   - 工作技巧
 tags:
   - Postman
+  - ngrok
 ---
 
 随手记一下一些工具小技巧
@@ -108,9 +109,71 @@ madge src/components/member \
 brew install graphviz || port install graphviz
 ```
 
+## ngrok
+
+ngrok 是一个反向代理工具，它会在你本地运行的服务器和 ngrok 云端之间建立一条安全隧道，并分配一个公网可访问的 HTTPS 域名。外部请求先打到这个公网域名，再由 ngrok 转发到你本机的指定端口，从而让「只跑在 localhost 上的服务」临时暴露到公网。
+
+**核心功能：**
+
+1. 内网穿透/公网访问：把 `http://localhost:3000` 映射成 `https://xxxx.ngrok-free.app` 这样的公网地址，无需配置路由器端口转发、无需公网 IP。
+2. 自动 HTTPS：分配的域名自带可信 TLS 证书，省去自签证书和本地配 HTTPS 的麻烦。
+3. 请求检查与重放：自带 Web 管理面板（默认 `http://127.0.0.1:4040`），可以查看每一次请求的 header、body、耗时，并支持一键重放（Replay），调试接口时非常方便。
+4. 鉴权与访问控制：可配置 Basic Auth（`--basic-auth`）、OAuth（限定只有指定邮箱能访问）、IP 白名单，避免把本地服务裸奔到公网。
+5. 固定域名与 TCP 隧道：付费版支持固定子域名（不用每次重启换地址），也支持转发 TCP 端口（如 SSH、数据库）。
+6. 自定义请求头/响应修改：配合 `--request-header-add`、`--response-header-add` 等参数，可以模拟线上网关的行为。
+
+**适用场景：**
+
+1. 联调第三方回调：微信/支付宝/飞书/GitHub 等平台的 Webhook 回调地址必须是公网 HTTPS，用 ngrok 可以直接把回调打到本地服务，方便断点调试，免去反复部署到测试环境。
+2. 移动端真机调试：手机、平板访问同一个 ngrok 域名就能连上本地开发机，适合调试只在移动端复现的问题（注意手机与电脑需处于同一 ngrok 账号/域名下即可，无需同一局域网）。
+3. 给远程同事/客户演示：本地起一个未完成的功能，把临时链接发给对方预览，演示完关闭隧道即失效。
+4. 调试 HTTPS 相关问题：很多能力（Service Worker、地理定位、摄像头、Cookie 的 `Secure`/`SameSite` 属性、第三方登录）只在 HTTPS 下可用，ngrok 提供的天然 HTTPS 域名可以直接验证。
+5. 临时对外提供接口：让外部系统、小程序（配置合法域名白名单时）临时访问本地接口进行自测。
+
+**使用方式：**
+
+1. 安装：
+   ```bash
+   brew install ngrok
+   ```
+2. 注册 [ngrok 官网](https://ngrok.com/) 账号，在 Dashboard 拿到 Authtoken 后配置一次即可：
+   ```bash
+   ngrok config add-authtoken <你的token>
+   ```
+3. 启动隧道，把本地 3000 端口暴露到公网：
+   ```bash
+   ngrok http 3000
+   ```
+   启动后终端会输出 Forwarding 地址（如 `https://abcd-1234.ngrok-free.app -> http://localhost:3000`），同时在浏览器打开 `http://127.0.0.1:4040` 可以进入请求检查面板。
+
+常用参数：
+
+```bash
+# 指定固定域名（付费）
+ngrok http --domain=your-name.ngrok-free.app 3000
+
+# 加上 Basic Auth 保护
+ngrok http --basic-auth="user:password" 3000
+
+# 自定义子域名（旧版写法）
+ngrok http -subdomain=myapp 3000
+
+# 转发 TCP，例如 SSH
+ngrok tcp 22
+```
+
+**需要注意的点：**
+
+1. 免费版每次启动隧道的随机域名都会变，且单账号有并发隧道数、请求速率限制；长期调试建议固定域名或自建（如 frp、Cloudflare Tunnel）。
+2. 隧道期间本地服务等于暴露在公网，不要长时间开着，也不要在上面跑含敏感数据的生产库；配合 Basic Auth / OAuth 使用更安全。
+3. 部分前端项目会校验 Host 白名单，需要在 Vite/Webpack 的 `server.allowedHosts` 中加上 ngrok 域名，否则会报 "Blocked request. This host is not allowed"。
+4. ngrok 免费域名常被部分第三方平台（如微信）风控拦截，正式联调仍建议走备案域名。
+
 ## 参考文献
 
 （1）[React 项目里，如何快速定位你的组件源码？](https://juejin.cn/post/7374631918111178790)
 （2）[Charles 抓包神器的使用，完美解决抓取 HTTPS 请求 unknown 问题](https://cloud.tencent.com/developer/article/2427128)
 
 （3）[madge](https://github.com/pahen/madge)
+
+（4）[ngrok 官方文档](https://ngrok.com/docs)
