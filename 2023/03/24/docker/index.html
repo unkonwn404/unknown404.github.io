@@ -24,7 +24,7 @@
 <meta property="og:description" content="docker知识笔记">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-24T09:36:32.000Z">
-<meta property="article:modified_time" content="2025-08-19T14:35:45.685Z">
+<meta property="article:modified_time" content="2026-08-31T10:11:47.672Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="docker">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.5k 字
+          9.8k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          55 分钟
+          82 分钟
         
       </span>
     
@@ -298,6 +298,20 @@
 <h3 id="镜像迁移相关"><a href="#镜像迁移相关" class="headerlink" title="镜像迁移相关"></a>镜像迁移相关</h3><h4 id="docker-save-docker-load"><a href="#docker-save-docker-load" class="headerlink" title="docker save + docker load"></a>docker save + docker load</h4><p>docker save 命令用于将 Docker 镜像导出为一个 tar 归档文件，该文件包含了镜像的全部文件系统层，包括 Dockerfile 中定义的命令、环境变量等。导出的镜像可以使用 docker load 命令重新导入到 Docker 中，或者将其传输到其他 Docker 安装实例中。由于 docker save 导出的文件包含了完整的镜像层，因此可以用来备份或迁移整个镜像。</p>
 <h4 id="docker-export-docker-import"><a href="#docker-export-docker-import" class="headerlink" title="docker export + docker import"></a>docker export + docker import</h4><p>docker export 命令用于将 Docker 容器的文件系统导出为一个 tar 归档文件，该文件不包含容器的元数据（比如容器的标签、端口号、环境变量等），仅包含容器中运行的应用程序和文件。导出的容器文件系统可以使用 docker import 命令导入为一个新的 Docker 镜像，或者在需要时手动将其中的文件复制到本地系统中。由于 docker export 不包含镜像的元数据，因此它通常用于容器的临时备份和文件传输。</p>
 <p>总之，docker save 适用于备份、迁移整个 Docker 镜像，docker export 适用于容器的临时备份和文件传输。</p>
+<h3 id="docker-compose-相关指令"><a href="#docker-compose-相关指令" class="headerlink" title="docker-compose 相关指令"></a>docker-compose 相关指令</h3><p>上面的 docker run 一次只能启动一个容器，参数还得手写一长串。实际项目往往是「前端 + 后端 + 数据库 + nginx」多个容器一起跑，这时候用 docker-compose 把这些容器的配置写进一个 <code>docker-compose.yml</code> 里，一条指令全部拉起来。</p>
+<p>注意新旧两种写法：老版本是独立的 <code>docker-compose</code> 命令，Docker Desktop &#x2F; 新版 Docker 里已经内置为插件，写成 <code>docker compose</code>（中间是空格），两者参数基本一致。</p>
+<p>配置文件示例，把前面 nginx 部署的前端项目和一个 node 服务放在一起：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># docker-compose.yml</span><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">web:</span><br>    <span class="hljs-attr">build:</span> <span class="hljs-string">.</span> <span class="hljs-comment"># 用当前目录的 Dockerfile 构建，等价于 docker build .</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">vue-init</span> <span class="hljs-comment"># 构建出来的镜像名</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">vue-init-container</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;8136:80&#x27;</span> <span class="hljs-comment"># 宿主机端口:容器端口，等价于 docker run -p</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">on-failure</span><br>    <span class="hljs-attr">depends_on:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">api</span> <span class="hljs-comment"># 先启动 api 再启动 web</span><br><br>  <span class="hljs-attr">api:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">node:20-alpine</span><br>    <span class="hljs-attr">working_dir:</span> <span class="hljs-string">/opt/project</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./server:/opt/project</span> <span class="hljs-comment"># 目录挂载，等价于 docker run -v</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">NODE_ENV=production</span> <span class="hljs-comment"># 环境变量，等价于 docker run -e</span><br>    <span class="hljs-attr">command:</span> <span class="hljs-string">node</span> <span class="hljs-string">index.js</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;3000:3000&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>常用指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 构建并后台启动所有服务</span><br><span class="hljs-comment"># -d 后台运行，不加则日志直接打在当前终端</span><br><span class="hljs-comment"># --build 强制重新构建镜像，代码更新后要加，否则会复用旧镜像</span><br>docker compose up -d --build<br><br><span class="hljs-comment"># 只启动/重启其中某个服务</span><br>docker compose up -d [service_name]<br>docker compose restart [service_name]<br><br><span class="hljs-comment"># 查看当前 compose 项目下容器的状态</span><br>docker compose ps<br><br><span class="hljs-comment"># 查看日志</span><br><span class="hljs-comment"># -f 持续跟踪输出，--tail=100 只看最后100行</span><br>docker compose logs -f --<span class="hljs-built_in">tail</span>=100 [service_name]<br><br><span class="hljs-comment"># 进入某个服务的容器</span><br>docker compose <span class="hljs-built_in">exec</span> [service_name] /bin/sh<br><br><span class="hljs-comment"># 停止容器但不删除</span><br>docker compose stop<br><br><span class="hljs-comment"># 停止并删除容器、网络</span><br><span class="hljs-comment"># 加 -v 会一并删除 volume，数据会丢，慎用</span><br>docker compose down<br><br><span class="hljs-comment"># 校验配置文件，会把最终生效的配置打印出来</span><br><span class="hljs-comment"># 排查缩进、变量替换问题很好用</span><br>docker compose config<br></code></pre></td></tr></table></figure>
+
+<p>几个实践中容易踩的点：</p>
+<ul>
+<li>服务之间可以直接用服务名当域名互相访问（例如 web 里请求 <code>http://api:3000</code>），compose 会自动建一个网络做服务发现，不需要写 IP。</li>
+<li>只改了代码没改 Dockerfile，<code>up -d</code> 默认不会重新构建，必须加 <code>--build</code>。</li>
+<li><code>down</code> 和 <code>stop</code> 的区别：<code>stop</code> 只是停，容器还在，<code>down</code> 会把容器和网络删掉。</li>
+</ul>
 <h2 id="docker-镜像运行实践：Jenkins-安装"><a href="#docker-镜像运行实践：Jenkins-安装" class="headerlink" title="docker 镜像运行实践：Jenkins 安装"></a>docker 镜像运行实践：Jenkins 安装</h2><h3 id="Jenkins-简介"><a href="#Jenkins-简介" class="headerlink" title="Jenkins 简介"></a>Jenkins 简介</h3><p>Jenkins 是一款业界流行的开源持续集成工具，广泛用于项目开发，具有自动化构建、测试和部署等功能。前端自动化部署的重要工具。</p>
 <h3 id="Jenkins-镜像获取"><a href="#Jenkins-镜像获取" class="headerlink" title="Jenkins 镜像获取"></a>Jenkins 镜像获取</h3><p>dockerHub 网站已经提供了对应的镜像<a target="_blank" rel="noopener" href="https://hub.docker.com/r/jenkins/jenkins">jenkins</a>。个人理解 dockerHub 网站类似依赖包的一个集合网站 npmjs，而镜像则类似于依赖包。开发者可以从 dockerHub 下载需要的镜像，也可以把自己生成的镜像打包上传到网站。在运行类似 docker run 等指令时如果镜像不存在当前 docker 内就会去网站拉取同名镜像。<br>执行指令<code>docker pull jenkins/jenkins:lts-jdk11</code>就可以下载 Jenkins 的稳定镜像版本。</p>
 <h3 id="Jenkins-容器创建"><a href="#Jenkins-容器创建" class="headerlink" title="Jenkins 容器创建"></a>Jenkins 容器创建</h3><p>执行如下指令，在 docker volume 会自动产生一个叫 jenkins_home 的空间，无论 docker 的容器是运行还是停止或删除 jenkins_home 都会存在；同时指令还做了端口的映射：将宿主机 8080 端口映射到容器 8080 端口，50000 端口是基于 JNLP 的 Jenkins 代理（slave）通过 TCP 与 Jenkins master 进行通信的端口。</p>
@@ -360,6 +374,82 @@
 <li>为了提升页面首屏性能，对 html 走协商缓存，css、js 走强缓存；同时采用 name-hash 的打包方式防止上线过程中资源请求错乱</li>
 <li>为了减轻服务器压力，不选择将文件存储在 Nginx Web 服务器内某目录下，而是将静态资源部署到 CDN 上，再将 Nginx 上的流量转发到 CDN 上</li>
 <li>。。。等等</li>
+</ul>
+<h2 id="docker-部署的适用对象"><a href="#docker-部署的适用对象" class="headerlink" title="docker 部署的适用对象"></a>docker 部署的适用对象</h2><p>上面前端静态资源、SSR 服务这类场景用 docker 很顺，因为它们都是<strong>无状态服务</strong>：容器随时销毁重建都不影响正确性，重启就是回到干净初始态。docker 的核心优势（一致环境、随意扩容、快速回滚）恰好都建立在这个前提上。</p>
+<p>反过来，容器”随时可丢弃”的特性对有状态服务就变成了负担：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>是否适合容器部署</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>前端静态资源、Node&#x2F;SSR 服务、BFF、API 服务</td>
+<td>适合</td>
+<td>无状态，可以水平扩容、滚动更新</td>
+</tr>
+<tr>
+<td>构建&#x2F;CI 工具（Jenkins、编译环境）</td>
+<td>适合</td>
+<td>环境依赖复杂，容器隔离收益最大；配置需要挂载出来</td>
+</tr>
+<tr>
+<td>数据库、Redis、消息队列</td>
+<td>开发&#x2F;测试适合，生产谨慎</td>
+<td>有状态，生产更推荐云托管或 k8s StatefulSet，见下</td>
+</tr>
+<tr>
+<td>用户上传的文件、日志</td>
+<td>数据本身不能放容器里</td>
+<td>必须挂载到宿主机、对象存储或 CDN</td>
+</tr>
+</tbody></table>
+<p>数据库这类有状态服务，生产环境一般不自己用单机 docker 跑。原因是单机容器等于单点故障，备份与恢复演练、主从复制、连接数和内存调优、磁盘 IO、宿主机宕机后的切换全都得自己兜；这些云数据库已经做完了，自建省下的成本通常抵不过一次事故。真要自建，走 k8s StatefulSet + PVC，或者直接装在 VM 上。所以典型做法是：无状态服务放容器里，数据库在 compose&#x2F;编排配置里只留一个连接串指向外部托管实例。</p>
+<h2 id="有状态服务与数据持久化"><a href="#有状态服务与数据持久化" class="headerlink" title="有状态服务与数据持久化"></a>有状态服务与数据持久化</h2><p>容器内的数据一共可能落在三个地方，区别决定了数据会不会丢：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>生命周期</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>容器可写层</td>
+<td>随容器删除一起消失</td>
+<td>临时文件、进程运行时产物</td>
+</tr>
+<tr>
+<td>镜像层</td>
+<td>构建时固化，容器重建即回到快照</td>
+<td>代码、依赖等构建产物</td>
+</tr>
+<tr>
+<td>volume &#x2F; 挂载</td>
+<td>独立于容器，容器删了数据还在</td>
+<td>数据库文件、上传文件、日志、配置</td>
+</tr>
+</tbody></table>
+<p>有两个常见误区：</p>
+<ul>
+<li><strong>不要把数据 COPY 进镜像。</strong> 镜像层是不可变的构建产物，容器运行期间写入的内容都落在可写层，<code>docker rm</code> 之后全丢，重建只会回到 <code>docker build</code> 那一刻的快照。</li>
+<li><strong>不要指望容器不删就没事。</strong> 升级镜像版本、改 Dockerfile、<code>docker compose down</code> 都会重建容器。</li>
+</ul>
+<p>正确做法是把需要留存的目录挂出来。两种挂载方式：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment"># 具名 volume：由 docker 管理，路径在 /var/lib/docker/volumes 下</span><br><span class="hljs-comment"># 前面 Jenkins 的例子用的就是这种，jenkins_home 独立于容器存在</span><br>docker run -v jenkins_home:<span class="hljs-regexp">/var/</span>jenkins_home jenkins/jenkins:lts-jdk11<br><br><span class="hljs-comment"># bind mount：直接映射宿主机的具体目录，路径自己指定</span><br><span class="hljs-comment"># 适合配置文件、日志这类需要在宿主机直接查看和编辑的内容</span><br>docker run -v <span class="hljs-regexp">/data/my</span>sql:<span class="hljs-regexp">/var/</span>lib/mysql mysql:<span class="hljs-number">8</span><br></code></pre></td></tr></table></figure>
+
+<p>差别在于：volume 由 docker 托管、跨平台行为一致、迁移时用 <code>docker volume</code> 相关指令处理；bind mount 路径可控、便于宿主机直接读写，但强依赖宿主机的目录结构和权限设置。<strong>数据用 volume，配置和日志用 bind mount</strong> 是比较省心的默认选择。</p>
+<p>写进 compose 里就是：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">mysql:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:8</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">MYSQL_ROOT_PASSWORD=$&#123;MYSQL_ROOT_PASSWORD&#125;</span> <span class="hljs-comment"># 密码走环境变量，不要硬编码进文件</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql_data:/var/lib/mysql</span> <span class="hljs-comment"># 数据：具名 volume</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro</span> <span class="hljs-comment"># 配置：bind mount，ro 表示只读</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;3306:3306&#x27;</span><br><br><span class="hljs-attr">volumes:</span><br>  <span class="hljs-attr">mysql_data:</span> <span class="hljs-comment"># 声明具名 volume，docker compose down 不会删它</span><br></code></pre></td></tr></table></figure>
+
+<p>几个注意点：</p>
+<ul>
+<li><code>docker compose down</code> 只删容器和网络，具名 volume 会保留；加了 <code>-v</code> 才会一起删，数据直接丢，这是生产环境最容易误操作的指令。</li>
+<li>挂载了数据 volume 不等于有备份。volume 只防容器重建，不防误删、不防宿主机磁盘损坏，该配的定时备份还是要配（数据库用 <code>mysqldump</code>&#x2F;<code>pg_dump</code> 导出到容器外，而不是直接拷 volume 目录里的数据文件——运行中的数据文件拷出来可能是不一致的）。</li>
+<li>备份恢复要真的演练过。没验证过能恢复的备份等于没有备份。</li>
+<li>挂载数据目录时留意宿主机侧的目录权限和属主，容器内进程往往不是 root，权限不对会直接启动失败。</li>
 </ul>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7209900557712212026">Win10 安装 Docker 以及 Jenkins(超级详细篇)</a><br>（2）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7187326853336530981">Docker 安装 Jenkins，Nginx，实现前端项目自动化构建</a><br>（3）<a target="_blank" rel="noopener" href="https://github.com/jenkinsci/docker/blob/master/README.md#connecting-agents">Docker Image Jenkins</a><br>（4）<a target="_blank" rel="noopener" href="https://juejin.cn/post/6992848354753380389?searchId=202309061616378C8D0FA3A38070899341">【前端 Docker 部署实战】Docker 镜像+Nginx 配置部署 Vue 项目</a><br>（5）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7017710911443959839">2021 年当我们聊前端部署时，我们在聊什么</a><br>（6）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7269668219488354361">使用 Docker 实现前端应用的标准化构建、部署和运行</a></p>
 

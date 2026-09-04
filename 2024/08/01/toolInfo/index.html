@@ -24,9 +24,10 @@
 <meta property="og:description" content="随手记一下一些工具小技巧">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-08-01T09:20:18.000Z">
-<meta property="article:modified_time" content="2025-12-05T03:43:16.067Z">
+<meta property="article:modified_time" content="2026-09-03T06:59:56.618Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="Postman">
+<meta property="article:tag" content="ngrok">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -221,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.2k 字
+          4k 字
         
       </span>
     
@@ -232,7 +233,7 @@
         
         
         
-          19 分钟
+          34 分钟
         
       </span>
     
@@ -335,8 +336,44 @@
 </ol>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">brew install graphviz || port install graphviz<br></code></pre></td></tr></table></figure>
 
+<h2 id="ngrok"><a href="#ngrok" class="headerlink" title="ngrok"></a>ngrok</h2><p>ngrok 是一个反向代理工具，它会在你本地运行的服务器和 ngrok 云端之间建立一条安全隧道，并分配一个公网可访问的 HTTPS 域名。外部请求先打到这个公网域名，再由 ngrok 转发到你本机的指定端口，从而让「只跑在 localhost 上的服务」临时暴露到公网。</p>
+<p><strong>核心功能：</strong></p>
+<ol>
+<li>内网穿透&#x2F;公网访问：把 <code>http://localhost:3000</code> 映射成 <code>https://xxxx.ngrok-free.app</code> 这样的公网地址，无需配置路由器端口转发、无需公网 IP。</li>
+<li>自动 HTTPS：分配的域名自带可信 TLS 证书，省去自签证书和本地配 HTTPS 的麻烦。</li>
+<li>请求检查与重放：自带 Web 管理面板（默认 <code>http://127.0.0.1:4040</code>），可以查看每一次请求的 header、body、耗时，并支持一键重放（Replay），调试接口时非常方便。</li>
+<li>鉴权与访问控制：可配置 Basic Auth（<code>--basic-auth</code>）、OAuth（限定只有指定邮箱能访问）、IP 白名单，避免把本地服务裸奔到公网。</li>
+<li>固定域名与 TCP 隧道：付费版支持固定子域名（不用每次重启换地址），也支持转发 TCP 端口（如 SSH、数据库）。</li>
+<li>自定义请求头&#x2F;响应修改：配合 <code>--request-header-add</code>、<code>--response-header-add</code> 等参数，可以模拟线上网关的行为。</li>
+</ol>
+<p><strong>适用场景：</strong></p>
+<ol>
+<li>联调第三方回调：微信&#x2F;支付宝&#x2F;飞书&#x2F;GitHub 等平台的 Webhook 回调地址必须是公网 HTTPS，用 ngrok 可以直接把回调打到本地服务，方便断点调试，免去反复部署到测试环境。</li>
+<li>移动端真机调试：手机、平板访问同一个 ngrok 域名就能连上本地开发机，适合调试只在移动端复现的问题（注意手机与电脑需处于同一 ngrok 账号&#x2F;域名下即可，无需同一局域网）。</li>
+<li>给远程同事&#x2F;客户演示：本地起一个未完成的功能，把临时链接发给对方预览，演示完关闭隧道即失效。</li>
+<li>调试 HTTPS 相关问题：很多能力（Service Worker、地理定位、摄像头、Cookie 的 <code>Secure</code>&#x2F;<code>SameSite</code> 属性、第三方登录）只在 HTTPS 下可用，ngrok 提供的天然 HTTPS 域名可以直接验证。</li>
+<li>临时对外提供接口：让外部系统、小程序（配置合法域名白名单时）临时访问本地接口进行自测。</li>
+</ol>
+<p><strong>使用方式：</strong></p>
+<ol>
+<li>安装：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">brew install ngrok<br></code></pre></td></tr></table></figure></li>
+<li>注册 <a target="_blank" rel="noopener" href="https://ngrok.com/">ngrok 官网</a> 账号，在 Dashboard 拿到 Authtoken 后配置一次即可：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ngrok config add-authtoken &lt;你的token&gt;<br></code></pre></td></tr></table></figure></li>
+<li>启动隧道，把本地 3000 端口暴露到公网：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ngrok http 3000<br></code></pre></td></tr></table></figure>
+启动后终端会输出 Forwarding 地址（如 <code>https://abcd-1234.ngrok-free.app -&gt; http://localhost:3000</code>），同时在浏览器打开 <code>http://127.0.0.1:4040</code> 可以进入请求检查面板。</li>
+</ol>
+<p>常用参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 指定固定域名（付费）</span><br>ngrok http --domain=your-name.ngrok-free.app 3000<br><br><span class="hljs-comment"># 加上 Basic Auth 保护</span><br>ngrok http --basic-auth=<span class="hljs-string">&quot;user:password&quot;</span> 3000<br><br><span class="hljs-comment"># 自定义子域名（旧版写法）</span><br>ngrok http -subdomain=myapp 3000<br><br><span class="hljs-comment"># 转发 TCP，例如 SSH</span><br>ngrok tcp 22<br></code></pre></td></tr></table></figure>
+
+<p><strong>需要注意的点：</strong></p>
+<ol>
+<li>免费版每次启动隧道的随机域名都会变，且单账号有并发隧道数、请求速率限制；长期调试建议固定域名或自建（如 frp、Cloudflare Tunnel）。</li>
+<li>隧道期间本地服务等于暴露在公网，不要长时间开着，也不要在上面跑含敏感数据的生产库；配合 Basic Auth &#x2F; OAuth 使用更安全。</li>
+<li>部分前端项目会校验 Host 白名单，需要在 Vite&#x2F;Webpack 的 <code>server.allowedHosts</code> 中加上 ngrok 域名，否则会报 “Blocked request. This host is not allowed”。</li>
+<li>ngrok 免费域名常被部分第三方平台（如微信）风控拦截，正式联调仍建议走备案域名。</li>
+</ol>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>（1）<a target="_blank" rel="noopener" href="https://juejin.cn/post/7374631918111178790">React 项目里，如何快速定位你的组件源码？</a><br>（2）<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2427128">Charles 抓包神器的使用，完美解决抓取 HTTPS 请求 unknown 问题</a></p>
 <p>（3）<a target="_blank" rel="noopener" href="https://github.com/pahen/madge">madge</a></p>
+<p>（4）<a target="_blank" rel="noopener" href="https://ngrok.com/docs">ngrok 官方文档</a></p>
 
                 
               </div>
@@ -371,6 +408,8 @@
       <i class="iconfont icon-tags"></i>
       
         <a href="/unknown404.github.io/tags/Postman/">#Postman</a>
+      
+        <a href="/unknown404.github.io/tags/ngrok/">#ngrok</a>
       
     </div>
   

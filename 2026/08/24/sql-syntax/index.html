@@ -1,0 +1,942 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/unknown404.github.io/img/avatar.png">
+  <link rel="icon" href="/unknown404.github.io/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="小白的文件整理箱">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="SQL（Structured Query Language，结构化查询语言）是用于操作关系型数据库的标准语言。本文将会整理日常开发中最常用的语法，帮助自己记忆理解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL语法入门">
+<meta property="og:url" content="https://unkonwn404.github.io/unknown404.github.io/2026/08/24/sql-syntax/index.html">
+<meta property="og:site_name" content="小白的文件整理箱">
+<meta property="og:description" content="SQL（Structured Query Language，结构化查询语言）是用于操作关系型数据库的标准语言。本文将会整理日常开发中最常用的语法，帮助自己记忆理解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-08-24T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-25T08:04:20.310Z">
+<meta property="article:author" content="小白的文件整理箱">
+<meta property="article:tag" content="SQL">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SQL语法入门 - 小白的文件整理箱</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/unknown404.github.io/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/unknown404.github.io/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/unknown404.github.io/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"unkonwn404.github.io","root":"/unknown404.github.io/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/unknown404.github.io/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/unknown404.github.io/js/utils.js" ></script>
+  <script  src="/unknown404.github.io/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/unknown404.github.io/atom.xml" title="小白的文件整理箱" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/unknown404.github.io/">
+      <strong>小白的文件整理箱</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/unknown404.github.io/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/unknown404.github.io/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SQL语法入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-08-24 10:00" pubdate>
+          2026年8月24日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          78 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SQL语法入门</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>SQL（Structured Query Language，结构化查询语言）是用于操作关系型数据库的标准语言。本文将会整理日常开发中最常用的语法，帮助自己记忆理解。</p>
+<span id="more"></span>
+
+<h2 id="1-表的基本结构与信息"><a href="#1-表的基本结构与信息" class="headerlink" title="1. 表的基本结构与信息"></a>1. 表的基本结构与信息</h2><p>在写查询之前，先了解关系型数据库中”表”的基本构成。</p>
+<h3 id="1-1-表、行、列"><a href="#1-1-表、行、列" class="headerlink" title="1.1 表、行、列"></a>1.1 表、行、列</h3><ul>
+<li><strong>表（Table）</strong>：一张二维数据表，对应一个实体或一类数据，如 <code>users</code>（用户）、<code>orders</code>（订单）。</li>
+<li><strong>列 &#x2F; 字段（Column）</strong>：表的纵向维度，定义数据的属性，如 <code>name</code>、<code>age</code>。每列都有明确的数据类型。</li>
+<li><strong>行 &#x2F; 记录（Row）</strong>：表的横向维度，代表一条具体的数据，如用户 Alice 的整条信息。</li>
+</ul>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs tap">┌────┬───────┬─────┬──────────┐<br>│ id │ name  │ age │  city    │  ← 列（字段）<br>├────┼───────┼─────┼──────────┤<br>│<span class="hljs-number"> 1 </span> │ Alice │<span class="hljs-number"> 25 </span> │ Beijing  │  ← 行（记录）<br>│<span class="hljs-number"> 2 </span> │ Bob   │<span class="hljs-number"> 30 </span> │ Shanghai │<br>└────┴───────┴─────┴──────────┘<br></code></pre></td></tr></table></figure>
+
+<h3 id="1-2-常见列属性与约束"><a href="#1-2-常见列属性与约束" class="headerlink" title="1.2 常见列属性与约束"></a>1.2 常见列属性与约束</h3><p>建表时为每列指定<strong>数据类型</strong>和<strong>约束</strong>，保证数据的正确性与一致性：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>说明</th>
+<th>常见示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据类型</td>
+<td>列中允许存储的数据种类</td>
+<td><code>INT</code>（整数）、<code>VARCHAR(n)</code>（变长字符串）、<code>DECIMAL(m,n)</code>（小数）、<code>DATE</code>（日期）、<code>BOOLEAN</code>（布尔）</td>
+</tr>
+<tr>
+<td>PRIMARY KEY（主键）</td>
+<td>唯一标识一行，不可重复、不可为空</td>
+<td><code>id INT PRIMARY KEY</code></td>
+</tr>
+<tr>
+<td>NOT NULL</td>
+<td>该列必须填值，不能为空</td>
+<td><code>name VARCHAR(50) NOT NULL</code></td>
+</tr>
+<tr>
+<td>UNIQUE</td>
+<td>列值（或列组合）在整个表中不能重复</td>
+<td><code>email VARCHAR(100) UNIQUE</code></td>
+</tr>
+<tr>
+<td>DEFAULT</td>
+<td>未提供值时的默认值</td>
+<td><code>status VARCHAR(10) DEFAULT &#39;active&#39;</code></td>
+</tr>
+<tr>
+<td>FOREIGN KEY（外键）</td>
+<td>引用另一张表的主键，建立表间关联</td>
+<td><code>user_id INT REFERENCES users(id)</code></td>
+</tr>
+<tr>
+<td>INDEX（索引）</td>
+<td>为列建立”目录”，加速查询（非约束，但常在建表时一并定义）</td>
+<td><code>INDEX idx_city (city)</code></td>
+</tr>
+</tbody></table>
+<h3 id="1-2-1-UNIQUE-详解"><a href="#1-2-1-UNIQUE-详解" class="headerlink" title="1.2.1 UNIQUE 详解"></a>1.2.1 UNIQUE 详解</h3><p><code>UNIQUE</code> 约束保证某一列（或多列组合）的值在整张表中<strong>不重复</strong>，常用来防止出现两条”同一个东西”的数据，例如两个用户注册了相同的邮箱。</p>
+<p><strong>基本用法（列级约束）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> users (<br>  id    <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY,<br>  email <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">UNIQUE</span>,   <span class="hljs-comment">-- 单列唯一：邮箱不能重复</span><br>  name  <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>)<br>);<br></code></pre></td></tr></table></figure>
+
+<p><strong>多列联合唯一（表级约束）</strong></p>
+<p>当”单独每一列都可能重复，但几列组合起来不能重复”时，用联合唯一约束。例如一个用户可以对同一商品下多个订单，但不能对同一个订单重复评价——评价表的 <code>(user_id, order_id)</code> 组合必须唯一：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> reviews (<br>  id       <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY,<br>  user_id  <span class="hljs-type">INT</span>,<br>  order_id <span class="hljs-type">INT</span>,<br>  content  TEXT,<br>  <span class="hljs-comment">-- 组合唯一：同一用户对同一订单只能评价一次</span><br>  <span class="hljs-keyword">UNIQUE</span> (user_id, order_id)<br>);<br></code></pre></td></tr></table></figure>
+
+<p><strong>给约束命名（便于后续删除 &#x2F; 管理）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> users (<br>  id    <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY,<br>  email <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>),<br>  <span class="hljs-keyword">CONSTRAINT</span> uk_users_email <span class="hljs-keyword">UNIQUE</span> (email)<br>);<br></code></pre></td></tr></table></figure>
+
+<p><strong>已存在的表追加 &#x2F; 删除唯一约束</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 追加</span><br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">TABLE</span> users <span class="hljs-keyword">ADD</span> <span class="hljs-keyword">CONSTRAINT</span> uk_users_email <span class="hljs-keyword">UNIQUE</span> (email);<br><br><span class="hljs-comment">-- 删除（注意：不同数据库语法略有差异，MySQL 用 DROP INDEX）</span><br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">TABLE</span> users <span class="hljs-keyword">DROP</span> <span class="hljs-keyword">CONSTRAINT</span> uk_users_email;   <span class="hljs-comment">-- PostgreSQL / SQL Server</span><br><span class="hljs-comment">-- ALTER TABLE users DROP INDEX uk_users_email;     -- MySQL</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>UNIQUE 与 PRIMARY KEY 的区别</strong></p>
+<p>两者都要求”不重复”，但有三个关键差异：</p>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>PRIMARY KEY</th>
+<th>UNIQUE</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>是否允许 NULL</td>
+<td>不允许（隐式 NOT NULL）</td>
+<td>允许（标准 SQL 下多个 NULL 不算重复；但 MySQL 中唯一列只允许一个 NULL，需注意）</td>
+</tr>
+<tr>
+<td>一张表的数量</td>
+<td>只能有一个</td>
+<td>可以有多个</td>
+</tr>
+<tr>
+<td>语义</td>
+<td>唯一标识一行（行的”身份证”）</td>
+<td>业务上的唯一性（如邮箱、手机号）</td>
+</tr>
+</tbody></table>
+<p>简单说：<strong>主键用来定位行，UNIQUE 用来约束业务字段不重复</strong>。一张表只能有一个主键，但可以有多个 <code>UNIQUE</code> 约束（比如邮箱唯一、手机号也唯一）。</p>
+<h3 id="1-3-主键与外键（表之间的关系）"><a href="#1-3-主键与外键（表之间的关系）" class="headerlink" title="1.3 主键与外键（表之间的关系）"></a>1.3 主键与外键（表之间的关系）</h3><ul>
+<li><strong>主键（Primary Key）</strong>：每张表通常有且只有一个主键，用来唯一定位一条记录（如 <code>users.id</code>）。</li>
+<li><strong>外键（Foreign Key）</strong>：在子表中引用父表的主键，从而把两张表关联起来。例如 <code>orders.user_id</code> 引用 <code>users.id</code>，表示”这笔订单属于哪个用户”。</li>
+</ul>
+<p>这种”外键引用主键”的关系，正是后续 <code>JOIN</code> 多表查询能够把数据拼起来的基础。</p>
+<h3 id="1-3-1-外键的级联行为（ON-DELETE-x2F-ON-UPDATE）"><a href="#1-3-1-外键的级联行为（ON-DELETE-x2F-ON-UPDATE）" class="headerlink" title="1.3.1 外键的级联行为（ON DELETE &#x2F; ON UPDATE）"></a>1.3.1 外键的级联行为（ON DELETE &#x2F; ON UPDATE）</h3><p>定义外键时，可以指定当<strong>被引用的父记录</strong>被修改或删除时，子表该怎么响应。以下面的代码为例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">FOREIGN</span> KEY (user_id) <span class="hljs-keyword">REFERENCES</span> users(id) <span class="hljs-keyword">ON</span> <span class="hljs-keyword">DELETE</span> CASCADE<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>FOREIGN KEY (user_id)</code>：当前表（如 <code>orders</code>）的 <code>user_id</code> 列是外键。</li>
+<li><code>REFERENCES users(id)</code>：它引用 <code>users</code> 表的主键 <code>id</code>，即 <code>orders.user_id</code> 的值必须在 <code>users.id</code> 中存在。</li>
+<li><code>ON DELETE CASCADE</code>：<strong>级联删除</strong>——当父记录被删除时，子表里所有引用它的记录也自动被删除。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 删除 id=1 的用户，同时 orders 里所有 user_id=1 的订单会被自动删掉</span><br><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<p>常见的级联行为对照：</p>
+<table>
+<thead>
+<tr>
+<th>行为</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ON DELETE CASCADE</code></td>
+<td>父删，子跟着删</td>
+</tr>
+<tr>
+<td><code>ON DELETE SET NULL</code></td>
+<td>父删，子的外键列置为 NULL（该列需允许 NULL）</td>
+</tr>
+<tr>
+<td><code>ON DELETE RESTRICT</code> &#x2F; <code>NO ACTION</code></td>
+<td>父还有子引用时，拒绝删除父记录（默认，最安全）</td>
+</tr>
+<tr>
+<td><code>ON UPDATE CASCADE</code></td>
+<td>父主键被修改时，子的外键值同步更新</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意：<code>ON DELETE CASCADE</code> 很方便也很危险——删一个用户会连带删掉其所有订单，且通常不可恢复。生产环境一般更倾向用 <code>RESTRICT</code> 先拦住，或做”软删除”（加 <code>deleted_at</code> 列标记），避免误删大量数据。</p>
+</blockquote>
+<h3 id="1-4-索引（INDEX）详解"><a href="#1-4-索引（INDEX）详解" class="headerlink" title="1.4 索引（INDEX）详解"></a>1.4 索引（INDEX）详解</h3><p>索引是一份**额外的”目录”**，帮助数据库不必逐行扫描整张表就能快速定位数据。</p>
+<ul>
+<li><strong>没有索引</strong>：执行 <code>WHERE city = &#39;Beijing&#39;</code> 时，数据库只能从头到尾扫描每一行（全表扫描 &#x2F; Full Table Scan），表越大越慢。</li>
+<li><strong>有索引</strong>：在 <code>city</code> 列上建立类似 B+Tree 的目录结构，查找时直接”翻目录”定位，速度从 O(n) 降到约 O(log n)。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 为单列建索引，加速按 city 的查询</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_users_city <span class="hljs-keyword">ON</span> users(city);<br><br><span class="hljs-comment">-- 联合索引（多列组合查询时更有用，注意最左前缀原则）</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_orders_user_created <span class="hljs-keyword">ON</span> orders(user_id, created_at);<br><br><span class="hljs-comment">-- 查看 / 删除索引</span><br><span class="hljs-keyword">SHOW</span> INDEX <span class="hljs-keyword">FROM</span> users;              <span class="hljs-comment">-- MySQL</span><br><span class="hljs-keyword">DROP</span> INDEX idx_users_city <span class="hljs-keyword">ON</span> users; <span class="hljs-comment">-- MySQL</span><br></code></pre></td></tr></table></figure>
+
+<p>使用索引的注意点：</p>
+<ol>
+<li><strong>加速读、拖慢写</strong>：索引占用空间，且每次 <code>INSERT</code> &#x2F; <code>UPDATE</code> &#x2F; <code>DELETE</code> 都要同步维护索引。</li>
+<li><strong>主键和 UNIQUE 约束会自动建索引</strong>，所以按主键查询本来就很快。</li>
+<li><strong>不是越多越好</strong>：只在频繁用于 <code>WHERE</code>、<code>JOIN</code>、<code>ORDER BY</code> 的列上建索引。</li>
+</ol>
+<h3 id="1-5-查看表结构的信息"><a href="#1-5-查看表结构的信息" class="headerlink" title="1.5 查看表结构的信息"></a>1.5 查看表结构的信息</h3><p>日常开发中，经常需要先了解一张表有哪些字段、类型是什么。不同数据库提供了对应的命令：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- MySQL / PostgreSQL：查看表结构</span><br><span class="hljs-keyword">DESCRIBE</span> users;<br><span class="hljs-comment">-- 或等价写法</span><br><span class="hljs-keyword">SHOW</span> COLUMNS <span class="hljs-keyword">FROM</span> users;<br><br><span class="hljs-comment">-- SQLite：查看建表语句</span><br>.schema users;<br><br><span class="hljs-comment">-- 标准 SQL：查询系统视图（多数数据库支持，字段名略有差异）</span><br><span class="hljs-keyword">SELECT</span> column_name, data_type, is_nullable<br><span class="hljs-keyword">FROM</span> information_schema.columns<br><span class="hljs-keyword">WHERE</span> table_name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;users&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>理解了表由”行 + 列”组成、列有类型与约束、表之间通过主键&#x2F;外键关联、索引能加速查询，再看后面的增删改查语法会清晰很多。</p>
+<h2 id="2-SQL-操作语法：增删改查（CRUD）"><a href="#2-SQL-操作语法：增删改查（CRUD）" class="headerlink" title="2. SQL 操作语法：增删改查（CRUD）"></a>2. SQL 操作语法：增删改查（CRUD）</h2><p>SQL 对数据的操作可以归纳成四类，对应英文 CRUD：</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>英文</th>
+<th>对应 SQL 关键字</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>增</td>
+<td>Create</td>
+<td><code>INSERT</code>（及建表 <code>CREATE TABLE</code>）</td>
+<td>新建表、插入新数据</td>
+</tr>
+<tr>
+<td>查</td>
+<td>Read</td>
+<td><code>SELECT</code></td>
+<td>从表中读取 &#x2F; 查询数据</td>
+</tr>
+<tr>
+<td>改</td>
+<td>Update</td>
+<td><code>UPDATE</code></td>
+<td>修改已有数据</td>
+</tr>
+<tr>
+<td>删</td>
+<td>Delete</td>
+<td><code>DELETE</code>（及 <code>DROP TABLE</code>）</td>
+<td>删除数据 &#x2F; 删除表</td>
+</tr>
+</tbody></table>
+<p>下面按这四类分别介绍，示例统一使用第 1 节中 <code>users</code> &#x2F; <code>orders</code> 两张表的结构。</p>
+<h3 id="2-1-增（Create）：建表与插入数据"><a href="#2-1-增（Create）：建表与插入数据" class="headerlink" title="2.1 增（Create）：建表与插入数据"></a>2.1 增（Create）：建表与插入数据</h3><p>建表用 <code>CREATE TABLE</code>，插入数据用 <code>INSERT INTO</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 用户表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> users (<br>  id      <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY,<br>  name    <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>),<br>  age     <span class="hljs-type">INT</span>,<br>  city    <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>)<br>);<br><br><span class="hljs-comment">-- 订单表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> orders (<br>  id        <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY,<br>  user_id   <span class="hljs-type">INT</span>,<br>  amount    <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>),<br>  created_at <span class="hljs-type">DATE</span><br>);<br></code></pre></td></tr></table></figure>
+
+<p>插入数据的几种常见写法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 1) 指定列插入一条</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> users (id, name, age, city)<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;Alice&#x27;</span>, <span class="hljs-number">25</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>);<br><br><span class="hljs-comment">-- 2) 一次插入多条</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> users (id, name, age, city) <span class="hljs-keyword">VALUES</span><br>(<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;Bob&#x27;</span>,   <span class="hljs-number">30</span>, <span class="hljs-string">&#x27;Shanghai&#x27;</span>),<br>(<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;Cara&#x27;</span>,  <span class="hljs-number">28</span>, <span class="hljs-string">&#x27;Beijing&#x27;</span>),<br>(<span class="hljs-number">4</span>, <span class="hljs-string">&#x27;Dan&#x27;</span>,   <span class="hljs-number">35</span>, <span class="hljs-string">&#x27;Shenzhen&#x27;</span>),<br>(<span class="hljs-number">5</span>, <span class="hljs-string">&#x27;Eve&#x27;</span>,   <span class="hljs-number">22</span>, <span class="hljs-string">&#x27;Shanghai&#x27;</span>);<br><br><span class="hljs-comment">-- 3) 插入时忽略某些列（使用默认值或 NULL）</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> users (id, name) <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">6</span>, <span class="hljs-string">&#x27;Frank&#x27;</span>);<br><br><span class="hljs-comment">-- 4) 主键/唯一键冲突时忽略（MySQL / PostgreSQL 语法略有差异）</span><br><span class="hljs-keyword">INSERT</span> IGNORE <span class="hljs-keyword">INTO</span> users (id, name) <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;Alice&#x27;</span>);          <span class="hljs-comment">-- MySQL</span><br><span class="hljs-comment">-- INSERT INTO users (id, name) VALUES (1, &#x27;Alice&#x27;) ON CONFLICT DO NOTHING;  -- PostgreSQL</span><br></code></pre></td></tr></table></figure>
+
+<p>常用的示例数据（后续查询都基于它）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> orders (id, user_id, amount, created_at) <span class="hljs-keyword">VALUES</span><br>(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">100.00</span>, <span class="hljs-string">&#x27;2026-01-10&#x27;</span>),<br>(<span class="hljs-number">2</span>, <span class="hljs-number">1</span>,  <span class="hljs-number">50.00</span>, <span class="hljs-string">&#x27;2026-02-15&#x27;</span>),<br>(<span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">200.00</span>, <span class="hljs-string">&#x27;2026-01-20&#x27;</span>),<br>(<span class="hljs-number">4</span>, <span class="hljs-number">3</span>,  <span class="hljs-number">80.00</span>, <span class="hljs-string">&#x27;2026-03-05&#x27;</span>),<br>(<span class="hljs-number">5</span>, <span class="hljs-number">5</span>, <span class="hljs-number">120.00</span>, <span class="hljs-string">&#x27;2026-02-28&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-查（Read）：SELECT-家族"><a href="#2-2-查（Read）：SELECT-家族" class="headerlink" title="2.2 查（Read）：SELECT 家族"></a>2.2 查（Read）：SELECT 家族</h3><p><code>SELECT</code> 是最常用的语句，用于从表中读取数据。基础用法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查询所有列</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users;<br><br><span class="hljs-comment">-- 查询指定列</span><br><span class="hljs-keyword">SELECT</span> name, age <span class="hljs-keyword">FROM</span> users;<br><br><span class="hljs-comment">-- 为列起别名</span><br><span class="hljs-keyword">SELECT</span> name <span class="hljs-keyword">AS</span> 姓名, age <span class="hljs-keyword">AS</span> 年龄 <span class="hljs-keyword">FROM</span> users;<br><br><span class="hljs-comment">-- 去重查询</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> city <span class="hljs-keyword">FROM</span> users;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-1-WHERE-条件过滤"><a href="#2-2-1-WHERE-条件过滤" class="headerlink" title="2.2.1 WHERE 条件过滤"></a>2.2.1 WHERE 条件过滤</h4><p><code>WHERE</code> 用于筛选满足条件的行。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 数值比较</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> age <span class="hljs-operator">&gt;</span> <span class="hljs-number">28</span>;<br><br><span class="hljs-comment">-- 多条件组合</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> age <span class="hljs-operator">&gt;</span> <span class="hljs-number">25</span> <span class="hljs-keyword">AND</span> city <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Beijing&#x27;</span>;<br><br><span class="hljs-comment">-- IN 匹配多个值</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> city <span class="hljs-keyword">IN</span> (<span class="hljs-string">&#x27;Beijing&#x27;</span>, <span class="hljs-string">&#x27;Shanghai&#x27;</span>);<br><br><span class="hljs-comment">-- LIKE 模糊匹配（% 表示任意多个字符，_ 表示单个字符）</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> name <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;A%&#x27;</span>;<br><br><span class="hljs-comment">-- BETWEEN 范围</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> orders <span class="hljs-keyword">WHERE</span> amount <span class="hljs-keyword">BETWEEN</span> <span class="hljs-number">50</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">150</span>;<br><br><span class="hljs-comment">-- IS NULL 判断空值</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> city <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-2-ORDER-BY-排序"><a href="#2-2-2-ORDER-BY-排序" class="headerlink" title="2.2.2 ORDER BY 排序"></a>2.2.2 ORDER BY 排序</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 按年龄升序</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> age <span class="hljs-keyword">ASC</span>;<br><br><span class="hljs-comment">-- 按年龄降序</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> age <span class="hljs-keyword">DESC</span>;<br><br><span class="hljs-comment">-- 多列排序：先按城市，再按年龄降序</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> city <span class="hljs-keyword">ASC</span>, age <span class="hljs-keyword">DESC</span>;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-3-LIMIT-限制条数"><a href="#2-2-3-LIMIT-限制条数" class="headerlink" title="2.2.3 LIMIT 限制条数"></a>2.2.3 LIMIT 限制条数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 取前 3 条</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> age <span class="hljs-keyword">DESC</span> LIMIT <span class="hljs-number">3</span>;<br><br><span class="hljs-comment">-- 分页：跳过前 2 条，取接下来的 3 条</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> id LIMIT <span class="hljs-number">3</span> <span class="hljs-keyword">OFFSET</span> <span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-4-聚合函数与-GROUP-BY"><a href="#2-2-4-聚合函数与-GROUP-BY" class="headerlink" title="2.2.4 聚合函数与 GROUP BY"></a>2.2.4 聚合函数与 GROUP BY</h4><p>聚合函数用于对一组数据进行统计：<code>COUNT</code>、<code>SUM</code>、<code>AVG</code>、<code>MAX</code>、<code>MIN</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 统计用户总数</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> users;<br><br><span class="hljs-comment">-- 各城市的平均年龄</span><br><span class="hljs-keyword">SELECT</span> city, <span class="hljs-built_in">AVG</span>(age) <span class="hljs-keyword">AS</span> avg_age<br><span class="hljs-keyword">FROM</span> users<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> city;<br><br><span class="hljs-comment">-- 每个用户的订单总额</span><br><span class="hljs-keyword">SELECT</span> user_id, <span class="hljs-built_in">SUM</span>(amount) <span class="hljs-keyword">AS</span> total<br><span class="hljs-keyword">FROM</span> orders<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> user_id;<br><br><span class="hljs-comment">-- HAVING 过滤分组结果（注意：WHERE 不能用聚合函数）</span><br><span class="hljs-keyword">SELECT</span> user_id, <span class="hljs-built_in">SUM</span>(amount) <span class="hljs-keyword">AS</span> total<br><span class="hljs-keyword">FROM</span> orders<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> user_id<br><span class="hljs-keyword">HAVING</span> <span class="hljs-built_in">SUM</span>(amount) <span class="hljs-operator">&gt;</span> <span class="hljs-number">100</span>;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-5-JOIN-多表连接"><a href="#2-2-5-JOIN-多表连接" class="headerlink" title="2.2.5 JOIN 多表连接"></a>2.2.5 JOIN 多表连接</h4><p><code>JOIN</code> 用于把多张表按关联字段组合起来查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- INNER JOIN：只返回两表都能匹配上的行</span><br><span class="hljs-keyword">SELECT</span> u.name, o.amount, o.created_at<br><span class="hljs-keyword">FROM</span> users u<br><span class="hljs-keyword">INNER</span> <span class="hljs-keyword">JOIN</span> orders o <span class="hljs-keyword">ON</span> u.id <span class="hljs-operator">=</span> o.user_id;<br><br><span class="hljs-comment">-- LEFT JOIN：返回左表全部，右表无匹配则补 NULL</span><br><span class="hljs-keyword">SELECT</span> u.name, o.amount<br><span class="hljs-keyword">FROM</span> users u<br><span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> orders o <span class="hljs-keyword">ON</span> u.id <span class="hljs-operator">=</span> o.user_id;<br><br><span class="hljs-comment">-- 统计每个用户的订单数（含 0 单的用户）</span><br><span class="hljs-keyword">SELECT</span> u.name, <span class="hljs-built_in">COUNT</span>(o.id) <span class="hljs-keyword">AS</span> order_count<br><span class="hljs-keyword">FROM</span> users u<br><span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> orders o <span class="hljs-keyword">ON</span> u.id <span class="hljs-operator">=</span> o.user_id<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> u.id, u.name;<br></code></pre></td></tr></table></figure>
+
+<p>常见连接类型区别：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>INNER JOIN</td>
+<td>两表匹配才返回</td>
+</tr>
+<tr>
+<td>LEFT JOIN</td>
+<td>左表全返回，右表不匹配补 NULL</td>
+</tr>
+<tr>
+<td>RIGHT JOIN</td>
+<td>右表全返回，左表不匹配补 NULL</td>
+</tr>
+<tr>
+<td>FULL JOIN</td>
+<td>左右表都返回（部分数据库不支持）</td>
+</tr>
+</tbody></table>
+<h4 id="2-2-6-子查询"><a href="#2-2-6-子查询" class="headerlink" title="2.2.6 子查询"></a>2.2.6 子查询</h4><p>子查询是嵌套在另一条查询中的 <code>SELECT</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查询订单金额大于平均值的订单</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> orders<br><span class="hljs-keyword">WHERE</span> amount <span class="hljs-operator">&gt;</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">AVG</span>(amount) <span class="hljs-keyword">FROM</span> orders);<br><br><span class="hljs-comment">-- 查询下过单的用户（IN + 子查询）</span><br><span class="hljs-keyword">SELECT</span> name <span class="hljs-keyword">FROM</span> users<br><span class="hljs-keyword">WHERE</span> id <span class="hljs-keyword">IN</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> user_id <span class="hljs-keyword">FROM</span> orders);<br></code></pre></td></tr></table></figure>
+
+<h5 id="2-2-6-1-嵌套子查询（多层子查询）"><a href="#2-2-6-1-嵌套子查询（多层子查询）" class="headerlink" title="2.2.6.1 嵌套子查询（多层子查询）"></a>2.2.6.1 嵌套子查询（多层子查询）</h5><p>子查询内部还可以再嵌套子查询，即”子查询里套子查询”。下面先算出每个用户的总消费，再找出总消费高于”整体平均消费”的用户。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 第一层：整体平均消费（来自每个用户的总消费结果）</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br><span class="hljs-keyword">FROM</span> (<br>  <span class="hljs-comment">-- 第二层：每个用户的总消费</span><br>  <span class="hljs-keyword">SELECT</span> user_id, <span class="hljs-built_in">SUM</span>(amount) <span class="hljs-keyword">AS</span> total<br>  <span class="hljs-keyword">FROM</span> orders<br>  <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> user_id<br>) <span class="hljs-keyword">AS</span> user_total<br><span class="hljs-keyword">WHERE</span> total <span class="hljs-operator">&gt;</span> (<br>  <span class="hljs-comment">-- 第三层（嵌套）：在用户总消费的基础上再求平均</span><br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">AVG</span>(total)<br>  <span class="hljs-keyword">FROM</span> (<br>    <span class="hljs-keyword">SELECT</span> user_id, <span class="hljs-built_in">SUM</span>(amount) <span class="hljs-keyword">AS</span> total<br>    <span class="hljs-keyword">FROM</span> orders<br>    <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> user_id<br>  ) <span class="hljs-keyword">AS</span> t<br>);<br></code></pre></td></tr></table></figure>
+
+<p>上面的写法把同一段”用户总消费”逻辑重复用了两次。更清晰的做法是用 <code>WITH</code>（公用表表达式 CTE）把中间结果提出来，效果等价：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">WITH</span> user_total <span class="hljs-keyword">AS</span> (<br>  <span class="hljs-keyword">SELECT</span> user_id, <span class="hljs-built_in">SUM</span>(amount) <span class="hljs-keyword">AS</span> total<br>  <span class="hljs-keyword">FROM</span> orders<br>  <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> user_id<br>)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br><span class="hljs-keyword">FROM</span> user_total<br><span class="hljs-keyword">WHERE</span> total <span class="hljs-operator">&gt;</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">AVG</span>(total) <span class="hljs-keyword">FROM</span> user_total);<br></code></pre></td></tr></table></figure>
+
+<h5 id="2-2-6-2-相关子查询（二次查询-x2F-逐行关联）"><a href="#2-2-6-2-相关子查询（二次查询-x2F-逐行关联）" class="headerlink" title="2.2.6.2 相关子查询（二次查询 &#x2F; 逐行关联）"></a>2.2.6.2 相关子查询（二次查询 &#x2F; 逐行关联）</h5><p>相关子查询的特点是：<strong>子查询会引用外层查询的列，外层每取出一行，子查询就重新执行一次</strong>（所以也常被称为”二次查询”）。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查询&quot;消费金额高于自己历史平均订单金额&quot;的订单</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br><span class="hljs-keyword">FROM</span> orders o1<br><span class="hljs-keyword">WHERE</span> o1.amount <span class="hljs-operator">&gt;</span> (<br>  <span class="hljs-comment">-- 子查询引用外层 o1.user_id，逐行计算该用户的平均金额</span><br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">AVG</span>(o2.amount)<br>  <span class="hljs-keyword">FROM</span> orders o2<br>  <span class="hljs-keyword">WHERE</span> o2.user_id <span class="hljs-operator">=</span> o1.user_id<br>);<br></code></pre></td></tr></table></figure>
+
+<p>再举一个常见的”分组取最大值”场景：查询每个用户金额最高的那笔订单。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br><span class="hljs-keyword">FROM</span> orders o1<br><span class="hljs-keyword">WHERE</span> o1.amount <span class="hljs-operator">=</span> (<br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MAX</span>(o2.amount)<br>  <span class="hljs-keyword">FROM</span> orders o2<br>  <span class="hljs-keyword">WHERE</span> o2.user_id <span class="hljs-operator">=</span> o1.user_id<br>);<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意关联约束的方向：<strong>内层去匹配外层</strong>。相关子查询中，外层表（如 <code>o1</code>）是”当前驱动行”，内层表（如 <code>o2</code>）通过 <code>内层列 = 外层列</code> 去匹配当前行。等号两边（<code>o2.user_id = o1.user_id</code> 与 <code>o1.user_id = o2.user_id</code>）等价可换，但内外层表的角色不能对调，否则就不再是”按当前行逐行关联”的语义。</p>
+</blockquote>
+<p>相关子查询与非相关子查询的区别：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>是否引用外层列</th>
+<th>执行方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>非相关子查询</td>
+<td>否</td>
+<td>只执行一次，结果传给外层</td>
+</tr>
+<tr>
+<td>相关子查询（二次查询）</td>
+<td>是</td>
+<td>外层每取一行就执行一次</td>
+</tr>
+</tbody></table>
+<h3 id="2-3-改（Update）：修改数据"><a href="#2-3-改（Update）：修改数据" class="headerlink" title="2.3 改（Update）：修改数据"></a>2.3 改（Update）：修改数据</h3><p><code>UPDATE</code> 用于修改已有行的数据，**必需配合 **<code>WHERE</code>联合使用，否则会更新整张表。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 把 id = 1 的用户城市改为 &#x27;Guangzhou&#x27;</span><br><span class="hljs-keyword">UPDATE</span> users<br><span class="hljs-keyword">SET</span> city <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Guangzhou&#x27;</span><br><span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><br><span class="hljs-comment">-- 同时修改多列</span><br><span class="hljs-keyword">UPDATE</span> users<br><span class="hljs-keyword">SET</span> age <span class="hljs-operator">=</span> <span class="hljs-number">26</span>, city <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Beijing&#x27;</span><br><span class="hljs-keyword">WHERE</span> name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Alice&#x27;</span>;<br><br><span class="hljs-comment">-- 不加 WHERE 会更新所有行（慎用！）</span><br><span class="hljs-comment">-- UPDATE users SET city = &#x27;Unknown&#x27;;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-4-删（Delete）：删除数据"><a href="#2-4-删（Delete）：删除数据" class="headerlink" title="2.4 删（Delete）：删除数据"></a>2.4 删（Delete）：删除数据</h3><p><code>DELETE</code> 用于删除行，同样**必须配合 **<code>WHERE</code>，否则会清空整张表。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 删除 id = 5 的用户</span><br><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">5</span>;<br><br><span class="hljs-comment">-- 删除上海的所有用户</span><br><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> city <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Shanghai&#x27;</span>;<br><br><span class="hljs-comment">-- 不加 WHERE 会删除所有行（慎用！）</span><br><span class="hljs-comment">-- DELETE FROM users;</span><br><br><span class="hljs-comment">-- 清空整张表（速度比 DELETE 快，但不走事务日志，且重置自增）</span><br><span class="hljs-comment">-- TRUNCATE TABLE users;</span><br><br><span class="hljs-comment">-- 连同表结构一起删除</span><br><span class="hljs-comment">-- DROP TABLE users;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安全提示：<code>UPDATE</code> 和 <code>DELETE</code> 影响的是真实数据，执行前建议先用 <code>SELECT ... WHERE ...</code> 确认要影响的范围，并在生产环境开启事务（<code>BEGIN;</code> … <code>ROLLBACK;</code> &#x2F; <code>COMMIT;</code>）以便出错时回滚。</p>
+</blockquote>
+<p>实际生产环境里，一般可能会使用软删除（即只更新状态字段，不删除数据），避免误删。</p>
+<h2 id="3-综合实例"><a href="#3-综合实例" class="headerlink" title="3. 综合实例"></a>3. 综合实例</h2><p>下面用一个综合例子把上面的语法串起来：查询 “2026 年 2 月之后下过单、且订单总额超过 100 元的用户姓名与城市”。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> u.name, u.city, <span class="hljs-built_in">SUM</span>(o.amount) <span class="hljs-keyword">AS</span> total<br><span class="hljs-keyword">FROM</span> users u<br><span class="hljs-keyword">INNER</span> <span class="hljs-keyword">JOIN</span> orders o <span class="hljs-keyword">ON</span> u.id <span class="hljs-operator">=</span> o.user_id<br><span class="hljs-keyword">WHERE</span> o.created_at <span class="hljs-operator">&gt;=</span> <span class="hljs-string">&#x27;2026-02-01&#x27;</span><br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> u.id, u.name, u.city<br><span class="hljs-keyword">HAVING</span> <span class="hljs-built_in">SUM</span>(o.amount) <span class="hljs-operator">&gt;</span> <span class="hljs-number">100</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> total <span class="hljs-keyword">DESC</span>;<br></code></pre></td></tr></table></figure>
+
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4. 总结"></a>4. 总结</h2><p>SQL 的四大操作（CRUD）对应关键字：<code>INSERT</code>（增）、<code>SELECT</code>（查）、<code>UPDATE</code>（改）、<code>DELETE</code>（删）。其中查询 <code>SELECT</code> 最常用，其标准结构如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span>   列<br><span class="hljs-keyword">FROM</span>     表<br><span class="hljs-keyword">JOIN</span>     关联表 <span class="hljs-keyword">ON</span> 条件<br><span class="hljs-keyword">WHERE</span>    行过滤<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> 分组列<br><span class="hljs-keyword">HAVING</span>   分组过滤<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> 排序列<br>LIMIT    条数;<br></code></pre></td></tr></table></figure>
+
+<p>记住执行顺序（逻辑上）：<code>FROM</code> → <code>WHERE</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>SELECT</code> → <code>ORDER BY</code> → <code>LIMIT</code>。理解了这条主线，再配合聚合函数、连接查询与子查询，就能解决绝大多数日常 SQL 操作需求。同时谨记：**<code>UPDATE</code> 和 <code>DELETE</code> 一定要带 <code>WHERE</code>**，避免误改全表数据。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/unknown404.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" class="category-chain-item">技术学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/unknown404.github.io/tags/SQL/">#SQL</a>
+      
+        <a href="/unknown404.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SQL语法入门</div>
+      <div>https://unkonwn404.github.io/unknown404.github.io/2026/08/24/sql-syntax/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>小白的文件整理箱</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年8月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/unknown404.github.io/2026/07/27/serverless/" title="Serverless服务初识">
+                        <span class="hidden-mobile">Serverless服务初识</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/unknown404.github.io/js/events.js" ></script>
+<script  src="/unknown404.github.io/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/unknown404.github.io/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/unknown404.github.io/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/unknown404.github.io/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

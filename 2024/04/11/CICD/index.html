@@ -24,7 +24,7 @@
 <meta property="og:description" content="CI&#x2F;CD 简介CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。 CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-04-11T13:07:01.000Z">
-<meta property="article:modified_time" content="2025-08-20T09:41:49.467Z">
+<meta property="article:modified_time" content="2026-07-30T06:23:02.472Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="CI&#x2F;CD">
 <meta property="article:tag" content="运维小知识">
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.3k 字
+          4.6k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          28 分钟
+          39 分钟
         
       </span>
     
@@ -278,7 +278,16 @@
                 
                 <h2 id="CI-x2F-CD-简介"><a href="#CI-x2F-CD-简介" class="headerlink" title="CI&#x2F;CD 简介"></a>CI&#x2F;CD 简介</h2><p>CI 代表持续集成（Continuous Integration），在持续集成中，开发人员通常会将其代码提交到共享存储库，并且在每次提交后，会自动触发一系列的构建、测试和验证流程。</p>
 <p>CD 代表持续交付（Continuous Delivery）和持续部署（Continuous Deployment）。持续交付是指自动化地将软件构建、测试和部署到预生产环境的过程，使得软件可以随时准备好进行发布。而持续部署更进一步，是指将软件构建、测试和部署的过程完全自动化，包括将新代码直接部署到生产环境，以便快速交付新功能和修复 bug。</p>
-<h2 id="常见-CI-x2F-CD-工具"><a href="#常见-CI-x2F-CD-工具" class="headerlink" title="常见 CI&#x2F;CD 工具"></a>常见 CI&#x2F;CD 工具</h2><h3 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h3><p>该软件提供了一个易于使用的 Web 界面，可以帮助开发团队快速、高效地构建、测试和交付软件。它与各种版本控制系统（如 Git、Subversion）和构建工具（如 Maven、Gradle）无缝集成，可以轻松地配置和管理项目的构建过程。</p>
+<h2 id="常见-CI-x2F-CD-工具"><a href="#常见-CI-x2F-CD-工具" class="headerlink" title="常见 CI&#x2F;CD 工具"></a>常见 CI&#x2F;CD 工具</h2><h3 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h3><p>该软件提供了一个易于使用的 Web 界面，可以帮助开发团队快速、高效地构建、测试和交付软件。它与各种版本控制系统（如 Git、Subversion）和构建工具（如 Maven、Gradle）无缝集成，可以轻松地配置和管理项目的构建过程。<br>Jenkins打包部署的配置大致包括以下几步：</p>
+<ol>
+<li>创建 Job（新建任务）<br>点击左侧 ‘New Item’，输入项目名称，类型建议选择 ‘Freestyle project’（自由风格，适合新手）或 ‘Pipeline’（如果想用脚本化流程，更灵活但学习成本高一些）。刚上手建议先用 Freestyle project。</li>
+<li>配置源码管理（Source Code Management）<br>在任务配置页找到 ‘Source Code Management’，选择 Git，填入你的仓库地址（如 <a target="_blank" rel="noopener" href="https://github.com/xxx/xxx.git%EF%BC%89%EF%BC%8C%E5%A6%82%E6%9E%9C%E6%98%AF%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93%E9%9C%80%E8%A6%81%E7%82%B9">https://github.com/xxx/xxx.git），如果是私有仓库需要点</a> ‘Add’ 添加凭据（用户名密码或 SSH Key&#x2F;Token）。分支默认填 _&#x2F;main 或 _&#x2F;master，看你实际分支名。</li>
+<li>配置构建触发器（Build Triggers）<br>可选：如果希望代码 push 后自动构建，勾选 ‘GitHub hook trigger for GITScm polling’（需要在 GitHub 仓库设置 Webhook 指向 Jenkins）；如果不想用 webhook，可以选 ‘Poll SCM’ 定时轮询，比如填 H&#x2F;5 * * * * 表示每5分钟检查一次代码变化。也可以先不配置，纯手动点击构建。</li>
+<li>配置构建步骤 - 前端<br>在 ‘Build Steps’ 里点 ‘Add build step’ -&gt; ‘Execute shell’（Linux&#x2F;Mac）或 ‘Execute Windows batch command’（Windows）。写入前端构建命令，例如：cd frontend &amp;&amp; npm install &amp;&amp; npm run build。构建产物通常会生成在 dist 或 build 目录。</li>
+<li>配置构建步骤 - 后端<br>再添加一个 ‘Execute shell’ 步骤，写入后端命令，比如 Java 项目：cd backend &amp;&amp; mvn clean package；或 Node 项目：cd backend &amp;&amp; npm install &amp;&amp; pm2 restart app；根据你的技术栈调整命令。（如果前端打包内容需要后端管理，pm2 侧配置可以在ecosystem.config.cjs增加一个 app -web配置，起用 pm2 内置静态服务器（script: ‘serve’），部署机不需要额外安装 serve npm 包）</li>
+<li>配置部署&#x2F;发布（可选）<br>如果需要自动部署，可以再加一个 shell 步骤，把构建产物拷贝到目标目录或用 scp&#x2F;rsync 传到服务器，再重启服务（如 systemctl restart xxx 或 pm2 restart xxx）。也可以用 Jenkins 插件如 ‘Publish Over SSH’ 来简化远程部署。</li>
+<li>保存并执行首次构建<br>点击页面下方 ‘Save’ 保存配置，回到项目主页点击左侧 ‘Build Now’（构建现在）触发第一次构建，可以在 ‘Build History’ 里点进去看 ‘Console Output’ 控制台日志，排查是否报错。</li>
+</ol>
 <h3 id="gitlab"><a href="#gitlab" class="headerlink" title="gitlab"></a>gitlab</h3><h4 id="gitlab-runner-启动"><a href="#gitlab-runner-启动" class="headerlink" title="gitlab runner 启动"></a>gitlab runner 启动</h4><p>gitlab runner 是一个开源项目，用于运行流水线任务并将结果发送回 GitLab。本质就是一个服务器。</p>
 <p>gitlab-runner 的三种类型：</p>
 <ul>

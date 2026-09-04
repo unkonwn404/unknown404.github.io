@@ -24,7 +24,7 @@
 <meta property="og:description" content="记录 Vercel AI SDK 的核心组成、网关能力，以及在前端中如何做流式渲染。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-27T02:00:00.000Z">
-<meta property="article:modified_time" content="2026-06-23T08:04:12.408Z">
+<meta property="article:modified_time" content="2026-08-24T10:01:44.728Z">
 <meta property="article:author" content="小白的文件整理箱">
 <meta property="article:tag" content="Vercel">
 <meta property="article:tag" content="AI SDK">
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.7k 字
+          6.5k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          56 分钟
+          54 分钟
         
       </span>
     
@@ -350,14 +350,8 @@
 <p>对于不同项目，AI网关的需求度也是不一样的。<br><strong>个人项目</strong><br>只需要简单地调用单个 AI 模型，直接调用 API 就够了。<br><strong>个人或团队的小项目</strong><br>需要用到 AI 网关的特性（比如集成多个模型），可以选用 Vercel AI Gateway<br><strong>企业级应用</strong><br>对安全性和稳定性要求很高，选用 Higress 或者 Kong更合适</p>
 <ul>
 <li>Kong AI Gateway：Kong 本身就是一个很成熟的 API 网关，现在专门为 AI 场景做了增强，企业级功能比较完善。</li>
-<li>Higress AI：阿里云开源的 AI 网关，支持 100 多种大模型的统一协议转换，提供语义缓存、令牌限流、MCP 转换等企业级功能，适合有复杂 AI 集成需求的企业。<br> 我来帮你在 AI 网关部分增加一个关于 AI 网关和 AI 中转站区别的辨析。让我先看一下当前文档的结构，找到合适的位置插入内容。</li>
+<li>Higress AI：阿里云开源的 AI 网关，支持 100 多种大模型的统一协议转换，提供语义缓存、令牌限流、MCP 转换等企业级功能，适合有复杂 AI 集成需求的企业。</li>
 </ul>
-<p>Read <a href="file:///Users/danhuipeng/Desktop/githubLoad/unknown_404/test/source/_posts/vercelSDK.md#50-50"></a>, lines 50 to 120</p>
-<p>Read <a href="file:///Users/danhuipeng/Desktop/githubLoad/unknown_404/test/source/_posts/vercelSDK.md#120-120"></a>, lines 120 to 160</p>
-<p>现在我了解了文档结构。我将在 2.4 节之后、”## 3. 流式渲染”之前，新增一个 2.5 节来辨析 AI 网关和 AI 中转站的区别。</p>
-<p>以下是建议插入的内容：</p>
-<hr>
-<p>在 <code>## 2. AI 网关</code> 章节中，建议在 <strong>2.4 实际使用建议</strong> 之后、<code>## 3. 流式渲染</code> 之前，新增以下小节：</p>
 <h3 id="2-5-AI-网关-vs-AI-中转站：概念辨析"><a href="#2-5-AI-网关-vs-AI-中转站：概念辨析" class="headerlink" title="2.5 AI 网关 vs AI 中转站：概念辨析"></a>2.5 AI 网关 vs AI 中转站：概念辨析</h3><p>在实际开发中，很多人容易把”AI 网关”和”AI 中转站”混为一谈，因为两者都涉及”请求转发”。但它们的定位、能力和适用场景有明显区别。</p>
 <table>
 <thead>
